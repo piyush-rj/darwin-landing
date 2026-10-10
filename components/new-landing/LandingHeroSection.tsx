@@ -17,6 +17,7 @@ import { BackChevronIcon, CtaArrowIcon, FooterLinkHoverArrowIcon } from "@/compo
 import RollingText from "@/components/utility/RollingText";
 
 import BlockMosaic from "./BlockMosaic";
+import PixelReveal from "./PixelReveal";
 import StatusStrip from "./StatusStrip";
 
 const FEATURED = [
@@ -145,13 +146,13 @@ export default function LandingHeroSection() {
         >
             <section
                 ref={stageRef}
-                className="grid w-full border-b border-edge lg:sticky lg:top-11 lg:h-[calc(100dvh-2.75rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[minmax(0,1fr)_auto]"
+                className="grid w-full border-b border-edge lg:sticky lg:top-11 lg:h-[calc(100dvh-2.75rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[minmax(auto,1fr)_minmax(0,auto)]"
             >
                 <motion.div
                     style={motionStyle(scroll.toLeft)}
-                    className="flex min-h-[22rem] items-end px-6 pt-24 pb-10 md:px-9"
+                    className="flex min-h-[18rem] items-end px-6 pt-16 pb-10 md:px-9 lg:min-h-[auto] lg:pt-10"
                 >
-                    <h1 className="text-[52px] leading-[0.95] font-normal tracking-[-0.035em] text-foreground sm:text-[72px] lg:text-[88px]">
+                    <h1 className="text-[min(calc((100vw-3.25rem)/6.95),3.25rem)] leading-[0.95] font-normal tracking-[-0.035em] max-lg:leading-[1.08] max-sm:tracking-[-0.045em] text-foreground sm:text-[72px] lg:text-[88px]">
                         <RollingText text={"Issues in.\nPull requests out."} />
                     </h1>
                 </motion.div>
@@ -161,6 +162,13 @@ export default function LandingHeroSection() {
                         aria-hidden
                         style={motionStyle(scroll.panel)}
                         className="absolute inset-0 border-edge bg-mist lg:border-b lg:border-l"
+                    />
+                    <PixelReveal
+                        cover="var(--color-ink)"
+                        tileSize={64}
+                        startMs={200}
+                        spreadMs={550}
+                        className="z-20"
                     />
                     <div ref={anchorRef} className="relative">
                         <motion.div style={motionStyle(scroll.statement)}>
@@ -194,17 +202,21 @@ export default function LandingHeroSection() {
                     </div>
                 </div>
 
-                <motion.div
-                    style={motionStyle(scroll.toLeft)}
-                    className="overflow-hidden border-t border-edge lg:border-r"
-                >
+                <motion.div style={motionStyle(scroll.toLeft)} className="overflow-hidden">
                     <BlockMosaic />
                 </motion.div>
 
                 <motion.div
                     style={motionStyle(scroll.toRight)}
-                    className="flex flex-col justify-between gap-10 border-t border-edge px-6 py-6 md:px-9 lg:border-t-0"
+                    className="relative flex flex-col justify-between gap-10 border-t border-edge px-6 py-6 max-lg:hidden md:px-9 lg:border-t-0"
                 >
+                    <PixelReveal
+                        cover="var(--color-ink)"
+                        tileSize={64}
+                        startMs={350}
+                        spreadMs={550}
+                        className="z-20"
+                    />
                     <div className="flex flex-col text-neutral-400">
                         {[0, 1, 2].map((arrow) => (
                             <FooterLinkHoverArrowIcon key={arrow} className="size-4" />

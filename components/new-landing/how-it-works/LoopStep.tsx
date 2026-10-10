@@ -5,6 +5,7 @@ import Link from "next/link";
 import { type ComponentType, useEffect, useRef } from "react";
 
 import { CtaArrowIcon } from "@/components/icons";
+import FadeIn from "@/components/new-landing/FadeIn";
 import { cn } from "@/lib/utils";
 
 import type { PixelGlyph } from "../PixelGlyphs";
@@ -53,7 +54,7 @@ export default function LoopStep({
                     index % 2 === 1 && "lg:order-last",
                 )}
             >
-                <div className="max-w-[28rem]">
+                <FadeIn className="max-w-[28rem]">
                     <h3 className="text-[34px] leading-[1.08] font-semibold tracking-[-0.03em] text-foreground sm:text-[40px]">
                         {step.title}
                     </h3>
@@ -65,7 +66,7 @@ export default function LoopStep({
                         {step.link.label}
                         <CtaArrowIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
                     </Link>
-                </div>
+                </FadeIn>
             </div>
 
             <div
@@ -76,12 +77,14 @@ export default function LoopStep({
                     index % 2 === 1 ? "lg:border-r" : "lg:border-l",
                 )}
             >
-                <ToneMosaic
-                    tone={step.tone}
-                    className="sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[30rem]"
-                >
-                    <step.stage frame={step.frames.from + frame} cycle={cycle} />
-                </ToneMosaic>
+                <FadeIn y={0} delay={0.1} className="lg:h-full">
+                    <ToneMosaic
+                        tone={step.tone}
+                        className="sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[30rem]"
+                    >
+                        <step.stage frame={step.frames.from + frame} cycle={cycle} />
+                    </ToneMosaic>
+                </FadeIn>
             </div>
         </article>
     );

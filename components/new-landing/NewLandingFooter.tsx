@@ -16,14 +16,14 @@ const LINK_COLUMNS = [
         heading: "Company",
         links: [
             { label: "Home", href: "/" },
-            { label: "About us", href: "/about" },
+            { label: "Team", href: "/team" },
             { label: "Why Darwin", href: "/why" },
         ],
     },
     {
         heading: "Product",
         links: [
-            { label: "How it works", href: "/#how-it-works" },
+            { label: "How it works", href: "/how-it-works" },
             { label: "Integrations", href: "/integrations" },
             { label: "Pricing", href: "/#pricing" },
         ],

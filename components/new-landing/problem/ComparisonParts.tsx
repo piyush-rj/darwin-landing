@@ -20,13 +20,28 @@ export function PanelTag({ children, className }: { children: ReactNode; classNa
     );
 }
 
-export function PanelHeading({ title, caption }: { title: string; caption: string }) {
+export function PanelHeading({
+    title,
+    caption,
+    inverse = false,
+}: {
+    title: string;
+    caption: string;
+    inverse?: boolean;
+}) {
     return (
         <div className="mt-5">
-            <h3 className="text-[24px] leading-tight font-semibold tracking-[-0.025em] text-foreground">
+            <h3
+                className={cn(
+                    "text-[24px] leading-tight font-semibold tracking-[-0.025em]",
+                    inverse ? "text-white" : "text-foreground",
+                )}
+            >
                 {title}
             </h3>
-            <p className="mt-1.5 text-[15px] text-neutral-500">{caption}</p>
+            <p className={cn("mt-1.5 text-[15px]", inverse ? "text-white/75" : "text-neutral-500")}>
+                {caption}
+            </p>
         </div>
     );
 }

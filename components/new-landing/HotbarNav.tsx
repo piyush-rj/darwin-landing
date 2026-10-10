@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 
+import FadeIn from "@/components/new-landing/FadeIn";
 import { cn } from "@/lib/utils";
 
 import type { PixelGlyph } from "./PixelGlyphs";
@@ -36,40 +37,41 @@ export default function HotbarNav({
             {items.map((item, index) => {
                 const selected = index === active;
                 return (
-                    <a
-                        key={item.id}
-                        href={`#${item.id}`}
-                        aria-current={selected ? "true" : undefined}
-                        className="group flex items-center gap-4"
-                        style={{ "--slot-tone": item.tone } as CSSProperties}
-                    >
-                        <span
-                            className={cn(
-                                "relative flex size-11 shrink-0 items-center justify-center transition-colors",
-                                selected
-                                    ? "bg-[color-mix(in_oklab,var(--slot-tone)_16%,var(--color-mist))] text-(--slot-tone)"
-                                    : "bg-mist text-neutral-500 group-hover:text-foreground",
-                            )}
-                            style={{ boxShadow: slotBevel(selected) }}
+                    <FadeIn key={item.id} delay={index * 0.08}>
+                        <a
+                            href={`#${item.id}`}
+                            aria-current={selected ? "true" : undefined}
+                            className="group flex items-center gap-4"
+                            style={{ "--slot-tone": item.tone } as CSSProperties}
                         >
-                            <item.icon />
-                        </span>
-                        <span className="flex flex-col">
-                            <span className="font-mono text-[10px] tracking-[0.12em] text-neutral-400">
-                                {String(index + 1).padStart(2, "0")}
-                            </span>
                             <span
                                 className={cn(
-                                    "text-[15px] transition-colors",
+                                    "relative flex size-11 shrink-0 items-center justify-center transition-colors",
                                     selected
-                                        ? "text-foreground"
-                                        : "text-neutral-500 group-hover:text-foreground",
+                                        ? "bg-[color-mix(in_oklab,var(--slot-tone)_16%,var(--color-mist))] text-(--slot-tone)"
+                                        : "bg-mist text-neutral-500 group-hover:text-foreground",
                                 )}
+                                style={{ boxShadow: slotBevel(selected) }}
                             >
-                                {item.label}
+                                <item.icon />
                             </span>
-                        </span>
-                    </a>
+                            <span className="flex flex-col">
+                                <span className="font-mono text-[10px] tracking-[0.12em] text-neutral-400">
+                                    {String(index + 1).padStart(2, "0")}
+                                </span>
+                                <span
+                                    className={cn(
+                                        "text-[15px] transition-colors",
+                                        selected
+                                            ? "text-foreground"
+                                            : "text-neutral-500 group-hover:text-foreground",
+                                    )}
+                                >
+                                    {item.label}
+                                </span>
+                            </span>
+                        </a>
+                    </FadeIn>
                 );
             })}
         </nav>

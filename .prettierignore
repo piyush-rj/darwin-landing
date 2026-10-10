@@ -5,3 +5,4 @@ build
 coverage
 bun.lock
 *.pem
+lib/hairline/core

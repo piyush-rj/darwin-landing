@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import FadeIn from "@/components/new-landing/FadeIn";
 import RollingText from "@/components/utility/RollingText";
 
 import HotbarNav from "./HotbarNav";
@@ -63,10 +64,12 @@ export default function HowItWorksSection() {
                     </h2>
                 </div>
                 <div className="flex items-end bg-mist px-6 py-10 max-lg:border-t max-lg:border-edge md:px-9">
-                    <p className="max-w-[30ch] text-[19px] leading-[1.35] tracking-[-0.01em] text-foreground">
-                        Darwin takes the issue from your board, fixes it where your code really runs
-                        and comes back with something you can merge.
-                    </p>
+                    <FadeIn delay={0.15}>
+                        <p className="max-w-[30ch] text-[19px] leading-[1.35] tracking-[-0.01em] text-foreground">
+                            Darwin takes the issue from your board, fixes it where your code really
+                            runs and comes back with something you can merge.
+                        </p>
+                    </FadeIn>
                 </div>
             </div>
 

@@ -1,8 +1,10 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FocusEvent, type FormEvent, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { CtaArrowIcon } from "@/components/icons";
+import RollingSwap from "@/components/utility/RollingSwap";
 import { cn } from "@/lib/utils";
 
 type WaitlistStatus =
@@ -26,9 +28,37 @@ async function joinWaitlist(email: string): Promise<WaitlistResponse> {
     }
 }
 
-export default function WaitlistNavForm() {
+const INVERTED = "bg-foreground text-[14px] font-medium whitespace-nowrap text-snow";
+const PLAIN = "text-[14px] font-medium whitespace-nowrap text-foreground";
+const COMPACT_LABEL =
+    "flex h-full flex-1 items-center justify-center text-[12px] font-medium tracking-[0.06em] text-foreground uppercase";
+
+export default function WaitlistNavForm({
+    compact = false,
+    menuOpen = false,
+}: {
+    compact?: boolean;
+    menuOpen?: boolean;
+}) {
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<WaitlistStatus>({ state: "idle" });
+    const [expanded, setExpanded] = useState(!compact);
+    const [menuWasOpened, setMenuWasOpened] = useState(false);
+    if (menuOpen && !menuWasOpened) setMenuWasOpened(true);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    function expand() {
+        flushSync(() => setExpanded(true));
+        inputRef.current?.focus();
+    }
+
+    function collapse() {
+        if (compact && !email) setExpanded(false);
+    }
+
+    function handleBlur(event: FocusEvent<HTMLFormElement>) {
+        if (!event.currentTarget.contains(event.relatedTarget)) collapse();
+    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -41,11 +71,34 @@ export default function WaitlistNavForm() {
         );
     }
 
+    if (compact && (menuOpen || (!expanded && status.state !== "joined"))) {
+        return (
+            <button
+                type="button"
+                onClick={expand}
+                disabled={menuOpen}
+                className={cn(
+                    COMPACT_LABEL,
+                    "cursor-pointer transition-colors enabled:hover:bg-mist enabled:active:bg-mist disabled:cursor-default",
+                )}
+            >
+                <RollingSwap
+                    text={menuOpen ? "Menu" : "Join waitlist"}
+                    direction={menuOpen || !menuWasOpened ? "up" : "down"}
+                />
+            </button>
+        );
+    }
+
     if (status.state === "joined") {
         return (
             <p
                 role="status"
-                className="flex h-full items-center bg-foreground px-4 text-[14px] font-medium whitespace-nowrap text-snow"
+                className={cn(
+                    compact ? PLAIN : INVERTED,
+                    "flex h-full items-center px-4",
+                    compact && "flex-1 justify-center",
+                )}
             >
                 {status.message}
             </p>
@@ -56,30 +109,43 @@ export default function WaitlistNavForm() {
     const failed = status.state === "failed";
 
     return (
-        <form onSubmit={handleSubmit} className="relative flex h-full items-stretch">
+        <form
+            onSubmit={handleSubmit}
+            onBlur={handleBlur}
+            className="relative flex h-full flex-1 items-stretch"
+        >
             <input
+                ref={inputRef}
                 type="email"
                 required
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="Work email"
+                onKeyDown={(event) => event.key === "Escape" && event.currentTarget.blur()}
+                placeholder="Enter your email here"
                 autoComplete="email"
                 aria-label="Email address"
                 aria-invalid={failed}
                 className={cn(
-                    "h-full w-36 bg-transparent px-4 text-[14px] text-foreground outline-none transition-colors placeholder:text-neutral-500 focus:bg-mist sm:w-60",
+                    "h-full min-w-0 flex-1 bg-transparent px-4 text-[14px] text-foreground outline-none transition-colors placeholder:text-neutral-500 focus:bg-mist",
                     failed && "bg-[color-mix(in_oklab,var(--color-red-500)_8%,transparent)]",
                 )}
             />
             <button
                 type="submit"
                 disabled={submitting}
-                className="flex h-full cursor-pointer items-center gap-2 bg-foreground px-4 text-[14px] font-medium whitespace-nowrap text-snow transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-70"
+                aria-label="Join waitlist"
+                onPointerDown={(event) => event.preventDefault()}
+                className={cn(
+                    "flex h-full cursor-pointer items-center justify-center gap-2 disabled:cursor-wait disabled:opacity-70",
+                    compact
+                        ? cn(
+                              PLAIN,
+                              "aspect-square border-l border-edge transition-colors hover:bg-mist active:bg-mist",
+                          )
+                        : cn(INVERTED, "px-4 transition-opacity hover:opacity-90"),
+                )}
             >
-                <span className="sm:hidden">Join</span>
-                <span className="hidden sm:inline">
-                    {submitting ? "Joining..." : "Join waitlist"}
-                </span>
+                {!compact && <span>{submitting ? "Joining..." : "Join waitlist"}</span>}
                 <CtaArrowIcon className="size-4" />
             </button>
             {failed && (

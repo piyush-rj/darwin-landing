@@ -10,12 +10,12 @@ export default function CtaSection({ children }: { children: ReactNode }) {
             <SectionDivider />
 
             <div className="overflow-clip">
-                <div aria-hidden className="h-88" />
+                <div aria-hidden className="h-95" />
 
-                <div className="sticky bottom-0">
+                <div className="sticky bottom-0 ">
                     <section
                         id="get-started"
-                        className="absolute inset-x-0 bottom-full flex h-88 items-end justify-between border-b border-edge bg-primary text-center md:px-9 px-8 py-16"
+                        className="absolute inset-x-0 bottom-full flex h-95 items-end justify-between border-b border-edge bg-primary text-center md:px-9 px-8 py-16"
                     >
                         <div className="grain-strong pointer-events-none absolute inset-0 opacity-12" />
 

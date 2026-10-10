@@ -72,31 +72,18 @@
     }
 }
 
-@keyframes portal-swirl {
-    0% {
-        fill: #3a0c7a;
-    }
-    25% {
-        fill: #6a1fd0;
-    }
-    50% {
-        fill: #b44dff;
-    }
-    75% {
-        fill: #6a1fd0;
-    }
-    100% {
-        fill: #3a0c7a;
+@keyframes nav-enter {
+    from {
+        transform: translateY(-100%);
     }
 }
 
-.portal-swirl {
-    fill: #6a1fd0;
-    animation: portal-swirl 2s step-end infinite;
+.nav-enter {
+    animation: nav-enter 600ms cubic-bezier(0.22, 1, 0.36, 1) 80ms backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .portal-swirl {
+    .nav-enter {
         animation: none;
     }
 }
@@ -106,4 +93,101 @@
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.35 1.6' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 7 0 0 0 -3.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
         background-repeat: repeat;
     }
+}
+
+.portrait-blurred {
+    filter: blur(4px) grayscale(1) contrast(0.75) brightness(1.15);
+}
+
+.portrait-sharp {
+    --portrait-ring: var(--color-primary);
+    filter: grayscale(1) contrast(1.05) drop-shadow(2px 0 0 var(--portrait-ring))
+        drop-shadow(-2px 0 0 var(--portrait-ring)) drop-shadow(0 2px 0 var(--portrait-ring))
+        drop-shadow(0 -2px 0 var(--portrait-ring))
+        drop-shadow(0 0 6px color-mix(in oklab, var(--portrait-ring) 45%, transparent));
+}
+
+.team-founder {
+    will-change: scale;
+    transition: scale 650ms
+        linear(
+            0,
+            0.141 4.4%,
+            0.5 9.6%,
+            0.86 15.4%,
+            1.044 21%,
+            1.11 25.6%,
+            1.118 28.8%,
+            1.096 33.6%,
+            1.012 44.6%,
+            0.985 52.4%,
+            0.987 61.8%,
+            1.002 79.6%,
+            1
+        );
+}
+
+.team-founder:hover {
+    scale: 1.05;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .team-founder {
+        transition: none;
+    }
+}
+
+[data-hairline] {
+    --figure-ground-color: var(--figure-ground, var(--color-ink));
+    --figure-ink-color: var(--figure-ink, var(--color-foreground));
+    --hairline-plate: var(--figure-ground-color);
+    --hairline-hi: var(--figure-ink-color);
+    --hairline-edge: color-mix(in oklab, var(--figure-ink-color) 55%, var(--figure-ground-color));
+    --hairline-mid: color-mix(in oklab, var(--figure-ink-color) 32%, var(--figure-ground-color));
+    --hairline-lo: color-mix(in oklab, var(--figure-ink-color) 16%, var(--figure-ground-color));
+}
+
+[data-hairline] .accent {
+    stroke: var(--color-primary);
+}
+
+[data-hairline] .filled {
+    fill: color-mix(in oklab, var(--color-primary) 92%, var(--color-white));
+    stroke: color-mix(in oklab, var(--color-primary) 72%, var(--color-black));
+    transition:
+        fill 260ms ease,
+        stroke 260ms ease;
+}
+
+[data-hairline] .dot.accent {
+    fill: var(--color-primary);
+}
+
+[data-hairline] .hairline-label {
+    font-family: var(--font-mono);
+    font-size: 6.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    fill: color-mix(in oklab, var(--figure-ink-color) 55%, var(--figure-ground-color));
+    stroke: var(--figure-ground-color);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    paint-order: stroke;
+    transition: fill 400ms ease;
+}
+
+[data-hairline] .hairline-label.on {
+    fill: var(--figure-ink-color);
+}
+
+[data-hairline] .hairline-status {
+    font-size: 8px;
+    stroke-width: 0;
+}
+
+[data-hairline] .hairline-pill {
+    fill: var(--figure-ground-color);
+    stroke: var(--hairline-mid);
+    stroke-width: 0.8px;
+    stroke-dasharray: 2 2;
 }

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 
 import { GithubLogoIcon, PullRequestOpenIcon } from "@/components/icons";
 import { DarwinBlockLogo } from "@/components/logo/DarwinBlockLogo";
+import FadeIn from "@/components/new-landing/FadeIn";
 import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
 import { cn } from "@/lib/utils";
 import { KanbanStatus } from "@/types/kanban";
@@ -39,35 +40,43 @@ export default function LiveBoardPanel() {
     return (
         <div
             ref={ref}
-            className="flex flex-col px-6 pt-8 pb-10 md:px-9"
+            className="relative isolate flex flex-col overflow-hidden px-6 pt-8 pb-10 md:px-9"
             style={{
-                background: "color-mix(in oklab, var(--color-primary) 24%, var(--color-snow))",
+                background: "var(--color-primary)",
             }}
         >
-            <div className="flex items-center gap-2">
-                <PanelTag>
-                    <DarwinBlockLogo className="size-3.5" />
-                    Darwin
-                </PanelTag>
-                <PanelTag>
-                    <span className={cn("size-1.5 rounded-full bg-current", done.titleBox)} />
-                    Live
-                </PanelTag>
-            </div>
-            <PanelHeading
-                title="Darwin clears it as it lands."
-                caption="Fixed by the agent, proven in a runner."
-            />
-
-            <div className="relative mx-auto mt-12 w-full max-w-[30rem]">
-                <div className="absolute -top-7 right-10 z-10 flex size-14 items-center justify-center rounded-[12px] border border-edge bg-snow shadow-[0_10px_24px_-12px_rgba(16,24,40,0.25)]">
-                    <DarwinBlockLogo className="size-11" />
+            <div className="grain-strong pointer-events-none absolute inset-0 -z-10 opacity-12" />
+            <FadeIn delay={0.08}>
+                <div className="flex items-center gap-2">
+                    <PanelTag className="border-white/25 bg-white/15 text-white">
+                        <DarwinBlockLogo className="size-3.5" />
+                        Darwin
+                    </PanelTag>
+                    <PanelTag className="border-white/25 bg-white/15 text-white">
+                        <span className={cn("size-1.5 rounded-full bg-current", done.titleBox)} />
+                        Live
+                    </PanelTag>
                 </div>
-                <div className="absolute top-5 right-1 z-10 flex size-14 items-center justify-center rounded-[12px] border border-edge bg-snow shadow-[0_10px_24px_-12px_rgba(16,24,40,0.25)] sm:-right-6">
-                    <GithubLogoIcon className="size-10 text-foreground" />
+                <PanelHeading
+                    inverse
+                    title="Darwin clears it as it lands."
+                    caption="Fixed by the agent, proven in a runner."
+                />
+            </FadeIn>
+
+            <FadeIn delay={0.2} className="relative mx-auto mt-12 w-full max-w-[30rem]">
+                <div className="absolute -top-[34px] right-[34px] z-10 rounded-[16px] bg-white/20 p-1.5">
+                    <div className="flex size-14 items-center justify-center rounded-[11px] border border-edge bg-snow shadow-[0_10px_24px_-12px_rgba(16,24,40,0.25)]">
+                        <DarwinBlockLogo className="size-11" />
+                    </div>
+                </div>
+                <div className="absolute top-[14px] -right-[2px] z-10 rounded-[16px] bg-white/20 p-1.5 sm:-right-[30px]">
+                    <div className="flex size-14 items-center justify-center rounded-[11px] border border-edge bg-snow shadow-[0_10px_24px_-12px_rgba(16,24,40,0.25)]">
+                        <GithubLogoIcon className="size-10 text-foreground" />
+                    </div>
                 </div>
 
-                <CardShell className="bg-snow/50">
+                <CardShell className="bg-white/20">
                     <div className="flex items-center gap-3">
                         <span className="text-[17px] text-foreground">Closed this week:</span>
                         <span className="rounded-[6px] bg-primary/15 p-0.5">
@@ -101,7 +110,7 @@ export default function LiveBoardPanel() {
                         </AnimatePresence>
                     </div>
                 </CardShell>
-            </div>
+            </FadeIn>
         </div>
     );
 }

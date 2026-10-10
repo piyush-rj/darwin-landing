@@ -1,5 +1,6 @@
 import RollingText from "@/components/utility/RollingText";
 
+import FadeIn from "./FadeIn";
 import LiveBoardPanel from "./problem/LiveBoardPanel";
 import StaleBacklogPanel from "./problem/StaleBacklogPanel";
 
@@ -16,10 +17,12 @@ export default function ProblemSection() {
                     </h2>
                 </div>
                 <div className="flex items-end bg-mist px-6 py-10 max-lg:border-t max-lg:border-edge md:px-9">
-                    <p className="max-w-[30ch] text-[19px] leading-[1.35] tracking-[-0.01em] text-foreground">
-                        Most of what sits in an issue tracker is small, well-understood work. It
-                        still waits for an engineer, a context switch and a review cycle.
-                    </p>
+                    <FadeIn delay={0.15}>
+                        <p className="max-w-[30ch] text-[19px] leading-[1.35] tracking-[-0.01em] text-foreground">
+                            Most of what sits in an issue tracker is small, well-understood work. It
+                            still waits for an engineer, a context switch and a review cycle.
+                        </p>
+                    </FadeIn>
                 </div>
             </div>
 

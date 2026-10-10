@@ -96,7 +96,6 @@ export default function LandingThemeToggle({ className }: { className?: string }
 
     useLayoutEffect(() => {
         useLandingThemeStore.persist.rehydrate();
-        return () => document.body.classList.remove(LANDING_DARK_CLASS);
     }, []);
 
     useLayoutEffect(() => {

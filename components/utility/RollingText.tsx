@@ -6,11 +6,20 @@ import { Fragment, useEffect } from "react";
 const RISE_SECONDS = 1;
 const ROW_GAP_SECONDS = 0.8;
 const PUSH_SECONDS = 0.8;
-const PACE_STEP_SECONDS = 0.005;
-const EASE_IN_OUT = [0.76, 0, 0.24, 1] as const;
+export const PACE_STEP_SECONDS = 0.005;
+export const EASE_IN_OUT = [0.76, 0, 0.24, 1] as const;
 const DESCENDER_LETTERS = new Set(["g", "j", "p", "q", "y"]);
+const FADE_SHARE = 0.55;
+export const PARKED_GAP_EM = 0.35;
+export const RESTING_Y = "calc(0% + 0em)";
 
-function seededRandom(seed: number) {
+export function parkedOffset(doubled: boolean, sign: 1 | -1 = 1) {
+    const lines = doubled ? 200 : 100;
+    const gap = doubled ? PARKED_GAP_EM * 2 : PARKED_GAP_EM;
+    return `calc(${sign * lines}% + ${sign * gap}em)`;
+}
+
+export function seededRandom(seed: number) {
     let state = seed >>> 0;
     return () => {
         state = (state + 0x6d2b79f5) >>> 0;
@@ -20,7 +29,7 @@ function seededRandom(seed: number) {
     };
 }
 
-function rollsTwice(character: string, indexInLine: number) {
+export function rollsTwice(character: string, indexInLine: number) {
     return !DESCENDER_LETTERS.has(character) && (indexInLine % 5 === 0 || indexInLine % 8 === 0);
 }
 
@@ -47,7 +56,7 @@ function RisingCharacter({
 }) {
     const doubled = rollsTwice(character, indexInLine);
     const pace = 1 + Math.floor(seededRandom(lineIndex * 7919 + indexInLine * 104729)() * 5);
-    const hiddenOffset = doubled ? "200%" : "100%";
+    const hiddenOffset = parkedOffset(doubled);
 
     return (
         <span
@@ -55,9 +64,16 @@ function RisingCharacter({
             data-pace={pace}
             data-hidden-offset={hiddenOffset}
             className="relative inline-block"
-            style={{ transform: `translateY(${hiddenOffset})` }}
+            style={{ transform: `translateY(${hiddenOffset})`, opacity: 0 }}
         >
-            {doubled && <span className="absolute inset-x-0 bottom-full">{character}</span>}
+            {doubled && (
+                <span
+                    className="absolute inset-x-0"
+                    style={{ bottom: `calc(100% + ${PARKED_GAP_EM}em)` }}
+                >
+                    {character}
+                </span>
+            )}
             {character}
         </span>
     );
@@ -113,15 +129,20 @@ export default function RollingText({ text }: { text: string }) {
                     ...word.querySelectorAll<HTMLElement>("[data-rising-character]"),
                 ])
                 .forEach((character, indexInRow) => {
+                    const delay =
+                        rowStart + indexInRow * Number(character.dataset.pace) * PACE_STEP_SECONDS;
                     animate(
                         character,
-                        { y: [character.dataset.hiddenOffset ?? "100%", "0%"] },
+                        { y: [character.dataset.hiddenOffset ?? parkedOffset(false), RESTING_Y] },
+                        { duration: RISE_SECONDS, delay, ease: EASE_IN_OUT },
+                    );
+                    animate(
+                        character,
+                        { opacity: [0, 1] },
                         {
-                            duration: RISE_SECONDS,
-                            delay:
-                                rowStart +
-                                indexInRow * Number(character.dataset.pace) * PACE_STEP_SECONDS,
-                            ease: EASE_IN_OUT,
+                            duration: RISE_SECONDS * FADE_SHARE,
+                            delay: delay + RISE_SECONDS * 0.25,
+                            ease: "easeOut",
                         },
                     );
                 });
