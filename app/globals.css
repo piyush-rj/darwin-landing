@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@import "./theme.css";
+
+@source "../**/*.{ts,tsx}";
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    html,
+    body {
+        overscroll-behavior: none;
+    }
+
+    body {
+        @apply bg-ink text-foreground;
+    }
+
+    html.lenis,
+    html.lenis body {
+        height: auto;
+    }
+
+    .lenis.lenis-smooth {
+        scroll-behavior: auto !important;
+    }
+
+    .lenis.lenis-smooth [data-lenis-prevent] {
+        overscroll-behavior: contain;
+    }
+
+    .lenis.lenis-stopped {
+        overflow: hidden;
+    }
+
+    /* Only the thumb is ever painted. WebKit otherwise fills the track with a
+       light band on hover, which reads as a stripe running the length of every
+       scroll pane. */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in oklab, var(--color-foreground) 22%, transparent) transparent;
+    }
+
+    *::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    *::-webkit-scrollbar-track,
+    *::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        border-radius: 9999px;
+        background-color: color-mix(in oklab, var(--color-foreground) 22%, transparent);
+    }
+
+    /* The page scrolls the document root (Lenis drives <html>), so the visible
+       scrollbar belongs there — hiding it on a child that doesn't scroll has no
+       effect. */
+    html,
+    body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@keyframes portal-swirl {
+    0% {
+        fill: #3a0c7a;
+    }
+    25% {
+        fill: #6a1fd0;
+    }
+    50% {
+        fill: #b44dff;
+    }
+    75% {
+        fill: #6a1fd0;
+    }
+    100% {
+        fill: #3a0c7a;
+    }
+}
+
+.portal-swirl {
+    fill: #6a1fd0;
+    animation: portal-swirl 2s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .portal-swirl {
+        animation: none;
+    }
+}
+
+@layer utilities {
+    .grain-strong {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.35 1.6' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 7 0 0 0 -3.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+    }
+}

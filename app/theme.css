@@ -1,0 +1,239 @@
+@theme {
+    /* Dark surfaces, darkest → lightest. */
+    --color-ink: #0a0a0a;
+    --color-charcoal: #121213;
+    --color-cement: #181819;
+    --color-graphite: #1d1d1e;
+
+    /* The lifted surface a selected row, tab or group header sits on. */
+    --color-active: #222222;
+    --color-hover: #1c1c1c;
+
+    /* Light surfaces. */
+    --color-snow: #ffffff;
+    --color-mist: #f4f4f4;
+
+    /* Accents. */
+    --color-primary: #ab9ff2; /* brand purple */
+    --color-primary-foreground: var(--color-ink);
+    --color-matcha: #9bc24f; /* interaction accent: focus rings, success, toggles */
+    --color-matcha-foreground: #14150c; /* text/icons on matcha fills */
+    --color-brick: #6e1d1d; /* muted maroon: warning/error pill fills */
+    --color-brick-foreground: #f2bcb9; /* text/icons on brick fills */
+
+    /* Hairline card borders and inset top-edge highlights. */
+    --color-edge: #212122;
+
+    /* Translucent hover/lift/hairline washes over a surface — flips warmth per scope. */
+    --color-overlay: #ffffff;
+
+    /* Dividers inside a card, one step quieter than `border`. */
+    --color-border-subtle: #ededed;
+
+    /*
+     * Semantic status colours. Each is a text tone plus a fill and edge tuned
+     * to sit on the scope's own ground, so a warning pill never has to pick
+     * raw palette shades that only work on one background.
+     */
+    --color-success: #4ade80;
+    --color-success-surface: rgba(74, 222, 128, 0.12);
+    --color-success-edge: rgba(74, 222, 128, 0.28);
+    --color-warning: #f5c451;
+    --color-warning-surface: rgba(245, 196, 81, 0.12);
+    --color-warning-edge: rgba(245, 196, 81, 0.28);
+    --color-danger: #f0736f;
+    --color-danger-surface: rgba(240, 115, 111, 0.12);
+    --color-danger-edge: rgba(240, 115, 111, 0.28);
+    --color-info: #60a5fa;
+    --color-info-surface: rgba(96, 165, 250, 0.12);
+    --color-info-edge: rgba(96, 165, 250, 0.28);
+
+    /*
+     * Elevation. Dark builds lift from fill lightness, light builds it from a
+     * real border plus a shadow, so the whole recipe — not just the colour —
+     * has to be a token. Consumed through the `.surface-*` classes in
+     * globals.css; the raw vars exist so one-offs can compose them.
+     */
+    --shadow-card: none;
+    --shadow-menu:
+        0 1px 2px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.12),
+        0 8px 16px -4px rgba(0, 0, 0, 0.16);
+    --shadow-dialog: 0 24px 60px rgba(0, 0, 0, 0.55);
+    --shadow-toast: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+    --shadow-drag: 0 12px 28px rgba(0, 0, 0, 0.55);
+
+    /*
+     * Defaults so a `.surface-*` class rendered outside any scope — the admin
+     * app, or before the scope class lands on <body> — still paints something
+     * rather than resolving to an invalid declaration.
+     */
+    --surface-card: var(--color-snow);
+    --surface-card-border: var(--color-border);
+    --surface-card-hover: var(--color-mist);
+    --surface-raised: var(--color-snow);
+    --surface-raised-border: var(--color-border);
+    --surface-sunken: var(--color-mist);
+    --surface-sunken-border: var(--color-border);
+    --surface-inset: var(--color-mist);
+    --surface-inset-border: var(--color-border);
+    --surface-menu: var(--color-snow);
+    --surface-menu-border: var(--color-border);
+    --surface-chrome: var(--color-snow);
+    --surface-chrome-border: var(--color-border);
+    --surface-scrim: rgba(0, 0, 0, 0.5);
+
+    /* Semantic roles (consumed by shadcn/ui components). */
+    --color-background: #fff8ed;
+    --color-foreground: #171717;
+    --color-surface: var(--color-mist);
+    --color-card: var(--color-snow);
+    --color-card-foreground: var(--color-foreground);
+    --color-popover: var(--color-snow);
+    --color-popover-foreground: var(--color-foreground);
+    --color-secondary: var(--color-mist);
+    --color-secondary-foreground: var(--color-foreground);
+    --color-muted: var(--color-mist);
+    --color-muted-foreground: #737373;
+    --color-accent: var(--color-mist);
+    --color-accent-foreground: var(--color-foreground);
+    --color-destructive: #e7000b;
+    --color-border: #e5e5e5;
+    --color-input: #e5e5e5;
+    --color-ring: #a3a3a3;
+
+    /* Radii: 0.625rem base, stepped ±4px/±2px. */
+    --radius-sm: calc(0.625rem - 4px);
+    --radius-md: calc(0.625rem - 2px);
+    --radius-lg: 0.625rem;
+    --radius-xl: calc(0.625rem + 4px);
+
+    /* Google Sans Flex is the shared UI default. `font-headline` is the display exception. */
+    --font-sans: var(--font-google-sans-flex), ui-sans-serif, system-ui, sans-serif;
+    --font-mono: var(--font-geist-mono);
+    --font-display: var(--font-sans);
+    --font-serif: var(--font-sans);
+    --font-grotesk: var(--font-sans);
+    --font-headline: var(--font-titillium-web);
+    --font-pixel: var(--font-departure-mono), ui-monospace, monospace;
+    --font-arimo: var(--font-sans);
+}
+
+/*
+ * Pages that are light by design and never follow the theme choice.
+ * Self-contained: it redeclares the whole vocabulary rather than leaning
+ * on an outer scope, so it reads the same wherever it is mounted.
+ */
+.theme-light {
+    --color-ink: #fcfcfc;
+    --color-charcoal: #f7f7f8;
+    --color-cement: #ffffff;
+    --color-graphite: #ffffff;
+
+    --color-active: #ebebed;
+    --color-hover: #f2f2f4;
+
+    --color-snow: #ffffff;
+    --color-mist: #f4f4f5;
+    --color-overlay: #18181b;
+
+    --color-primary: #7c5ce6;
+    --color-primary-foreground: var(--color-snow);
+    --color-matcha: #5f8a1c;
+    --color-matcha-foreground: var(--color-snow);
+    --color-brick: #fbe3e1;
+    --color-brick-foreground: #9b2c2c;
+
+    --color-edge: #e7e7ea;
+
+    --color-background: #fcfcfc;
+    --color-foreground: #18181b;
+    --color-surface: var(--color-mist);
+    --color-card: var(--color-snow);
+    --color-card-foreground: var(--color-foreground);
+    --color-popover: var(--color-snow);
+    --color-popover-foreground: var(--color-foreground);
+    --color-secondary: var(--color-mist);
+    --color-secondary-foreground: var(--color-foreground);
+    --color-muted: var(--color-mist);
+    --color-muted-foreground: #6b6b70;
+    --color-accent: var(--color-mist);
+    --color-accent-foreground: var(--color-foreground);
+    --color-destructive: #c1121f;
+    --color-border: #e7e7ea;
+    --color-border-subtle: #f0f0f2;
+    --color-input: #e7e7ea;
+    --color-ring: #7c5ce6;
+
+    --color-neutral-50: #17181d;
+    --color-neutral-100: #23242b;
+    --color-neutral-200: #3a3c46;
+    --color-neutral-300: #4e505b;
+    --color-neutral-400: #63656f;
+    --color-neutral-500: #797b86;
+    --color-neutral-600: #9a9ca6;
+
+    /*
+     * The landing site has no dark counterpart, but it renders the same shared
+     * primitives as the playground, so it needs the same vocabulary defined or
+     * those components resolve to nothing here.
+     */
+    --color-success: #17803d;
+    --color-success-surface: rgba(23, 128, 61, 0.09);
+    --color-success-edge: rgba(23, 128, 61, 0.22);
+    --color-warning: #a15c07;
+    --color-warning-surface: rgba(161, 92, 7, 0.1);
+    --color-warning-edge: rgba(161, 92, 7, 0.22);
+    --color-danger: #c1121f;
+    --color-danger-surface: rgba(193, 18, 31, 0.08);
+    --color-danger-edge: rgba(193, 18, 31, 0.22);
+    --color-info: #1f6feb;
+    --color-info-surface: rgba(31, 111, 235, 0.09);
+    --color-info-edge: rgba(31, 111, 235, 0.22);
+
+    --surface-card: #ffffff;
+    --surface-card-border: #e7e7ea;
+    --surface-card-hover: #fbfbfc;
+    --surface-raised: #ffffff;
+    --surface-raised-border: #e7e7ea;
+    --surface-sunken: #f7f7f8;
+    --surface-sunken-border: #ededf0;
+    --surface-inset: #f4f4f5;
+    --surface-inset-border: #e7e7ea;
+    --surface-menu: #ffffff;
+    --surface-menu-border: #e7e7ea;
+    --surface-chrome: #fcfcfc;
+    --surface-chrome-border: #e7e7ea;
+    --surface-scrim: rgba(20, 20, 26, 0.28);
+
+    --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05);
+    --shadow-menu: 0 4px 12px rgba(16, 24, 40, 0.08), 0 1px 3px rgba(16, 24, 40, 0.04);
+    --shadow-dialog: 0 16px 48px rgba(16, 24, 40, 0.12), 0 2px 8px rgba(16, 24, 40, 0.06);
+    --shadow-toast: 0 8px 24px rgba(16, 24, 40, 0.1);
+    --shadow-drag: 0 8px 20px rgba(16, 24, 40, 0.14);
+
+    --gradient-border-rgb: 38 38 38;
+    --color-mention-member: #4338ca;
+    --color-mention-team: #14603f;
+    color-scheme: light;
+}
+
+.theme-light.landing-dark {
+    --color-ink: #111114;
+    --color-charcoal: #16161a;
+    --color-snow: #1a1a1f;
+    --color-mist: #1f1f25;
+    --color-overlay: #ffffff;
+    --color-edge: #2a2a31;
+    --color-foreground: #f4f4f5;
+    --color-primary-foreground: #ffffff;
+    --color-background: #111114;
+
+    --color-neutral-200: #2e2f37;
+    --color-neutral-300: #4a4c56;
+    --color-neutral-400: #74767f;
+    --color-neutral-500: #9b9da6;
+    --color-neutral-600: #c2c3c9;
+
+    color-scheme: dark;
+}
+
