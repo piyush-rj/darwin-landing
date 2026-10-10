@@ -43,7 +43,10 @@ export default function WaitlistNavForm() {
 
     if (status.state === "joined") {
         return (
-            <p role="status" className="flex h-full items-center px-4 text-[14px] text-foreground">
+            <p
+                role="status"
+                className="flex h-full items-center bg-foreground px-4 text-[14px] font-medium whitespace-nowrap text-snow"
+            >
                 {status.message}
             </p>
         );

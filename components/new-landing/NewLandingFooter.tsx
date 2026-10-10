@@ -38,11 +38,7 @@ const LINK_COLUMNS = [
     },
     {
         heading: "Social",
-        links: [
-            { label: "GitHub", href: "#" },
-            { label: "X", href: "#" },
-            { label: "LinkedIn", href: "#" },
-        ],
+        links: [{ label: "X", href: "https://x.com/heydarwin_app" }],
     },
 ];
 
@@ -51,15 +47,17 @@ export default function NewLandingFooter() {
 
     return (
         <footer className="w-full bg-ink text-foreground">
-            <div className="grid grid-cols-2 border-b border-edge lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))_minmax(0,1.4fr)]">
+            <div className="grid grid-cols-2 border-b border-edge lg:grid-cols-[minmax(0,2.2fr)_repeat(4,minmax(0,1fr))_14rem] lg:grid-rows-[14rem]">
                 <div
                     className={cn(
                         CELL,
                         "flex min-h-52 flex-col justify-between gap-8 col-span-2 lg:col-span-1 lg:border-r",
                     )}
                 >
-                    <p className="max-w-[12ch] text-[26px] leading-[1.05] font-semibold tracking-[-0.03em] uppercase sm:text-[28px]">
-                        Issues in. Pull requests out.
+                    <p className="text-[26px] leading-[1.05] font-semibold tracking-[-0.03em] uppercase sm:text-[28px]">
+                        Issues in.
+                        <br />
+                        Pull requests out.
                     </p>
                     <Link
                         href="/login"
@@ -86,6 +84,10 @@ export default function NewLandingFooter() {
                                 <li key={link.label}>
                                     <Link
                                         href={link.href}
+                                        {...(link.href.startsWith("http") && {
+                                            target: "_blank",
+                                            rel: "noopener noreferrer",
+                                        })}
                                         className={cn(
                                             LINK,
                                             pathname === link.href && "text-primary",
