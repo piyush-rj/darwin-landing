@@ -245,7 +245,7 @@ export default function BlockMosaic({ className }: { className?: string }) {
         <div
             ref={ref}
             aria-hidden
-            className={cn("relative w-full overflow-hidden", className)}
+            className={cn("relative isolate w-full overflow-hidden", className)}
             style={{
                 background: live ? TONE_FILL.base : "transparent",
                 aspectRatio: `${COLUMNS} / ${ROWS}`,

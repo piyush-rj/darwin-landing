@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import Image from "next/image";
 import type { ReactNode } from "react";
 
 import {
@@ -12,39 +13,46 @@ import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
 import { cn } from "@/lib/utils";
 import { KanbanStatus } from "@/types/kanban";
 
+import { HARD_SHADOW } from "../boxStyles";
 import { LOOP } from "./loopTimeline";
 
 const DONE_TONE = KanbanBoard.glyphFor(KanbanStatus.Done).titleBox;
+const DIFF_BLOCKS = ["added", "added", "added", "removed", "unchanged"] as const;
+const BUTTON_FILL =
+    "border-[color-mix(in_oklab,var(--tone)_80%,black)] bg-[color-mix(in_oklab,var(--tone)_80%,black)] text-white";
+const MOVE = { duration: 0.5, ease: [0.22, 1, 0.36, 1] } as const;
 
-function ReviewerAvatar({ letter }: { letter: string }) {
+function Tile({ done, children }: { done: boolean; children: ReactNode }) {
     return (
         <span
-            aria-hidden
-            className="relative inline-flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-[5px] bg-linear-to-br from-[#C7B9FF] via-[#9D8AF5] to-[#6C55DE] text-[9px] leading-none font-semibold text-white shadow-[0_2px_6px_-1px_rgba(108,85,222,0.5)] ring-1 ring-overlay/15 ring-inset before:pointer-events-none before:absolute before:inset-0 before:bg-linear-to-b before:from-white/35 before:to-transparent before:opacity-80"
+            className={cn(
+                "flex size-6 shrink-0 items-center justify-center border transition-colors duration-300",
+                done ? BUTTON_FILL : "border-edge text-neutral-400",
+            )}
         >
-            <span className="relative drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">{letter}</span>
+            {children}
         </span>
     );
 }
 
 function CheckRow({
-    icon,
+    tile,
     label,
     done,
     children,
 }: {
-    icon: ReactNode;
+    tile: ReactNode;
     label: string;
     done: boolean;
     children: ReactNode;
 }) {
     return (
-        <div className="flex h-9 items-center gap-2.5 px-3 text-[12.5px]">
-            {icon}
+        <div className="flex h-[38px] items-center gap-3 border-b border-dashed border-edge px-3 text-[13.5px]">
+            {tile}
             <span className="text-foreground/80">{label}</span>
             <span
                 className={cn(
-                    "ml-auto flex items-center gap-1 font-mono text-[10.5px] tracking-[0.08em] uppercase transition-colors",
+                    "ml-auto flex items-center gap-1 font-mono text-[11px] tracking-[0.08em] uppercase transition-colors duration-300",
                     done ? DONE_TONE : "text-neutral-400",
                 )}
             >
@@ -57,87 +65,141 @@ function CheckRow({
 export default function PullRequestStage({ frame }: { frame: number }) {
     if (frame < LOOP.opened) {
         return (
-            <div className="flex h-[18.25rem] items-center justify-center rounded-md border border-dashed border-edge text-[12.5px] text-neutral-400">
+            <div className="flex h-[246px] items-center justify-center gap-2 border border-dashed border-edge bg-snow/60 font-mono text-[11px] tracking-[0.12em] text-neutral-400 uppercase">
+                <span aria-hidden className="size-1.5 animate-pulse bg-current" />
                 Waiting for a passing run
             </div>
         );
     }
 
+    const checked = frame >= LOOP.checked;
+    const approved = frame >= LOOP.approved;
     const merged = frame >= LOOP.merged;
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="overflow-hidden rounded-md border border-edge bg-snow"
+            transition={MOVE}
+            className={cn("border border-edge bg-snow", HARD_SHADOW)}
         >
-            <div className="border-b border-edge px-3 py-2.5">
-                <div className="flex items-center gap-2 text-[11px] text-neutral-500">
+            <div className="border-b border-edge px-3 py-3">
+                <div className="flex items-center gap-2 font-mono text-[11px] text-neutral-500">
                     <GithubLogoIcon className="size-3.5 text-foreground/70" aria-hidden />
                     acme/web
-                    <span className="font-mono text-neutral-400">#910</span>
+                    <span className="text-neutral-400">#910</span>
                 </div>
-                <p className="mt-1.5 flex items-center gap-2 text-[13px] text-foreground">
-                    {merged ? (
-                        <MergeIcon className="size-3.5 shrink-0 text-green-600" aria-hidden />
-                    ) : (
-                        <PullRequestOpenIcon
-                            className="size-3.5 shrink-0 text-green-500"
-                            aria-hidden
-                        />
-                    )}
+                <p className="mt-2 flex items-center gap-2.5 text-[14px] text-foreground">
+                    <span
+                        className={cn(
+                            "flex size-6 shrink-0 items-center justify-center text-white transition-colors duration-500",
+                            merged ? "bg-(--tone)" : "bg-green-500",
+                        )}
+                    >
+                        {merged ? (
+                            <MergeIcon className="size-3.5" aria-hidden />
+                        ) : (
+                            <PullRequestOpenIcon className="size-3.5" aria-hidden />
+                        )}
+                    </span>
                     fix(checkout): round after conversion
                 </p>
-                <p className="mt-1 font-mono text-[10.5px] text-neutral-400">
-                    <span className="text-green-600">+12</span>{" "}
-                    <span className="text-red-500">−4</span> · 1 file · closes NOC-142
-                </p>
-            </div>
-
-            <div className="divide-y divide-edge">
-                <CheckRow
-                    icon={<RunnerIcon className="size-3.5 text-neutral-400" aria-hidden />}
-                    label="Tests in runner-04"
-                    done={frame >= LOOP.checked}
-                >
-                    {frame >= LOOP.checked ? (
-                        <>
-                            <CheckIcon className="size-3" aria-hidden /> 214 passed
-                        </>
-                    ) : (
-                        "Running"
-                    )}
-                </CheckRow>
-                <CheckRow
-                    icon={<ReviewerAvatar letter="M" />}
-                    label="Review from Maya"
-                    done={frame >= LOOP.approved}
-                >
-                    {frame >= LOOP.approved ? (
-                        <>
-                            <CheckIcon className="size-3" aria-hidden /> Approved
-                        </>
-                    ) : (
-                        "Requested"
-                    )}
-                </CheckRow>
-            </div>
-
-            <div className="border-t border-edge p-3">
-                <div
-                    className={cn(
-                        "flex h-9 items-center justify-center gap-2 rounded-md text-[13px] font-medium transition-colors duration-500",
-                        merged
-                            ? "bg-green-600 text-white"
-                            : frame >= LOOP.approved
-                              ? "bg-foreground text-snow"
-                              : "bg-mist text-neutral-400",
-                    )}
-                >
-                    <MergeIcon className="size-3.5" aria-hidden />
-                    {merged ? "Merged" : "Merge pull request"}
+                <div className="mt-2.5 flex items-center gap-2 font-mono text-[11px] text-neutral-400">
+                    <span className="text-green-600">+12</span>
+                    <span className="text-red-500">−4</span>
+                    <span aria-hidden className="flex gap-0.5">
+                        {DIFF_BLOCKS.map((kind, index) => (
+                            <span
+                                key={index}
+                                className={cn(
+                                    "size-2",
+                                    kind === "added" && "bg-green-500",
+                                    kind === "removed" && "bg-red-500",
+                                    kind === "unchanged" && "bg-edge",
+                                )}
+                            />
+                        ))}
+                    </span>
+                    <span>· closes NOC-142</span>
                 </div>
+            </div>
+
+            <CheckRow
+                tile={
+                    <Tile done={checked}>
+                        <RunnerIcon className="size-3.5" aria-hidden />
+                    </Tile>
+                }
+                label="Tests in runner-04"
+                done={checked}
+            >
+                {checked ? (
+                    <>
+                        <CheckIcon className="size-3" aria-hidden /> 214 passed
+                    </>
+                ) : (
+                    "Running"
+                )}
+            </CheckRow>
+            <CheckRow
+                tile={
+                    <span
+                        className={cn(
+                            "size-6 shrink-0 overflow-hidden border bg-white transition-colors duration-300",
+                            approved
+                                ? "border-[color-mix(in_oklab,var(--tone)_80%,black)]"
+                                : "border-edge",
+                        )}
+                    >
+                        <Image
+                            src="/images/team/piyush.png"
+                            alt=""
+                            width={48}
+                            height={48}
+                            className="size-full scale-[1.3] object-cover object-[50%_40%]"
+                        />
+                    </span>
+                }
+                label="Review from Piyush"
+                done={approved}
+            >
+                {approved ? (
+                    <>
+                        <CheckIcon className="size-3" aria-hidden /> Approved
+                    </>
+                ) : (
+                    "Requested"
+                )}
+            </CheckRow>
+
+            <div className="p-3 pb-4">
+                <motion.div
+                    animate={{ y: merged ? 3 : 0 }}
+                    transition={MOVE}
+                    className={cn(
+                        "flex h-10 items-center justify-center gap-2 border text-[13.5px] font-medium transition-[background-color,border-color,color,box-shadow] duration-300",
+                        merged &&
+                            cn(
+                                BUTTON_FILL,
+                                "shadow-[0_0_0_color-mix(in_oklab,var(--tone)_55%,black)]",
+                            ),
+                        approved &&
+                            !merged &&
+                            cn(
+                                BUTTON_FILL,
+                                "shadow-[0_3px_0_color-mix(in_oklab,var(--tone)_55%,black)]",
+                            ),
+                        !approved &&
+                            "border-edge bg-mist text-neutral-400 shadow-[0_3px_0_var(--color-edge)]",
+                    )}
+                >
+                    {merged ? (
+                        <CheckIcon className="size-3.5" aria-hidden />
+                    ) : (
+                        <MergeIcon className="size-3.5" aria-hidden />
+                    )}
+                    {merged ? "Merged" : "Merge pull request"}
+                </motion.div>
             </div>
         </motion.div>
     );

@@ -14,6 +14,7 @@ import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
 import { cn } from "@/lib/utils";
 import { KanbanStatus } from "@/types/kanban";
 
+import { HARD_SHADOW } from "../boxStyles";
 import { LOOP } from "./loopTimeline";
 
 type LogLine = { icon: IconType; text: string; detail?: string; passed?: boolean };
@@ -28,71 +29,58 @@ const LOG: LogLine[] = [
     { icon: CommitsIcon, text: "Commit fix(checkout)" },
 ];
 
-const DONE_TONE = KanbanBoard.glyphFor(KanbanStatus.Done).titleBox;
+const ROW_HEIGHT_PX = 38;
 
-function runnerState(frame: number) {
-    if (frame < LOOP.firstLog) return { label: "Idle", dot: "bg-neutral-300" };
-    if (frame < LOOP.opened) return { label: "Running", dot: "bg-primary animate-pulse" };
-    return { label: "Passed", dot: "bg-current" };
-}
+const DONE_TONE = KanbanBoard.glyphFor(KanbanStatus.Done).titleBox;
 
 export default function RunnerStage({ frame }: { frame: number }) {
     const visible = Math.max(0, Math.min(LOG.length, frame - LOOP.firstLog + 1));
-    const state = runnerState(frame);
+    const passed = frame >= LOOP.opened;
 
     return (
-        <div className="overflow-hidden rounded-md border border-edge bg-snow">
-            <div className="flex items-center justify-between border-b border-edge px-3 py-2">
-                <span className="flex items-center gap-2 text-[12.5px] text-foreground/80">
-                    <RunnerIcon className="size-3.5 text-neutral-500" aria-hidden />
-                    runner-04
-                    <span className="font-mono text-[10.5px] tracking-[0.08em] text-neutral-400 uppercase">
-                        Sandbox
-                    </span>
-                </span>
-                <span
-                    className={cn(
-                        "flex items-center gap-1.5 font-mono text-[10.5px] tracking-[0.08em] text-neutral-500 uppercase",
-                        frame >= LOOP.opened && DONE_TONE,
-                    )}
-                >
-                    <span className={cn("size-1.5 rounded-full", state.dot)} />
-                    {state.label}
-                </span>
-            </div>
-            <ul className="flex h-[15.5rem] flex-col gap-0.5 p-2">
+        <div className={cn("border border-edge bg-snow", HARD_SHADOW)}>
+            <ul className="flex flex-col" style={{ height: `${LOG.length * ROW_HEIGHT_PX}px` }}>
                 <AnimatePresence initial={false}>
-                    {LOG.slice(0, visible).map((line) => (
-                        <motion.li
-                            key={line.text}
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="flex h-8 items-center gap-2.5 rounded-[5px] px-1.5 text-[12.5px]"
-                        >
-                            <line.icon
-                                className={cn(
-                                    "size-3.5 shrink-0",
-                                    line.passed ? DONE_TONE : "text-neutral-400",
-                                )}
-                                aria-hidden
-                            />
-                            <span
-                                className={cn(
-                                    "truncate",
-                                    line.passed ? "text-foreground" : "text-foreground/80",
-                                )}
+                    {LOG.slice(0, visible).map((line, index) => {
+                        const current = !passed && index === visible - 1;
+                        return (
+                            <motion.li
+                                key={line.text}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                                style={{ height: ROW_HEIGHT_PX }}
+                                className="flex shrink-0 items-center gap-3 border-b border-dashed border-edge px-3 text-[13.5px] last:border-b-0"
                             >
-                                {line.text}
-                            </span>
-                            {line.detail && (
-                                <span className="ml-auto shrink-0 font-mono text-[10.5px] text-neutral-400">
-                                    {line.detail}
+                                <span
+                                    className={cn(
+                                        "flex size-6 shrink-0 items-center justify-center border",
+                                        line.passed && cn("border-current", DONE_TONE),
+                                        current && "border-(--tone) bg-(--tone) text-white",
+                                        !line.passed && !current && "border-edge text-neutral-400",
+                                    )}
+                                >
+                                    <line.icon className="size-3.5" aria-hidden />
                                 </span>
-                            )}
-                        </motion.li>
-                    ))}
+                                <span
+                                    className={cn(
+                                        "truncate",
+                                        line.passed || current
+                                            ? "text-foreground"
+                                            : "text-foreground/75",
+                                    )}
+                                >
+                                    {line.text}
+                                </span>
+                                {line.detail && (
+                                    <span className="ml-auto shrink-0 font-mono text-[11.5px] text-neutral-400">
+                                        {line.detail}
+                                    </span>
+                                )}
+                            </motion.li>
+                        );
+                    })}
                 </AnimatePresence>
             </ul>
         </div>

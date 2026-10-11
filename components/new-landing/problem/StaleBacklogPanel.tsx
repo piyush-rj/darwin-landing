@@ -3,6 +3,7 @@ import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
 import { cn } from "@/lib/utils";
 import { KanbanStatus } from "@/types/kanban";
 
+import StatusBlock from "../StatusBlock";
 import { CardShell, IssueRow, PanelHeading, PanelTag } from "./ComparisonParts";
 
 const WAITING_ISSUES = [
@@ -23,7 +24,7 @@ export default function StaleBacklogPanel() {
                 <div className="flex items-center gap-2">
                     <PanelTag>Backlog</PanelTag>
                     <PanelTag>
-                        <span className={cn("size-1.5 rounded-full bg-current", todo.titleBox)} />
+                        <span className={cn("size-1.5 bg-current", todo.titleBox)} />
                         Waiting
                     </PanelTag>
                 </div>
@@ -41,12 +42,18 @@ export default function StaleBacklogPanel() {
                             7%
                         </span>
                     </div>
-                    <div className="mt-6 h-[13.5rem] overflow-hidden">
+                    <div className="mt-6 h-[214px] overflow-hidden">
                         {WAITING_ISSUES.map((issue, index) => (
                             <IssueRow
                                 key={issue.title}
-                                icon={todo.icon}
-                                iconClassName={todo.titleBox}
+                                tile={
+                                    <StatusBlock
+                                        status={KanbanStatus.Todo}
+                                        depth={2}
+                                        className="size-5"
+                                        iconClassName="size-[10px]"
+                                    />
+                                }
                                 title={issue.title}
                                 meta={`Open ${issue.days}d`}
                                 index={index}

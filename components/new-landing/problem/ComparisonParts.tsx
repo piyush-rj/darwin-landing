@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
-import type { IconType } from "@/components/icons";
 import { cn } from "@/lib/utils";
+
+import { HARD_SHADOW } from "../boxStyles";
 
 export const META = "font-mono text-[11px] tracking-[0.14em] text-neutral-400 uppercase";
 
@@ -48,8 +49,13 @@ export function PanelHeading({
 
 export function CardShell({ children, className }: { children: ReactNode; className?: string }) {
     return (
-        <div className={cn("rounded-[16px] p-1.5", className)}>
-            <div className="rounded-[11px] border border-edge bg-snow px-6 pt-6 pb-2 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:px-8 sm:pt-8">
+        <div className={cn("p-1.5", className)}>
+            <div
+                className={cn(
+                    "border border-edge bg-snow px-5 pt-6 pb-3 sm:px-7 sm:pt-7",
+                    HARD_SHADOW,
+                )}
+            >
                 {children}
             </div>
         </div>
@@ -57,35 +63,24 @@ export function CardShell({ children, className }: { children: ReactNode; classN
 }
 
 export function IssueRow({
-    icon: Icon,
-    iconClassName,
+    tile,
     title,
     meta,
     index,
 }: {
-    icon: IconType;
-    iconClassName: string;
+    tile: ReactNode;
     title: string;
     meta: string;
     index: number;
 }) {
     return (
         <div
-            className="flex h-12 items-center justify-between gap-4"
+            className="flex h-[43px] items-center gap-3 border-b border-dashed border-edge"
             style={{ opacity: ROW_FADE[index] ?? 0 }}
         >
-            <span className="flex min-w-0 items-center gap-2.5 rounded-md border border-foreground/15 bg-snow py-1.5 pr-3 pl-1.5">
-                <span
-                    className={cn(
-                        "flex size-6 shrink-0 items-center justify-center rounded-[5px] bg-current/12",
-                        iconClassName,
-                    )}
-                >
-                    <Icon className="size-3.5" aria-hidden />
-                </span>
-                <span className="truncate text-[14px] text-foreground">{title}</span>
-            </span>
-            <span className={cn(META, "shrink-0")}>{meta}</span>
+            {tile}
+            <span className="min-w-0 truncate text-[14px] text-foreground">{title}</span>
+            <span className={cn(META, "ml-auto shrink-0")}>{meta}</span>
         </div>
     );
 }

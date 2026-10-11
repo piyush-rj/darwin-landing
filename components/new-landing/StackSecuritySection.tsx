@@ -24,14 +24,14 @@ function LogoImage({ name, className }: { name: string; className?: string }) {
             alt=""
             width={40}
             height={40}
-            className={cn("size-10", className)}
+            className={cn("size-7 sm:size-10", className)}
         />
     );
 }
 
 const LOGOS: Record<string, ReactNode> = {
     GitHub: <LogoImage name="github" className="[.landing-dark_&]:invert" />,
-    Telegram: <TelegramLogoIcon className="size-11 text-sky-500" />,
+    Telegram: <TelegramLogoIcon className="size-8 text-sky-500 sm:size-11" />,
     Slack: <LogoImage name="slack" className="scale-[2.4]" />,
     Figma: <LogoImage name="figma" />,
 };
@@ -82,7 +82,7 @@ export default function StackSecuritySection() {
             </div>
 
             <div className="grid grid-cols-1 border-t border-edge lg:grid-cols-2">
-                <div className="flex items-center justify-center border-edge px-4 py-8 max-lg:border-b md:px-9 lg:border-r lg:py-10">
+                <div className="flex items-center justify-center border-edge px-4 py-8 max-lg:order-1 max-lg:border-b md:px-9 lg:border-r lg:py-10">
                     <HairlineFigure
                         figure={mountIntegrationTower}
                         value={active}
@@ -91,8 +91,8 @@ export default function StackSecuritySection() {
                     />
                 </div>
 
-                <div className="flex flex-col">
-                    <div className="flex flex-1 flex-col justify-center px-6 py-14 md:px-12 lg:px-16">
+                <div className="flex flex-col max-lg:contents">
+                    <div className="flex flex-1 flex-col justify-center px-6 py-14 max-lg:order-3 md:px-12 lg:px-16">
                         <FadeIn>
                             <h3 className="max-w-[22ch] text-[26px] leading-[1.15] font-medium tracking-[-0.03em] text-foreground sm:text-[30px]">
                                 Works where your team already talks.
@@ -122,7 +122,7 @@ export default function StackSecuritySection() {
                         </FadeIn>
                     </div>
 
-                    <div className="border-t border-edge">
+                    <div className="border-edge max-lg:order-2 max-lg:border-b lg:border-t">
                         <div className="flex items-stretch border-b border-edge">
                             <p className="flex-1 px-6 py-4 font-mono text-[12px] tracking-[0.12em] text-foreground uppercase md:px-9">
                                 Integrations
@@ -145,7 +145,7 @@ export default function StackSecuritySection() {
                             </button>
                         </div>
 
-                        <ul className="grid grid-cols-2 sm:grid-cols-4">
+                        <ul className="grid grid-cols-4">
                             {INTEGRATIONS.map((integration, index) => {
                                 const selected = index === active;
                                 return (
@@ -153,7 +153,7 @@ export default function StackSecuritySection() {
                                         key={integration.name}
                                         aria-current={selected ? "true" : undefined}
                                         className={cn(
-                                            "relative flex h-32 items-center justify-center border-dashed border-edge max-sm:nth-[-n+2]:border-b sm:not-last:border-r max-sm:odd:border-r",
+                                            "relative flex h-20 items-center justify-center border-dashed border-edge not-last:border-r sm:h-32",
                                         )}
                                     >
                                         <span
@@ -165,7 +165,7 @@ export default function StackSecuritySection() {
                                         />
                                         <span
                                             className={cn(
-                                                "flex size-11 items-center justify-center overflow-hidden transition-[opacity,filter] duration-300",
+                                                "flex size-8 items-center justify-center overflow-hidden transition-[opacity,filter] duration-300 sm:size-11",
                                                 selected ? "opacity-100" : "opacity-45 grayscale",
                                             )}
                                         >

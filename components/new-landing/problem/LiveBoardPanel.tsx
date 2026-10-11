@@ -9,6 +9,8 @@ import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
 import { cn } from "@/lib/utils";
 import { KanbanStatus } from "@/types/kanban";
 
+import { HARD_SHADOW } from "../boxStyles";
+import StatusBlock from "../StatusBlock";
 import { useVisualTicker } from "../useVisualTicker";
 import { CardShell, IssueRow, PanelHeading, PanelTag } from "./ComparisonParts";
 
@@ -53,7 +55,7 @@ export default function LiveBoardPanel() {
                         Darwin
                     </PanelTag>
                     <PanelTag className="border-white/25 bg-white/15 text-white">
-                        <span className={cn("size-1.5 rounded-full bg-current", done.titleBox)} />
+                        <span className={cn("size-1.5 bg-current", done.titleBox)} />
                         Live
                     </PanelTag>
                 </div>
@@ -65,13 +67,23 @@ export default function LiveBoardPanel() {
             </FadeIn>
 
             <FadeIn delay={0.2} className="relative mx-auto mt-12 w-full max-w-[30rem]">
-                <div className="absolute -top-[34px] right-[34px] z-10 rounded-[16px] bg-white/20 p-1.5">
-                    <div className="flex size-14 items-center justify-center rounded-[11px] border border-edge bg-snow shadow-[0_10px_24px_-12px_rgba(16,24,40,0.25)]">
+                <div className="absolute -top-[34px] right-[34px] z-10 bg-white/20 p-1.5">
+                    <div
+                        className={cn(
+                            "flex size-14 items-center justify-center border border-edge bg-snow",
+                            HARD_SHADOW,
+                        )}
+                    >
                         <DarwinBlockLogo className="size-11" />
                     </div>
                 </div>
-                <div className="absolute top-[14px] -right-[2px] z-10 rounded-[16px] bg-white/20 p-1.5 sm:-right-[30px]">
-                    <div className="flex size-14 items-center justify-center rounded-[11px] border border-edge bg-snow shadow-[0_10px_24px_-12px_rgba(16,24,40,0.25)]">
+                <div className="absolute top-[14px] -right-[2px] z-10 bg-white/20 p-1.5 sm:-right-[30px]">
+                    <div
+                        className={cn(
+                            "flex size-14 items-center justify-center border border-edge bg-snow",
+                            HARD_SHADOW,
+                        )}
+                    >
                         <GithubLogoIcon className="size-10 text-foreground" />
                     </div>
                 </div>
@@ -79,13 +91,11 @@ export default function LiveBoardPanel() {
                 <CardShell className="bg-white/20">
                     <div className="flex items-center gap-3">
                         <span className="text-[17px] text-foreground">Closed this week:</span>
-                        <span className="rounded-[6px] bg-primary/15 p-0.5">
-                            <span className="block rounded-[4px] bg-primary/30 px-2 py-0.5 text-[24px] leading-tight font-semibold tracking-[-0.02em] text-foreground tabular-nums">
-                                94%
-                            </span>
+                        <span className="border border-primary/50 bg-primary/25 px-2 py-0.5 text-[24px] leading-tight font-semibold tracking-[-0.02em] text-foreground tabular-nums shadow-[0_3px_0_color-mix(in_oklab,var(--color-primary)_55%,transparent)]">
+                            94%
                         </span>
                     </div>
-                    <div className="mt-6 h-[13.5rem] overflow-hidden">
+                    <div className="mt-6 h-[214px] overflow-hidden">
                         <AnimatePresence initial={false} mode="popLayout">
                             {rows.map((row) => (
                                 <motion.div
@@ -97,9 +107,22 @@ export default function LiveBoardPanel() {
                                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                                 >
                                     <IssueRow
-                                        icon={row.slot === 0 ? PullRequestOpenIcon : done.icon}
-                                        iconClassName={
-                                            row.slot === 0 ? "text-green-500" : done.titleBox
+                                        tile={
+                                            row.slot === 0 ? (
+                                                <span className="flex size-5 shrink-0 items-center justify-center bg-green-500 text-white shadow-[0_2px_0_var(--color-green-700)]">
+                                                    <PullRequestOpenIcon
+                                                        className="size-3"
+                                                        aria-hidden
+                                                    />
+                                                </span>
+                                            ) : (
+                                                <StatusBlock
+                                                    status={KanbanStatus.Done}
+                                                    depth={2}
+                                                    className="size-5"
+                                                    iconClassName="size-[10px]"
+                                                />
+                                            )
                                         }
                                         title={row.title}
                                         meta={ageLabel(row.slot)}

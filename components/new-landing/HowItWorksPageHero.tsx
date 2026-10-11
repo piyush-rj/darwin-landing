@@ -75,6 +75,8 @@ const STEP_CARDS: StepCard[] = [
 
 const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
 const CARD_GAP_PX = 24;
+const ENTRY_STAGGER_SECONDS = 0.12;
+const ENTRY = { duration: 0.9, ease: [0.22, 1, 0.36, 1] } as const;
 const SPREAD_SCROLL_PX = 260;
 const CARD_HEIGHT = "560px";
 
@@ -91,66 +93,83 @@ function StepCardView({
     const remaining = useTransform(scrollY, spread, [1, 0]);
 
     return (
-        <motion.article
-            className="relative isolate flex min-h-[34rem] flex-col overflow-hidden text-black md:flex-row lg:mr-[calc(var(--remaining)*var(--cascade-right))] lg:ml-[calc(var(--remaining)*var(--cascade-left))] lg:h-(--card-height) lg:min-h-0 lg:translate-y-[calc(var(--remaining)*(var(--cascade-top)-var(--list-offset)))]"
-            style={
-                {
-                    backgroundColor: card.tone,
-                    "--remaining": remaining,
-                    "--cascade-top": `${card.cascade.top}px`,
-                    "--cascade-left": `${card.cascade.left}%`,
-                    "--cascade-right": `${card.cascade.right}%`,
-                    "--card-height": CARD_HEIGHT,
-                    "--list-offset": `calc(${index} * (${CARD_HEIGHT} + ${CARD_GAP_PX}px))`,
-                } as CSSProperties
-            }
+        <motion.div
+            initial={{ y: 140 }}
+            animate={{ y: 0 }}
+            transition={{
+                ...ENTRY,
+                delay: 0.2 + ENTRY_STAGGER_SECONDS * index,
+            }}
         >
-            <div className="grain-strong pointer-events-none absolute inset-0 -z-10 opacity-15" />
-            <div className="flex flex-col px-4 pt-4 pb-5 md:w-[28%] md:px-5">
-                <span className="text-[11px] font-medium">Step</span>
-                <span className="mt-3 text-[88px] leading-[0.8] font-semibold tracking-[-0.06em] lg:text-[132px]">
-                    {card.step}.
-                </span>
-                <ul className="mt-6 flex flex-col gap-2 md:mt-auto">
-                    {card.points.map((point) => (
-                        <li key={point} className="flex items-center gap-2 text-[13px] font-medium">
-                            <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-black" />
-                            {point}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="flex min-h-0 flex-1 flex-col border-black/70 px-4 pt-5 pb-4 max-md:border-t md:border-l md:px-6">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="flex flex-col gap-2">
-                        <span className="text-[11px] font-medium">{card.label}</span>
-                        <h2 className="flex max-w-[24ch] gap-2 text-[20px] leading-[1.15] font-medium tracking-[-0.02em] lg:text-[26px]">
-                            <span aria-hidden>→</span>
-                            {card.title}
-                        </h2>
+            <motion.article
+                className="relative isolate flex min-h-[34rem] flex-col overflow-hidden text-black md:flex-row lg:mr-[calc(var(--remaining)*var(--cascade-right))] lg:ml-[calc(var(--remaining)*var(--cascade-left))] lg:h-(--card-height) lg:min-h-0 lg:translate-y-[calc(var(--remaining)*(var(--cascade-top)-var(--list-offset)))]"
+                style={
+                    {
+                        backgroundColor: card.tone,
+                        "--remaining": remaining,
+                        "--cascade-top": `${card.cascade.top}px`,
+                        "--cascade-left": `${card.cascade.left}%`,
+                        "--cascade-right": `${card.cascade.right}%`,
+                        "--card-height": CARD_HEIGHT,
+                        "--list-offset": `calc(${index} * (${CARD_HEIGHT} + ${CARD_GAP_PX}px))`,
+                    } as CSSProperties
+                }
+            >
+                <div className="grain-strong pointer-events-none absolute inset-0 -z-10 opacity-15" />
+                <div className="flex flex-col px-4 pt-4 pb-5 md:w-[28%] md:px-5">
+                    <span className="text-[11px] font-medium">Step</span>
+                    <span className="mt-3 text-[88px] leading-[0.8] font-semibold tracking-[-0.06em] lg:text-[132px]">
+                        {card.step}.
+                    </span>
+                    <ul className="mt-6 flex flex-col gap-2 md:mt-auto">
+                        {card.points.map((point) => (
+                            <li
+                                key={point}
+                                className="flex items-center gap-2 text-[13px] font-medium"
+                            >
+                                <span
+                                    aria-hidden
+                                    className="size-1.5 shrink-0 rounded-full bg-black"
+                                />
+                                {point}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="flex min-h-0 flex-1 flex-col border-black/70 px-4 pt-5 pb-4 max-md:border-t md:border-l md:px-6">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-[11px] font-medium">{card.label}</span>
+                            <h2 className="flex max-w-[24ch] gap-2 text-[20px] leading-[1.15] font-medium tracking-[-0.02em] lg:text-[26px]">
+                                <span aria-hidden>→</span>
+                                {card.title}
+                            </h2>
+                        </div>
+                    </div>
+                    <p className="mt-3 max-w-[52ch] pl-6 text-[14px] leading-[1.5] text-black/80">
+                        {card.body}
+                    </p>
+                    <div
+                        className="relative mt-2 aspect-[4/3] w-full lg:aspect-auto lg:min-h-0 lg:flex-1"
+                        style={
+                            {
+                                "--figure-ground": card.tone,
+                                "--figure-ink": "var(--color-black)",
+                                "--figure-fill": "var(--color-white)",
+                                "--figure-fill-edge": "var(--color-black)",
+                            } as CSSProperties
+                        }
+                    >
+                        <HairlineFigure
+                            figure={card.figure}
+                            value={0}
+                            label={card.figureLabel}
+                            className="absolute inset-0 h-full"
+                        />
                     </div>
                 </div>
-                <p className="mt-3 max-w-[52ch] pl-6 text-[14px] leading-[1.5] text-black/80">
-                    {card.body}
-                </p>
-                <div
-                    className="relative mt-2 aspect-[4/3] w-full lg:aspect-auto lg:min-h-0 lg:flex-1"
-                    style={
-                        {
-                            "--figure-ground": card.tone,
-                            "--figure-ink": "var(--color-black)",
-                        } as CSSProperties
-                    }
-                >
-                    <HairlineFigure
-                        figure={card.figure}
-                        value={0}
-                        label={card.figureLabel}
-                        className="absolute inset-0 h-full"
-                    />
-                </div>
-            </div>
-        </motion.article>
+            </motion.article>
+        </motion.div>
     );
 }
 

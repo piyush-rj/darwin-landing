@@ -8,7 +8,7 @@ import RollingText from "@/components/utility/RollingText";
 import HotbarNav from "./HotbarNav";
 import BoardStage from "./how-it-works/BoardStage";
 import LoopStep, { type LoopStepContent } from "./how-it-works/LoopStep";
-import { LOOP } from "./how-it-works/loopTimeline";
+import { BOARD_LOOP, LOOP } from "./how-it-works/loopTimeline";
 import PullRequestStage from "./how-it-works/PullRequestStage";
 import RunnerStage from "./how-it-works/RunnerStage";
 import { BoardGlyph, PullRequestGlyph, TerminalGlyph } from "./PixelGlyphs";
@@ -24,7 +24,7 @@ const STEPS: LoopStepContent[] = [
         link: { label: "Open your board", href: "/login" },
         tone: "var(--color-orange-500)",
         icon: BoardGlyph,
-        frames: { from: 0, to: LOOP.frames },
+        frames: { from: 0, to: BOARD_LOOP.frames },
         stage: BoardStage,
     },
     {

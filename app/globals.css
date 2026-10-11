@@ -152,8 +152,11 @@
 }
 
 [data-hairline] .filled {
-    fill: color-mix(in oklab, var(--color-primary) 92%, var(--color-white));
-    stroke: color-mix(in oklab, var(--color-primary) 72%, var(--color-black));
+    fill: var(--figure-fill, color-mix(in oklab, var(--color-primary) 92%, var(--color-white)));
+    stroke: var(
+        --figure-fill-edge,
+        color-mix(in oklab, var(--color-primary) 72%, var(--color-black))
+    );
     transition:
         fill 260ms ease,
         stroke 260ms ease;

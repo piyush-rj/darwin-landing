@@ -10,16 +10,16 @@ export default function CtaSection({ children }: { children: ReactNode }) {
             <SectionDivider />
 
             <div className="overflow-clip">
-                <div aria-hidden className="h-95" />
+                <div aria-hidden className="hidden lg:block lg:h-95" />
 
-                <div className="sticky bottom-0 ">
+                <div className="lg:sticky lg:bottom-0">
                     <section
                         id="get-started"
-                        className="absolute inset-x-0 bottom-full flex h-95 items-end justify-between border-b border-edge bg-primary text-center md:px-9 px-8 py-16"
+                        className="relative flex flex-col items-start justify-end gap-8 border-b border-edge bg-primary px-6 py-16 text-center md:px-9 lg:absolute lg:inset-x-0 lg:bottom-full lg:h-95 lg:flex-row lg:items-end lg:justify-between"
                     >
                         <div className="grain-strong pointer-events-none absolute inset-0 opacity-12" />
 
-                        <h2 className="relative text-[34px] max-w-3xl text-left text-balance leading-[1.05] font-medium tracking-[-0.04em] text-snow sm:text-[44px] lg:text-[50px]">
+                        <h2 className="relative text-[34px] max-w-3xl text-left text-balance leading-[1.05] font-medium tracking-[-0.04em] text-white sm:text-[44px] lg:text-[50px]">
                             <RollingText
                                 text={"Hand any issue to Darwin\nand wake up to a pull request."}
                             />

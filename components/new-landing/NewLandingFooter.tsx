@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { FooterLinkHoverArrowIcon } from "@/components/icons";
 import { DarwinBlockLogo } from "@/components/logo/DarwinBlockLogo";
+import WaitlistNavForm from "@/components/new-landing/WaitlistNavForm";
 import { cn } from "@/lib/utils";
 
 const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
@@ -59,13 +59,9 @@ export default function NewLandingFooter() {
                         <br />
                         Pull requests out.
                     </p>
-                    <Link
-                        href="/login"
-                        className="group flex w-fit items-center gap-2 text-[15px] text-neutral-500 transition-colors hover:text-primary"
-                    >
-                        Open Darwin
-                        <FooterLinkHoverArrowIcon className="size-4 -rotate-90 transition-transform group-hover:translate-x-0.5" />
-                    </Link>
+                    <div className="flex h-12 w-full items-stretch border border-edge">
+                        <WaitlistNavForm />
+                    </div>
                 </div>
 
                 {LINK_COLUMNS.map((column, index) => (

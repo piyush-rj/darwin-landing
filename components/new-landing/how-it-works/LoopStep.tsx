@@ -77,14 +77,14 @@ export default function LoopStep({
                     index % 2 === 1 ? "lg:border-r" : "lg:border-l",
                 )}
             >
-                <FadeIn y={0} delay={0.1} className="lg:h-full">
+                <div className="lg:h-full">
                     <ToneMosaic
                         tone={step.tone}
                         className="sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[30rem]"
                     >
                         <step.stage frame={step.frames.from + frame} cycle={cycle} />
                     </ToneMosaic>
-                </FadeIn>
+                </div>
             </div>
         </article>
     );
