@@ -20,13 +20,11 @@ import {
     VideoSoundIcon,
 } from "@/components/icons";
 import FadeIn from "@/components/new-landing/FadeIn";
-import RollingText from "@/components/utility/RollingText";
 import { cn } from "@/lib/utils";
 
 import { HARD_SHADOW } from "./boxStyles";
 import VideoBackdrop from "./VideoBackdrop";
 
-const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
 const VIDEO_SECONDS = 56;
 const SEEK_STEP_SECONDS = 5;
 const PREVIEW_WIDTH_PX = 224;
@@ -98,6 +96,7 @@ export default function ProductVideoSection() {
     const [hover, setHover] = useState<HoverPreview | null>(null);
     const [idle, setIdle] = useState(false);
     const idleTimerRef = useRef(0);
+    const trackRef = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         const video = videoRef.current;
@@ -171,9 +170,10 @@ export default function ProductVideoSection() {
     }
 
     function pointerOnTrack(event: PointerEvent<HTMLDivElement>) {
-        const track = event.currentTarget.getBoundingClientRect();
+        const area = event.currentTarget.getBoundingClientRect();
+        const track = (trackRef.current ?? event.currentTarget).getBoundingClientRect();
         const share = Math.min(Math.max((event.clientX - track.left) / track.width, 0), 1);
-        return { seconds: share * duration, left: event.clientX - track.left, width: track.width };
+        return { seconds: share * duration, left: event.clientX - area.left, width: area.width };
     }
 
     function previewAtPointer(event: PointerEvent<HTMLDivElement>) {
@@ -195,24 +195,7 @@ export default function ProductVideoSection() {
 
     return (
         <section id="see-it-run" className="w-full border-b border-edge bg-ink">
-            <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
-                <div className="border-edge px-6 pt-20 pb-12 md:px-9 lg:border-r lg:pt-28">
-                    <p className={MONO_LABEL}>See it run</p>
-                    <h2 className="mt-5 max-w-[18ch] text-[40px] leading-[1] font-medium tracking-[-0.04em] text-foreground sm:text-[52px] lg:text-[60px]">
-                        <RollingText text="One issue, from the board to merged." />
-                    </h2>
-                </div>
-                <div className="flex items-end bg-mist px-6 py-10 max-lg:border-t max-lg:border-edge md:px-9">
-                    <FadeIn delay={0.15}>
-                        <p className="max-w-[30ch] text-[19px] leading-[1.35] tracking-[-0.01em] text-foreground">
-                            Watch Darwin pick up an issue, fix it in a runner, check the result and
-                            hand back a pull request that gets merged.
-                        </p>
-                    </FadeIn>
-                </div>
-            </div>
-
-            <div className="relative isolate border-t border-edge px-4 py-10 md:px-9 md:py-20">
+            <div className="relative isolate px-4 py-10 md:px-9 md:py-20">
                 <VideoBackdrop className="-z-10" />
                 <FadeIn y={24} className="mx-auto max-w-[1120px]">
                     <div className="bg-white/50 p-1.5 shadow-[0_28px_70px_-28px_rgba(24,18,48,0.35)]">
@@ -307,7 +290,10 @@ export default function ProductVideoSection() {
                                     onKeyDown={seekFromKeys}
                                     className="relative flex min-w-0 flex-1 cursor-pointer items-center px-4 focus-visible:bg-mist focus-visible:outline-none"
                                 >
-                                    <span className="relative block h-2.5 w-full border border-edge bg-mist">
+                                    <span
+                                        ref={trackRef}
+                                        className="relative block h-2.5 w-full border border-edge bg-mist"
+                                    >
                                         <span
                                             className="absolute inset-y-0 left-0 bg-primary transition-[width] duration-300 ease-linear"
                                             style={{ width: `${(currentTime / duration) * 100}%` }}
