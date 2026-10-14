@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-import HowItWorksPageHero from "@/components/new-landing/HowItWorksPageHero";
+import BeachBreakSection from "@/components/new-landing/BeachBreakSection";
+import HowItWorksDetailsSection from "@/components/new-landing/how-it-works-details/HowItWorksDetailsSection";
+import HowItWorksPathSection from "@/components/new-landing/HowItWorksPathSection";
+import HowItWorksSplitHero from "@/components/new-landing/HowItWorksSplitHero";
 import LandingPageShell from "@/components/new-landing/LandingPageShell";
 
 export const metadata: Metadata = {
@@ -10,8 +13,11 @@ export const metadata: Metadata = {
 
 export default function HowItWorksPage() {
     return (
-        <LandingPageShell>
-            <HowItWorksPageHero />
+        <LandingPageShell ctaTone="#3B82F6">
+            <HowItWorksSplitHero />
+            <HowItWorksPathSection />
+            <HowItWorksDetailsSection />
+            <BeachBreakSection />
         </LandingPageShell>
     );
 }

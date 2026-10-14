@@ -6,7 +6,13 @@ import NewLandingFooter from "@/components/new-landing/NewLandingFooter";
 import NewLandingNavbar from "@/components/new-landing/NewLandingNavbar";
 import LenisProvider from "@/providers/LenisProvider";
 
-export default function LandingPageShell({ children }: { children: ReactNode }) {
+export default function LandingPageShell({
+    ctaTone,
+    children,
+}: {
+    ctaTone?: string;
+    children: ReactNode;
+}) {
     return (
         <LenisProvider>
             <main
@@ -18,7 +24,7 @@ export default function LandingPageShell({ children }: { children: ReactNode }) 
                 <div className="[--color-edge:color-mix(in_oklab,var(--color-foreground)_12%,var(--color-snow))]">
                     <NewLandingNavbar />
                     {children}
-                    <CtaSection>
+                    <CtaSection tone={ctaTone}>
                         <NewLandingFooter />
                     </CtaSection>
                 </div>

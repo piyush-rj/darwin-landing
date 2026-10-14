@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { DarwinBlockLogo } from "@/components/logo/DarwinBlockLogo";
+import { MONO_LABEL } from "@/components/new-landing/landingType";
 import WaitlistNavForm from "@/components/new-landing/WaitlistNavForm";
 import { cn } from "@/lib/utils";
 
-const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
 const CELL = "border-edge px-6 py-6 md:px-5";
 const LINK = "text-[15px] text-foreground transition-colors hover:text-primary";
 

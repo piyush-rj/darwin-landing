@@ -6,6 +6,7 @@ import { type ReactNode, useEffect, useState } from "react";
 
 import { BackChevronIcon, CtaArrowIcon, TelegramLogoIcon } from "@/components/icons";
 import FadeIn from "@/components/new-landing/FadeIn";
+import { MONO_LABEL } from "@/components/new-landing/landingType";
 import HairlineFigure from "@/components/utility/HairlineFigure";
 import RollingText from "@/components/utility/RollingText";
 import {
@@ -14,8 +15,6 @@ import {
     mountIntegrationTower,
 } from "@/lib/hairline/figures/integrationTower";
 import { cn } from "@/lib/utils";
-
-const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
 
 function LogoImage({ name, className }: { name: string; className?: string }) {
     return (

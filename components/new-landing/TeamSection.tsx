@@ -4,10 +4,9 @@ import Image from "next/image";
 import { type CSSProperties, useState } from "react";
 
 import FadeIn from "@/components/new-landing/FadeIn";
+import { MONO_LABEL } from "@/components/new-landing/landingType";
 import RollingText from "@/components/utility/RollingText";
 import { cn } from "@/lib/utils";
-
-const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
 
 type FounderKey = "Rishi" | "Anjan" | "Piyush";
 

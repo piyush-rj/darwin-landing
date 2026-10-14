@@ -4,7 +4,13 @@ import { CtaArrowIcon } from "@/components/icons";
 import SectionDivider from "@/components/new-landing/SectionDivider";
 import RollingText from "@/components/utility/RollingText";
 
-export default function CtaSection({ children }: { children: ReactNode }) {
+export default function CtaSection({
+    tone = "var(--color-primary)",
+    children,
+}: {
+    tone?: string;
+    children: ReactNode;
+}) {
     return (
         <div>
             <SectionDivider />
@@ -15,7 +21,8 @@ export default function CtaSection({ children }: { children: ReactNode }) {
                 <div className="lg:sticky lg:bottom-0">
                     <section
                         id="get-started"
-                        className="relative flex flex-col items-start justify-end gap-8 border-b border-edge bg-primary px-6 py-16 text-center md:px-9 lg:absolute lg:inset-x-0 lg:bottom-full lg:h-95 lg:flex-row lg:items-end lg:justify-between"
+                        style={{ backgroundColor: tone }}
+                        className="relative flex flex-col items-start justify-end gap-8 border-b border-edge px-6 py-16 text-center md:px-9 lg:absolute lg:inset-x-0 lg:bottom-full lg:h-95 lg:flex-row lg:items-end lg:justify-between"
                     >
                         <div className="grain-strong pointer-events-none absolute inset-0 opacity-12" />
 

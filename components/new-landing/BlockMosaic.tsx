@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-const COLUMNS = 10;
-const ROWS = 4;
+export const COLUMNS = 10;
+const DEFAULT_ROWS = 4;
 const BEAT_MS = 1600;
 const SLIDE_MS = 900;
 const SWAPS_PER_BEAT = 7;
@@ -20,7 +20,7 @@ const TONE_FILL: Record<Exclude<Tone, "diamond">, string> = {
     light: "color-mix(in oklab, var(--color-primary) 55%, var(--color-snow))",
 };
 
-const LAYOUT: Tone[] = [
+const PATTERN: Tone[] = [
     "base",
     "base",
     "deep",
@@ -66,16 +66,25 @@ const LAYOUT: Tone[] = [
 const SEAM = "color-mix(in oklab, var(--color-primary) 86%, var(--color-black))";
 const CROP_LINE = "color-mix(in oklab, var(--color-primary) 55%, var(--color-black))";
 
-const ACCENTS = LAYOUT.flatMap((tone, tile) => (tone === "base" ? [] : [tile]));
+type Grid = { rows: number; layout: Tone[]; accents: number[] };
 
-function neighbours(cell: number) {
+function buildGrid(rows: number): Grid {
+    const layout = Array.from(
+        { length: rows * COLUMNS },
+        (_, tile) => PATTERN[tile % PATTERN.length],
+    );
+    const accents = layout.flatMap((tone, tile) => (tone === "base" ? [] : [tile]));
+    return { rows, layout, accents };
+}
+
+function neighbours(cell: number, rows: number) {
     const column = cell % COLUMNS;
     const row = Math.floor(cell / COLUMNS);
     return [
         column > 0 ? cell - 1 : -1,
         column < COLUMNS - 1 ? cell + 1 : -1,
         row > 0 ? cell - COLUMNS : -1,
-        row < ROWS - 1 ? cell + COLUMNS : -1,
+        row < rows - 1 ? cell + COLUMNS : -1,
     ].filter((neighbour) => neighbour >= 0);
 }
 
@@ -88,7 +97,7 @@ function shuffle<T>(items: T[], random: () => number = Math.random) {
     return copy;
 }
 
-function nextArrangement(cellOfTile: number[]) {
+function nextArrangement(grid: Grid, cellOfTile: number[]) {
     const tileAtCell = new Array<number>(cellOfTile.length);
     cellOfTile.forEach((cell, tile) => {
         tileAtCell[cell] = tile;
@@ -96,12 +105,13 @@ function nextArrangement(cellOfTile: number[]) {
     const busy = new Set<number>();
     const next = cellOfTile.slice();
     let swaps = 0;
-    for (const tile of shuffle(ACCENTS)) {
+    for (const tile of shuffle(grid.accents)) {
         if (swaps === SWAPS_PER_BEAT) break;
         const cell = cellOfTile[tile];
         if (busy.has(cell)) continue;
-        const target = shuffle(neighbours(cell)).find(
-            (neighbour) => !busy.has(neighbour) && LAYOUT[tileAtCell[neighbour]] !== LAYOUT[tile],
+        const target = shuffle(neighbours(cell, grid.rows)).find(
+            (neighbour) =>
+                !busy.has(neighbour) && grid.layout[tileAtCell[neighbour]] !== grid.layout[tile],
         );
         if (target === undefined) continue;
         const other = tileAtCell[target];
@@ -127,10 +137,10 @@ const SLIDE_EASE = "cubic-bezier(0.65, 0, 0.35, 1)";
 type Emergence = { delay: number; dx: number; dy: number; generation: number };
 type Phase = "waiting" | "armed" | "emerging" | "live";
 
-function planEmergence(random: () => number): Emergence[] {
-    const plan = new Array<Emergence | undefined>(LAYOUT.length);
+function planEmergence(grid: Grid, random: () => number): Emergence[] {
+    const plan = new Array<Emergence | undefined>(grid.layout.length);
     const seeds = shuffle(
-        LAYOUT.map((_, cell) => cell),
+        grid.layout.map((_, cell) => cell),
         random,
     ).slice(0, 2 + Math.floor(random() * 3));
     seeds.forEach((cell) => {
@@ -142,7 +152,7 @@ function planEmergence(random: () => number): Emergence[] {
         const nextFrontier: number[] = [];
         for (const cell of shuffle(frontier, random)) {
             const parent = plan[cell]!;
-            const empty = neighbours(cell).filter((neighbour) => !plan[neighbour]);
+            const empty = neighbours(cell, grid.rows).filter((neighbour) => !plan[neighbour]);
             const sprouts = shuffle(empty, random).slice(0, 1 + Math.floor(random() * 3));
             for (const sprout of sprouts) {
                 plan[sprout] = {
@@ -182,11 +192,18 @@ function emergenceStyle(phase: Phase, emergence: Emergence | undefined) {
     };
 }
 
-export default function BlockMosaic({ className }: { className?: string }) {
+export default function BlockMosaic({
+    className,
+    rows = DEFAULT_ROWS,
+}: {
+    className?: string;
+    rows?: number;
+}) {
     const ref = useRef<HTMLDivElement>(null);
     const inView = useInView(ref, { amount: 0.2 });
     const reduceMotion = useReducedMotion();
-    const [cellOfTile, setCellOfTile] = useState(() => LAYOUT.map((_, tile) => tile));
+    const [grid] = useState(() => buildGrid(rows));
+    const [cellOfTile, setCellOfTile] = useState(() => grid.layout.map((_, tile) => tile));
     const [plan, setPlan] = useState<Emergence[] | null>(null);
     const [phase, setPhase] = useState<Phase>("waiting");
 
@@ -204,7 +221,7 @@ export default function BlockMosaic({ className }: { className?: string }) {
         const scheduled = entry.current;
         if (!inView || scheduled.started) return;
         scheduled.started = true;
-        const nextPlan = planEmergence(Math.random);
+        const nextPlan = planEmergence(grid, Math.random);
         const finish = Math.max(...nextPlan.map((emergence) => emergence.delay)) + EMERGE_MS;
         scheduled.frame = requestAnimationFrame(() => {
             if (reduceMotion) {
@@ -220,16 +237,16 @@ export default function BlockMosaic({ className }: { className?: string }) {
                 });
             });
         });
-    }, [inView, reduceMotion]);
+    }, [grid, inView, reduceMotion]);
 
     useEffect(() => {
         if (!inView || reduceMotion || phase !== "live") return;
         const timer = window.setInterval(
-            () => setCellOfTile((current) => nextArrangement(current)),
+            () => setCellOfTile((current) => nextArrangement(grid, current)),
             BEAT_MS,
         );
         return () => window.clearInterval(timer);
-    }, [inView, reduceMotion, phase]);
+    }, [grid, inView, reduceMotion, phase]);
 
     const live = phase === "live";
     const overlayStyle = { opacity: live ? 1 : 0, transition: "opacity 500ms ease-out" };
@@ -237,8 +254,8 @@ export default function BlockMosaic({ className }: { className?: string }) {
     const cropStyle = {
         left: `${(CROP.left / COLUMNS) * 100}%`,
         right: `${((COLUMNS - CROP.right) / COLUMNS) * 100}%`,
-        top: `${(CROP.top / ROWS) * 100}%`,
-        bottom: `${((ROWS - CROP.bottom) / ROWS) * 100}%`,
+        top: `${(CROP.top / rows) * 100}%`,
+        bottom: `${((rows - CROP.bottom) / rows) * 100}%`,
     };
 
     return (
@@ -248,10 +265,10 @@ export default function BlockMosaic({ className }: { className?: string }) {
             className={cn("relative isolate w-full overflow-hidden", className)}
             style={{
                 background: live ? TONE_FILL.base : "transparent",
-                aspectRatio: `${COLUMNS} / ${ROWS}`,
+                aspectRatio: `${COLUMNS} / ${rows}`,
             }}
         >
-            {LAYOUT.map((tone, tile) => {
+            {grid.layout.map((tone, tile) => {
                 const cell = cellOfTile[tile];
                 return (
                     <div
@@ -259,9 +276,9 @@ export default function BlockMosaic({ className }: { className?: string }) {
                         className="absolute flex items-center justify-center"
                         style={{
                             left: `${((cell % COLUMNS) / COLUMNS) * 100}%`,
-                            top: `${(Math.floor(cell / COLUMNS) / ROWS) * 100}%`,
+                            top: `${(Math.floor(cell / COLUMNS) / rows) * 100}%`,
                             width: `${100 / COLUMNS}%`,
-                            height: `${100 / ROWS}%`,
+                            height: `${100 / rows}%`,
                             background: tone === "diamond" ? TONE_FILL.base : TONE_FILL[tone],
                             ...emergenceStyle(phase, plan?.[tile]),
                         }}
@@ -294,12 +311,12 @@ export default function BlockMosaic({ className }: { className?: string }) {
                     }}
                 />
             ))}
-            {Array.from({ length: ROWS - 1 }, (_, line) => (
+            {Array.from({ length: rows - 1 }, (_, line) => (
                 <span
                     key={`row-${line}`}
                     className="pointer-events-none absolute inset-x-0 z-[60] h-px"
                     style={{
-                        top: `${((line + 1) / ROWS) * 100}%`,
+                        top: `${((line + 1) / rows) * 100}%`,
                         background: SEAM,
                         ...overlayStyle,
                     }}

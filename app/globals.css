@@ -88,6 +88,95 @@
     }
 }
 
+@keyframes beach-cloud-drift {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(100cqw);
+    }
+}
+
+@keyframes pixel-frame-hide {
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes pixel-frame-show {
+    50% {
+        opacity: 1;
+    }
+}
+
+.beach-cloud-drift {
+    animation: beach-cloud-drift 90s linear infinite;
+}
+
+.beach-leg-raised {
+    animation: pixel-frame-hide 1.2s step-end infinite;
+}
+
+.beach-leg-swung {
+    opacity: 0;
+    animation: pixel-frame-show 1.2s step-end infinite;
+}
+
+.beach-sparkle {
+    animation: pixel-frame-hide 1.6s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .beach-cloud-drift,
+    .beach-leg-raised,
+    .beach-leg-swung,
+    .beach-sparkle {
+        animation: none;
+    }
+}
+
+@layer components {
+    .surface-card {
+        background: var(--surface-card);
+        border: 1px solid var(--surface-card-border);
+        box-shadow: var(--shadow-card);
+    }
+
+    .surface-card-interactive:hover {
+        background: var(--surface-card-hover);
+    }
+
+    .surface-raised {
+        background: var(--surface-raised);
+        border: 1px solid var(--surface-raised-border);
+        box-shadow: var(--shadow-card);
+    }
+
+    .surface-sunken {
+        background: var(--surface-sunken);
+        border: 1px solid var(--surface-sunken-border);
+    }
+
+    .surface-inset {
+        background: var(--surface-inset);
+        border: 1px solid var(--surface-inset-border);
+    }
+
+    .surface-menu {
+        background: var(--surface-menu);
+        border: 1px solid var(--surface-menu-border);
+        box-shadow: var(--shadow-menu);
+    }
+
+    .surface-chrome {
+        background: var(--surface-chrome);
+        border-color: var(--surface-chrome-border);
+    }
+    .surface-scrim {
+        background: var(--surface-scrim);
+    }
+}
+
 @layer utilities {
     .grain-strong {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.35 1.6' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 7 0 0 0 -3.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");

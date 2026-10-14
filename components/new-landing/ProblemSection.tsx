@@ -1,10 +1,9 @@
+import { MONO_LABEL } from "@/components/new-landing/landingType";
 import RollingText from "@/components/utility/RollingText";
 
 import FadeIn from "./FadeIn";
 import LiveBoardPanel from "./problem/LiveBoardPanel";
 import StaleBacklogPanel from "./problem/StaleBacklogPanel";
-
-const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
 
 export default function ProblemSection() {
     return (

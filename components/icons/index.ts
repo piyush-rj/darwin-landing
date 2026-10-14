@@ -1,9 +1,12 @@
 export * from "./ActionIcons";
+export * from "./ActivityIcons";
+export * from "./FilledIcons";
 export * from "./GitIcons";
 export * from "./MarketingIcons";
 export * from "./MediaIcons";
 export * from "./MiscIcons";
 export * from "./NavigationIcons";
+export * from "./PeopleIcons";
 export * from "./StatusIcons";
 export * from "./TemplateIcons";
 export type { IconType } from "react-icons";

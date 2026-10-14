@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import FadeIn from "@/components/new-landing/FadeIn";
+import { MONO_LABEL } from "@/components/new-landing/landingType";
 import RollingText from "@/components/utility/RollingText";
 
 import HotbarNav from "./HotbarNav";
@@ -12,8 +13,6 @@ import { BOARD_LOOP, LOOP } from "./how-it-works/loopTimeline";
 import PullRequestStage from "./how-it-works/PullRequestStage";
 import RunnerStage from "./how-it-works/RunnerStage";
 import { BoardGlyph, PullRequestGlyph, TerminalGlyph } from "./PixelGlyphs";
-
-const MONO_LABEL = "font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase";
 
 const STEPS: LoopStepContent[] = [
     {

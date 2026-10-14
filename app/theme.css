@@ -236,3 +236,251 @@
 
     color-scheme: dark;
 }
+
+.theme-playground {
+    --color-ink: #0c0c0c;
+    --color-charcoal: #141414;
+    --color-cement: #1a1a1a;
+    --color-graphite: #212121;
+    --color-active: #222222;
+    --color-hover: #1c1c1c;
+
+    --color-snow: #ffffff;
+    --color-mist: #f4f4f4;
+    --color-overlay: #ffffff;
+    --color-primary: rgb(var(--playground-primary-rgb, 171, 159, 242));
+    --color-primary-foreground: var(--color-ink);
+    --color-matcha: #9bc24f;
+    --color-matcha-foreground: #14150c;
+    --color-brick: #6e1d1d;
+    --color-brick-foreground: #f2bcb9;
+
+    --color-edge: #242424;
+
+    --color-background: #070707;
+    --color-foreground: #e4e4e4;
+    --color-surface: #101010;
+    --color-card: #1a1a1a;
+    --color-card-foreground: var(--color-foreground);
+    --color-popover: #212121;
+    --color-popover-foreground: var(--color-foreground);
+    --color-secondary: #101010;
+    --color-secondary-foreground: var(--color-foreground);
+    --color-muted: #101010;
+    --color-muted-foreground: #828282;
+    --color-accent: #1a1a1a;
+    --color-accent-foreground: var(--color-foreground);
+    --color-destructive: #e7000b;
+    --color-border: #242424;
+    --color-input: #242424;
+    --color-ring: #3a3a3a;
+    --color-neutral-50: #fafafa;
+    --color-neutral-100: #e4e4e4;
+    --color-neutral-200: #cfcfcf;
+    --color-neutral-300: #b5b5b5;
+    --color-neutral-400: #999999;
+    --color-neutral-500: #828282;
+    --color-neutral-600: #626262;
+
+    --color-border-subtle: #1c1c1c;
+    --surface-card: color-mix(in srgb, var(--color-overlay) 4%, transparent);
+    --surface-card-border: color-mix(in srgb, var(--color-overlay) 5%, transparent);
+    --surface-card-hover: color-mix(in srgb, var(--color-overlay) 6%, transparent);
+    --surface-raised: color-mix(in srgb, var(--color-overlay) 3%, transparent);
+    --surface-raised-border: color-mix(in srgb, var(--color-overlay) 8%, transparent);
+    --surface-sunken: color-mix(in srgb, var(--color-ink) 20%, transparent);
+    --surface-sunken-border: color-mix(in srgb, var(--color-overlay) 3%, transparent);
+    --surface-inset: color-mix(in srgb, var(--color-overlay) 6%, transparent);
+    --surface-inset-border: color-mix(in srgb, var(--color-overlay) 5%, transparent);
+    --surface-menu: var(--color-graphite);
+    --surface-menu-border: color-mix(in srgb, var(--color-overlay) 5%, transparent);
+    --surface-chrome: color-mix(in srgb, var(--color-charcoal) 60%, transparent);
+    --surface-chrome-border: color-mix(in srgb, var(--color-overlay) 5%, transparent);
+    --surface-scrim: rgba(0, 0, 0, 0.5);
+    --gradient-border-rgb: 38 38 38;
+    --glow-alpha-scale: 1;
+    --grain-opacity: 0.01;
+    --diff-add-line: color-mix(in oklab, var(--color-green-500) 13%, transparent);
+    --diff-remove-line: color-mix(in oklab, var(--color-rose-500) 13%, transparent);
+    --diff-add-word: color-mix(in oklab, var(--color-green-500) 32%, transparent);
+    --diff-remove-word: color-mix(in oklab, var(--color-rose-500) 32%, transparent);
+    --diff-add-gutter: color-mix(in oklab, var(--color-green-500) 20%, transparent);
+    --diff-remove-gutter: color-mix(in oklab, var(--color-rose-500) 20%, transparent);
+    --diff-add-gutter-text: var(--color-emerald-300);
+    --diff-remove-gutter-text: var(--color-rose-300);
+    --diff-add-bar: var(--color-green-500);
+    --diff-remove-bar: var(--color-rose-500);
+    --diff-seam: rgba(255, 255, 255, 0.1);
+    --diff-lineno: var(--color-neutral-600);
+    --diff-selection: color-mix(in oklab, var(--color-sky-400) 24%, transparent);
+    --diff-plain: #e6e6e6;
+
+    --workspace-backdrop:
+        radial-gradient(
+            120% 110% at 100% 100%,
+            rgba(10, 10, 10, 0.98) 0%,
+            rgba(10, 10, 10, 0.7) 32%,
+            rgba(10, 10, 10, 0) 66%
+        ),
+        radial-gradient(
+            85% 62% at 0% -16%,
+            rgba(20, 20, 20, 0.75) 0%,
+            rgba(16, 16, 16, 0.32) 22%,
+            rgba(13, 13, 13, 0.1) 44%,
+            rgba(10, 10, 10, 0) 62%
+        ),
+        radial-gradient(
+            65% 48% at -18% 60%,
+            rgba(15, 15, 15, 0.28) 0%,
+            rgba(12, 12, 12, 0.1) 32%,
+            rgba(10, 10, 10, 0) 60%
+        ),
+        linear-gradient(
+            148deg,
+            #141414 0%,
+            #101010 10%,
+            #0d0d0d 20%,
+            #0b0b0b 32%,
+            #0a0a0a 44%,
+            #0a0a0a 100%
+        );
+
+    --color-mention-member: #c7d2fe;
+    --color-mention-team: #a7f3d0;
+
+    color-scheme: dark;
+}
+
+.theme-playground.light {
+    --color-ink: #ffffff;
+    --color-charcoal: #fafafb;
+    --color-cement: #ffffff;
+    --color-graphite: #ffffff;
+    --color-active: #ebebef;
+    --color-hover: #f4f4f6;
+
+    --color-snow: #ffffff;
+    --color-mist: #f2f2f5;
+    --color-overlay: #23242b;
+
+    --color-primary: #7c5ce6;
+    --color-primary-foreground: var(--color-snow);
+    --color-matcha: #4f7a15;
+    --color-matcha-foreground: var(--color-snow);
+    --color-brick: #fdecea;
+    --color-brick-foreground: #a02622;
+
+    --color-edge: #e5e5ea;
+
+    --color-background: #ffffff;
+    --color-foreground: #23242b;
+    --color-surface: #f6f6f8;
+    --color-card: var(--color-cement);
+    --color-card-foreground: var(--color-foreground);
+    --color-popover: #ffffff;
+    --color-popover-foreground: var(--color-foreground);
+    --color-secondary: var(--color-mist);
+    --color-secondary-foreground: var(--color-foreground);
+    --color-muted: var(--color-mist);
+    --color-muted-foreground: #797b86;
+    --color-accent: var(--color-mist);
+    --color-accent-foreground: var(--color-foreground);
+    --color-destructive: #cf3b3b;
+    --color-border: #e5e5ea;
+    --color-border-subtle: #efeff2;
+    --color-input: #e5e5ea;
+    --color-ring: #7c5ce6;
+
+    --color-success: #17803d;
+    --color-success-surface: rgba(23, 128, 61, 0.09);
+    --color-success-edge: rgba(23, 128, 61, 0.22);
+    --color-warning: #a15c07;
+    --color-warning-surface: rgba(161, 92, 7, 0.1);
+    --color-warning-edge: rgba(161, 92, 7, 0.22);
+    --color-danger: #cf3b3b;
+    --color-danger-surface: rgba(207, 59, 59, 0.08);
+    --color-danger-edge: rgba(207, 59, 59, 0.22);
+    --color-info: #1f6feb;
+    --color-info-surface: rgba(31, 111, 235, 0.09);
+    --color-info-edge: rgba(31, 111, 235, 0.22);
+    --color-neutral-50: #17181d;
+    --color-neutral-100: #23242b;
+    --color-neutral-200: #3a3c46;
+    --color-neutral-300: #4e505b;
+    --color-neutral-400: #63656f;
+    --color-neutral-500: #797b86;
+    --color-neutral-600: #9a9ca6;
+    --surface-card: #ffffff;
+    --surface-card-border: #e5e5ea;
+    --surface-card-hover: #fbfbfc;
+    --surface-raised: #ffffff;
+    --surface-raised-border: #e5e5ea;
+    --surface-sunken: #f8f8fa;
+    --surface-sunken-border: #ececf0;
+    --surface-inset: #f2f2f5;
+    --surface-inset-border: #e5e5ea;
+    --surface-menu: #ffffff;
+    --surface-menu-border: #e5e5ea;
+    --surface-chrome: #fafafb;
+    --surface-chrome-border: #e5e5ea;
+    --surface-scrim: rgba(20, 20, 26, 0.28);
+
+    --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05);
+    --shadow-menu: 0 4px 12px rgba(16, 24, 40, 0.08), 0 1px 3px rgba(16, 24, 40, 0.04);
+    --shadow-dialog: 0 16px 48px rgba(16, 24, 40, 0.12), 0 2px 8px rgba(16, 24, 40, 0.06);
+    --shadow-toast: 0 8px 24px rgba(16, 24, 40, 0.1);
+    --shadow-drag: 0 8px 20px rgba(16, 24, 40, 0.14);
+
+    --gradient-border-rgb: 229 229 234;
+    --glow-alpha-scale: 0.28;
+    --grain-opacity: 0;
+    --diff-add-line: #e6ffec;
+    --diff-remove-line: #ffebe9;
+    --diff-add-word: #abf2bc;
+    --diff-remove-word: #ffc9c9;
+    --diff-add-gutter: #ccffd8;
+    --diff-remove-gutter: #ffd7d5;
+    --diff-add-gutter-text: #1a7f37;
+    --diff-remove-gutter-text: #cf222e;
+    --diff-add-bar: #2da44e;
+    --diff-remove-bar: #cf222e;
+    --diff-seam: #e5e5ea;
+    --diff-lineno: #797b86;
+    --diff-selection: rgba(124, 92, 230, 0.18);
+    --diff-plain: #24292f;
+
+    --workspace-backdrop:
+        radial-gradient(
+            120% 110% at 100% 100%,
+            rgba(233, 233, 239, 0.9) 0%,
+            rgba(238, 238, 243, 0.5) 32%,
+            rgba(255, 255, 255, 0) 66%
+        ),
+        radial-gradient(
+            85% 62% at 0% -16%,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(250, 250, 252, 0.45) 22%,
+            rgba(246, 246, 249, 0.15) 44%,
+            rgba(255, 255, 255, 0) 62%
+        ),
+        radial-gradient(
+            65% 48% at -18% 60%,
+            rgba(236, 236, 242, 0.35) 0%,
+            rgba(244, 244, 248, 0.12) 32%,
+            rgba(255, 255, 255, 0) 60%
+        ),
+        linear-gradient(
+            148deg,
+            #ffffff 0%,
+            #fdfdfe 10%,
+            #fbfbfc 20%,
+            #f9f9fb 32%,
+            #f6f6f8 44%,
+            #f6f6f8 100%
+        );
+
+    --color-mention-member: #4338ca;
+    --color-mention-team: #14603f;
+
+    color-scheme: light;
+}
