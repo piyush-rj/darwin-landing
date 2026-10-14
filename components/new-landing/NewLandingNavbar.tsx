@@ -15,10 +15,9 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS: NavLink[] = [
     { label: "Security", href: "/#security" },
     { label: "How it works", href: "/how-it-works" },
-    { label: "Pricing", href: "/#pricing" },
     { label: "Why Darwin", href: "/why" },
     { label: "Blog", href: "/blog?tab=blogs" },
-    { label: "Changelog", href: "/blog?tab=changelog" },
+    { label: "Changelog", href: "/changelog" },
 ];
 
 const CELL = "flex h-full items-center border-r border-edge px-4 text-[14px] text-foreground";

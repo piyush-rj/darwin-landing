@@ -1,6 +1,7 @@
 export * from "./ActionIcons";
 export * from "./GitIcons";
 export * from "./MarketingIcons";
+export * from "./MediaIcons";
 export * from "./MiscIcons";
 export * from "./NavigationIcons";
 export * from "./StatusIcons";
