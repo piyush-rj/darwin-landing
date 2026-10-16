@@ -14,14 +14,12 @@ export const LOOP = {
 export const BOARD_LOOP = {
     assigned: 1,
     started: 2,
-    inReview: 5,
-    done: 9,
-    frames: 13,
+    done: 6,
+    frames: 10,
 };
 
 export function boardStatusAt(frame: number): KanbanStatus {
     if (frame < BOARD_LOOP.started) return KanbanStatus.Todo;
-    if (frame < BOARD_LOOP.inReview) return KanbanStatus.InProgress;
-    if (frame < BOARD_LOOP.done) return KanbanStatus.InReview;
+    if (frame < BOARD_LOOP.done) return KanbanStatus.InProgress;
     return KanbanStatus.Done;
 }

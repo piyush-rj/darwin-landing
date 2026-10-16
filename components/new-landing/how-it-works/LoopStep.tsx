@@ -80,7 +80,7 @@ export default function LoopStep({
                 <div className="lg:h-full">
                     <ToneMosaic
                         tone={step.tone}
-                        className="sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[30rem]"
+                        className="aspect-square sm:aspect-[16/11] lg:aspect-auto lg:h-full lg:min-h-[30rem]"
                     >
                         <step.stage frame={step.frames.from + frame} cycle={cycle} />
                     </ToneMosaic>

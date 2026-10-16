@@ -139,12 +139,10 @@ function ToneTiles({ tone, shown, animate }: { tone: string; shown: boolean; ani
 export default function ToneMosaic({
     tone,
     className,
-    cardClassName = "max-w-[22rem]",
     children,
 }: {
     tone: string;
     className: string;
-    cardClassName?: string;
     children: ReactNode;
 }) {
     const ref = useRef<HTMLDivElement>(null);
@@ -160,22 +158,17 @@ export default function ToneMosaic({
             style={{ "--tone": tone } as CSSProperties}
         >
             <ToneTiles tone={tone} shown={shown} animate={!reduceMotion} />
-            <div className="relative flex items-center justify-center px-5 py-10 sm:absolute sm:inset-0 sm:p-8">
-                <div
-                    className={cn(
-                        "w-full bg-white/40 p-1.5 shadow-[0_24px_48px_-24px_rgba(16,24,40,0.45)]",
-                        cardClassName,
-                    )}
-                    style={{
-                        opacity: shown ? 1 : 0,
-                        transform: shown ? "translateY(0)" : "translateY(12px)",
-                        transition: reduceMotion
-                            ? "none"
-                            : `opacity 420ms ${EASE} ${cardDelayMs}ms, transform 560ms ${EASE} ${cardDelayMs}ms`,
-                    }}
-                >
-                    {children}
-                </div>
+            <div
+                className="absolute inset-0"
+                style={{
+                    opacity: shown ? 1 : 0,
+                    transform: shown ? "translateY(0)" : "translateY(12px)",
+                    transition: reduceMotion
+                        ? "none"
+                        : `opacity 420ms ${EASE} ${cardDelayMs}ms, transform 560ms ${EASE} ${cardDelayMs}ms`,
+                }}
+            >
+                {children}
             </div>
         </div>
     );
