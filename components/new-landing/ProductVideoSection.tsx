@@ -41,6 +41,8 @@ const CHAPTERS = [
 
 type HoverPreview = { seconds: number; left: number };
 
+type IPhoneVideo = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
+
 function clock(seconds: number) {
     const whole = Math.max(0, Math.floor(seconds));
     return `${String(Math.floor(whole / 60)).padStart(2, "0")}:${String(whole % 60).padStart(2, "0")}`;
@@ -155,7 +157,9 @@ export default function ProductVideoSection() {
 
     function toggleFullscreen() {
         if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-        else frameRef.current?.requestFullscreen().catch(() => {});
+        else if (frameRef.current?.requestFullscreen)
+            frameRef.current.requestFullscreen().catch(() => {});
+        else (videoRef.current as IPhoneVideo | null)?.webkitEnterFullscreen?.();
     }
 
     function seek(seconds: number) {
@@ -351,8 +355,10 @@ export default function ProductVideoSection() {
 
                                 <span className="flex shrink-0 items-center border-l border-edge px-4 font-mono text-[12px] text-neutral-500 tabular-nums">
                                     <span className="text-foreground">{clock(currentTime)}</span>
-                                    <span className="mx-1.5">/</span>
-                                    {clock(duration)}
+                                    <span className="max-sm:hidden">
+                                        <span className="mx-1.5">/</span>
+                                        {clock(duration)}
+                                    </span>
                                 </span>
                                 <ControlButton
                                     label={muted ? "Turn sound on" : "Mute"}
@@ -368,7 +374,7 @@ export default function ProductVideoSection() {
                                 <ControlButton
                                     label={fullscreen ? "Exit full screen" : "Full screen"}
                                     onClick={toggleFullscreen}
-                                    className="border-l max-sm:hidden"
+                                    className="border-l"
                                 >
                                     {fullscreen ? (
                                         <VideoExitFullscreenIcon className="size-5" />
