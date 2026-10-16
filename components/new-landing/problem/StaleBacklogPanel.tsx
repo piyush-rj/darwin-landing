@@ -46,14 +46,7 @@ export default function StaleBacklogPanel() {
                         {WAITING_ISSUES.map((issue, index) => (
                             <IssueRow
                                 key={issue.title}
-                                tile={
-                                    <StatusBlock
-                                        status={KanbanStatus.Todo}
-                                        depth={2}
-                                        className="size-5"
-                                        iconClassName="size-[10px]"
-                                    />
-                                }
+                                tile={<StatusBlock status={KanbanStatus.Todo} />}
                                 title={issue.title}
                                 meta={`Open ${issue.days}d`}
                                 index={index}

@@ -116,12 +116,7 @@ export default function LiveBoardPanel() {
                                                     />
                                                 </span>
                                             ) : (
-                                                <StatusBlock
-                                                    status={KanbanStatus.Done}
-                                                    depth={2}
-                                                    className="size-5"
-                                                    iconClassName="size-[10px]"
-                                                />
+                                                <StatusBlock status={KanbanStatus.Done} />
                                             )
                                         }
                                         title={row.title}

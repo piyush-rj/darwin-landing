@@ -4,13 +4,8 @@ import { motion, useInView, useReducedMotion } from "motion/react";
 import { useRef } from "react";
 
 import RollingText from "@/components/utility/RollingText";
-import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
-import { cn } from "@/lib/utils";
-import { KanbanStatus } from "@/types/kanban";
 
-import PixelSprite from "./PixelSprite";
-
-type StatusSprite = { status: KanbanStatus; rows: string[] };
+import StatusBlock, { STATUS_BLOCK_ORDER } from "./StatusBlock";
 
 const PIXEL_SCALE = 3;
 const DROP_HEIGHT = PIXEL_SCALE * 8;
@@ -25,107 +20,20 @@ function inSteps(count: number) {
     return (progress: number) => Math.ceil(progress * count) / count;
 }
 
-const SHADES: Record<string, string> = {
-    b: "currentColor",
-    h: "color-mix(in oklab, currentColor 55%, white)",
-    s: "color-mix(in oklab, currentColor 72%, black)",
-    f: "color-mix(in oklab, currentColor 12%, white)",
-    k: "var(--color-snow)",
-};
-
-const STATUS_SPRITES: StatusSprite[] = [
-    {
-        status: KanbanStatus.Todo,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-    {
-        status: KanbanStatus.InProgress,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbfffhhbbfffbs",
-            "hbfffhbbbfffbs",
-            "hbfffbbbbfffbs",
-            "hbfffbbbbfffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-    {
-        status: KanbanStatus.InReview,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffbbbbbbffbs",
-            "hbffbbbbbbffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffbbbbffffbs",
-            "hbffbbbbffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-    {
-        status: KanbanStatus.Done,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbkkbbs",
-            "hbbbbbbbkkbbbs",
-            "hbbkkbbkkbbbbs",
-            "hbbbkkkkbbbbbs",
-            "hbbbbkkbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-];
-
 export default function HowItWorksPathSection() {
     const rowRef = useRef<HTMLDivElement>(null);
     const rowInView = useInView(rowRef, { once: true, amount: 0.6 });
     const reduceMotion = useReducedMotion();
-    const lastIndex = STATUS_SPRITES.length - 1;
+    const lastIndex = STATUS_BLOCK_ORDER.length - 1;
 
     return (
         <section className="flex w-full flex-col items-center border-b border-edge bg-ink px-6 py-20 md:py-24">
             <div ref={rowRef} className="flex items-center gap-8">
-                {STATUS_SPRITES.map((sprite, index) => {
+                {STATUS_BLOCK_ORDER.map((status, index) => {
                     const isDone = index === lastIndex;
                     return (
                         <motion.div
-                            key={sprite.status}
+                            key={status}
                             initial={reduceMotion ? false : { y: 0, scale: 1 }}
                             animate={
                                 rowInView
@@ -150,13 +58,10 @@ export default function HowItWorksPathSection() {
                                     ease: inSteps(4),
                                 }}
                             >
-                                <PixelSprite
-                                    art={{ rows: sprite.rows, colors: SHADES }}
+                                <StatusBlock
+                                    status={status}
                                     scale={PIXEL_SCALE}
-                                    className={cn(
-                                        "block",
-                                        KanbanBoard.glyphFor(sprite.status).titleBox,
-                                    )}
+                                    className="block"
                                 />
                             </motion.div>
                         </motion.div>
