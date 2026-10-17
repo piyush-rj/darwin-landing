@@ -80,7 +80,7 @@ function StatusGlyph({
     );
 }
 
-export function TodoGlyph(props: IconBaseProps) {
+function TodoGlyph(props: IconBaseProps) {
     return (
         <StatusGlyph {...props}>
             <rect {...token} />
@@ -88,7 +88,7 @@ export function TodoGlyph(props: IconBaseProps) {
     );
 }
 
-export function QueuedGlyph(props: IconBaseProps) {
+function QueuedGlyph(props: IconBaseProps) {
     return (
         <StatusGlyph {...props}>
             <rect {...token} strokeDasharray="2 1.214" />
@@ -96,7 +96,7 @@ export function QueuedGlyph(props: IconBaseProps) {
     );
 }
 
-export function InProgressGlyph(props: IconBaseProps) {
+function InProgressGlyph(props: IconBaseProps) {
     return (
         <StatusGlyph {...props}>
             <rect {...token} />
@@ -105,7 +105,7 @@ export function InProgressGlyph(props: IconBaseProps) {
     );
 }
 
-export function InReviewGlyph(props: IconBaseProps) {
+function InReviewGlyph(props: IconBaseProps) {
     return (
         <StatusGlyph {...props}>
             <rect {...token} />
@@ -114,7 +114,7 @@ export function InReviewGlyph(props: IconBaseProps) {
     );
 }
 
-export function DoneGlyph(props: IconBaseProps) {
+function DoneGlyph(props: IconBaseProps) {
     const knockout = useId();
     return (
         <StatusGlyph {...props}>
@@ -127,7 +127,7 @@ export function DoneGlyph(props: IconBaseProps) {
     );
 }
 
-export function FailedGlyph(props: IconBaseProps) {
+function FailedGlyph(props: IconBaseProps) {
     return (
         <StatusGlyph {...props}>
             <rect {...token} />
@@ -136,7 +136,7 @@ export function FailedGlyph(props: IconBaseProps) {
     );
 }
 
-export function CancelledGlyph(props: IconBaseProps) {
+function CancelledGlyph(props: IconBaseProps) {
     return (
         <StatusGlyph {...props}>
             <rect {...token} />
@@ -145,7 +145,7 @@ export function CancelledGlyph(props: IconBaseProps) {
     );
 }
 
-export function OffBoardGlyph(props: IconBaseProps) {
+function OffBoardGlyph(props: IconBaseProps) {
     return (
         <StatusGlyph {...props}>
             <rect {...token} />
@@ -162,7 +162,7 @@ export const UrgentPriorityIcon = createIcon(FaTowerBroadcast);
 
 export const SuccessCircleIcon = createIcon(HiCheckCircle);
 
-export function HighPriorityIcon({ className }: IconBaseProps) {
+function HighPriorityGlyph({ className }: IconBaseProps) {
     return (
         <svg
             viewBox="0 0 16 16"
@@ -178,7 +178,7 @@ export function HighPriorityIcon({ className }: IconBaseProps) {
     );
 }
 
-export function MediumPriorityIcon({ className }: IconBaseProps) {
+function MediumPriorityGlyph({ className }: IconBaseProps) {
     return (
         <svg
             viewBox="0 0 16 16"
@@ -194,7 +194,7 @@ export function MediumPriorityIcon({ className }: IconBaseProps) {
     );
 }
 
-export function LowPriorityIcon({ className }: IconBaseProps) {
+function LowPriorityGlyph({ className }: IconBaseProps) {
     return (
         <svg
             viewBox="0 0 16 16"
@@ -209,3 +209,9 @@ export function LowPriorityIcon({ className }: IconBaseProps) {
         </svg>
     );
 }
+
+export const HighPriorityIcon = createIcon(HighPriorityGlyph);
+
+export const MediumPriorityIcon = createIcon(MediumPriorityGlyph);
+
+export const LowPriorityIcon = createIcon(LowPriorityGlyph);

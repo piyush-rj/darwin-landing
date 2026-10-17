@@ -1,13 +1,7 @@
 "use client";
 
-import {
-    animate,
-    motion,
-    useInView,
-    useMotionValue,
-    useReducedMotion,
-    useTransform,
-} from "motion/react";
+import { animate, useInView, useMotionValue, useReducedMotion, useTransform } from "motion/react";
+import * as m from "motion/react-m";
 import { type PointerEvent, type ReactNode, useEffect, useRef, useState } from "react";
 
 import { CheckIcon } from "@/components/icons";
@@ -178,24 +172,24 @@ export default function ProductDiffScene() {
                     <div className="absolute inset-0">
                         <CheckoutPage fixed />
                     </div>
-                    <motion.div className="absolute inset-0" style={{ clipPath: beforeClip }}>
+                    <m.div className="absolute inset-0" style={{ clipPath: beforeClip }}>
                         <CheckoutPage fixed={false} />
-                    </motion.div>
+                    </m.div>
 
-                    <motion.div
+                    <m.div
                         className="pointer-events-none absolute top-3 left-3"
                         style={{ opacity: beforeLabelOpacity }}
                     >
                         <PixelLabel>Before</PixelLabel>
-                    </motion.div>
-                    <motion.div
+                    </m.div>
+                    <m.div
                         className="pointer-events-none absolute top-3 right-3"
                         style={{ opacity: afterLabelOpacity }}
                     >
                         <PixelLabel>After</PixelLabel>
-                    </motion.div>
+                    </m.div>
 
-                    <motion.div
+                    <m.div
                         aria-hidden
                         className="pointer-events-none absolute inset-y-0 w-0"
                         style={{ left: handleLeft }}
@@ -209,7 +203,7 @@ export default function ProductDiffScene() {
                             scale={PIXEL}
                             className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2"
                         />
-                    </motion.div>
+                    </m.div>
                 </div>
             </PixelBox>
         </div>

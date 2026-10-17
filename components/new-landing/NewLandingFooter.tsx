@@ -33,7 +33,6 @@ const LINK_COLUMNS = [
         links: [
             { label: "Blog", href: "/blog?tab=blogs" },
             { label: "Changelog", href: "/blog?tab=changelog" },
-            { label: "Waitlist", href: "/join-waitlist" },
         ],
     },
     {

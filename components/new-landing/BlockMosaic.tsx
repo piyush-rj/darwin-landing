@@ -241,12 +241,12 @@ export default function BlockMosaic({
 
     useEffect(() => {
         if (!inView || reduceMotion || phase !== "live") return;
-        const timer = window.setInterval(
-            () => setCellOfTile((current) => nextArrangement(grid, current)),
+        const timer = window.setTimeout(
+            () => setCellOfTile(nextArrangement(grid, cellOfTile)),
             BEAT_MS,
         );
-        return () => window.clearInterval(timer);
-    }, [grid, inView, reduceMotion, phase]);
+        return () => window.clearTimeout(timer);
+    }, [grid, inView, reduceMotion, phase, cellOfTile]);
 
     const live = phase === "live";
     const overlayStyle = { opacity: live ? 1 : 0, transition: "opacity 500ms ease-out" };

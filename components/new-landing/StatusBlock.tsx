@@ -1,10 +1,9 @@
 import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
 import { cn } from "@/lib/utils";
-import { KanbanStatus } from "@/types/kanban";
+import type { KanbanStatus } from "@/types/kanban";
 
 import PixelSprite from "./PixelSprite";
-
-type StatusSprite = { status: KanbanStatus; rows: string[] };
+import { STATUS_SPRITES } from "./statusSprites";
 
 const SHADES: Record<string, string> = {
     b: "currentColor",
@@ -13,87 +12,6 @@ const SHADES: Record<string, string> = {
     f: "color-mix(in oklab, currentColor 12%, white)",
     k: "var(--color-snow)",
 };
-
-const STATUS_SPRITES: StatusSprite[] = [
-    {
-        status: KanbanStatus.Todo,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-    {
-        status: KanbanStatus.InProgress,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbfffhhbbfffbs",
-            "hbfffhbbbfffbs",
-            "hbfffbbbbfffbs",
-            "hbfffbbbbfffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-    {
-        status: KanbanStatus.InReview,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffbbbbbbffbs",
-            "hbffbbbbbbffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            "hbffbbbbffffbs",
-            "hbffbbbbffffbs",
-            "hbffffffffffbs",
-            "hbffffffffffbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-    {
-        status: KanbanStatus.Done,
-        rows: [
-            "..hhhhhhhhhh..",
-            ".hbbbbbbbbbbb.",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbkkbbs",
-            "hbbbbbbbkkbbbs",
-            "hbbkkbbkkbbbbs",
-            "hbbbkkkkbbbbbs",
-            "hbbbbkkbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            "hbbbbbbbbbbbbs",
-            ".bbbbbbbbbbbs.",
-            "..ssssssssss..",
-        ],
-    },
-];
-
-export const STATUS_BLOCK_ORDER = STATUS_SPRITES.map((sprite) => sprite.status);
 
 export default function StatusBlock({
     status,

@@ -1,4 +1,4 @@
-import { seededRandom } from "@/components/utility/RollingText";
+import { seededRandom } from "@/lib/seededRandom";
 
 export function planTileFlood(
     columns: number,

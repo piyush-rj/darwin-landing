@@ -1,4 +1,5 @@
-import { LayoutGroup, motion } from "motion/react";
+import { LayoutGroup } from "motion/react";
+import * as m from "motion/react-m";
 import type { ComponentType } from "react";
 
 import {
@@ -167,7 +168,7 @@ export default function BoardStage({ frame, cycle }: { frame: number; cycle: num
                                 </div>
                                 <div className="flex flex-1 flex-col gap-1.5 bg-foreground/[0.04] p-1">
                                     {holdsIssue && (
-                                        <motion.div
+                                        <m.div
                                             layoutId={`board-issue-${cycle}`}
                                             initial={frame === 0 ? { opacity: 0, y: -28 } : false}
                                             animate={{ opacity: 1, y: 0 }}
@@ -175,7 +176,7 @@ export default function BoardStage({ frame, cycle }: { frame: number; cycle: num
                                             className={HARD_SHADOW}
                                         >
                                             <IssueCard issue={trackedIssue} active />
-                                        </motion.div>
+                                        </m.div>
                                     )}
                                     {others.map((issue) => (
                                         <IssueCard

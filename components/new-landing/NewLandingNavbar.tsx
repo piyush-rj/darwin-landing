@@ -1,7 +1,8 @@
 "use client";
 
 import { useLenis } from "lenis/react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import Link from "next/link";
 import { type MouseEvent, useEffect, useState } from "react";
 
@@ -105,7 +106,7 @@ export default function NewLandingNavbar() {
                     className="relative flex w-14 shrink-0 cursor-pointer items-center justify-center border-l border-edge text-foreground lg:hidden"
                 >
                     <AnimatePresence initial={false}>
-                        <motion.span
+                        <m.span
                             key={menu.open ? "close" : "open"}
                             initial={{ opacity: 0, rotate: -90 }}
                             animate={{ opacity: 1, rotate: 0 }}
@@ -118,7 +119,7 @@ export default function NewLandingNavbar() {
                             ) : (
                                 <MobileNavIcon className="size-6" />
                             )}
-                        </motion.span>
+                        </m.span>
                     </AnimatePresence>
                 </button>
             </header>

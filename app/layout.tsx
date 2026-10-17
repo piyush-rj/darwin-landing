@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { Geist_Mono, Google_Sans_Flex, JetBrains_Mono, Titillium_Web } from "next/font/google";
 import localFont from "next/font/local";
 
+import MotionProvider from "@/providers/MotionProvider";
+
 const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
@@ -48,7 +50,9 @@ export default function RootLayout({
             suppressHydrationWarning
             className={`${googleSansFlex.variable} ${geistMono.variable} ${jetBrainsMono.variable} ${titilliumWeb.variable} ${departureMono.variable} h-full antialiased`}
         >
-            <body className="theme-light min-h-full flex flex-col">{children}</body>
+            <body className="theme-light min-h-full flex flex-col">
+                <MotionProvider>{children}</MotionProvider>
+            </body>
         </html>
     );
 }

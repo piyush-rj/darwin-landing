@@ -1,0 +1,135 @@
+import type { StaticImageData } from "next/image";
+
+import type { FigureMount } from "@/lib/hairline/core/stage";
+import { mountFoundingStack } from "@/lib/hairline/figures/foundingStack";
+import { mountQueueRunners } from "@/lib/hairline/figures/queueRunners";
+import { mountShapingPress } from "@/lib/hairline/figures/shapingPress";
+import anjanPortrait from "@/public/images/team/founders/anjan.webp";
+import anjanBoxed from "@/public/images/team/founders/anjan-boxed.webp";
+import piyushPortrait from "@/public/images/team/founders/piyush.webp";
+import piyushBoxed from "@/public/images/team/founders/piyush-boxed.webp";
+import rishiPortrait from "@/public/images/team/founders/rishi.webp";
+import rishiBoxed from "@/public/images/team/founders/rishi-boxed.webp";
+
+export type ChapterBeat = { readout: string };
+
+export type TeamChapter = {
+    key: string;
+    name: string;
+    title: string;
+    role: string;
+    tone: string;
+    portrait: StaticImageData;
+    boxedPortrait: StaticImageData;
+    figure: FigureMount;
+    figureTitle: string;
+    figureLabel: string;
+    about: string;
+    xHandle: string;
+    beats: ChapterBeat[];
+    hoverLines: string[];
+};
+
+export const BEAT_STARTS = [0, 0.34, 0.67];
+
+export const TEAM_CHAPTERS: TeamChapter[] = [
+    {
+        key: "rishi",
+        xHandle: "khairrishi",
+        about: "Rishi started Darwin with one idea: a teammate that picks an issue off the board and comes back with a pull request. He writes across the whole stack, from the board you file issues on to the runners that fix them, and owns every call in between.",
+        hoverLines: [
+            "psst. you're hovering the founder.",
+            "rishi here. i filed issue #1.",
+            "this whole page? started as a todo.",
+            "your backlog's next. join the waitlist.",
+        ],
+        name: "Rishi Kant",
+        title: "Founder",
+        role: "Founder & CEO",
+        tone: "var(--color-primary)",
+        portrait: rishiPortrait,
+        boxedPortrait: rishiBoxed,
+        figure: mountFoundingStack,
+        figureTitle: "Issue #1",
+        figureLabel:
+            "Issue #1 drops onto a board and moves into progress. Wires carry it into a four-layer stack built one layer at a time, a carriage keeps climbing a rail touching every layer, and pull requests land on a tray while new issues queue up.",
+        beats: [
+            {
+                readout: "#1 · filed by Rishi",
+            },
+            {
+                readout: "web · server · database · runners",
+            },
+            {
+                readout: "owner · every layer",
+            },
+        ],
+    },
+    {
+        key: "piyush",
+        xHandle: "piyushc2p",
+        about: "Piyush shapes everything you touch in Darwin. He takes what Rishi and Anjan build and turns it into something that feels obvious, from the board and the review screens to this very page. Every spacing, motion and state passes through him before it ships.",
+        hoverLines: [
+            "easy there. fresh paint.",
+            "piyush here. i decide how darwin feels.",
+            "the boxy me? yeah, also my idea.",
+            "ok you can stop staring now.",
+        ],
+        name: "Piyush Raj",
+        title: "Co-founder",
+        role: "Co-founder · Frontend & Design",
+        tone: "var(--color-orange-500)",
+        portrait: piyushPortrait,
+        boxedPortrait: piyushBoxed,
+        figure: mountShapingPress,
+        figureTitle: "The shaping press",
+        figureLabel:
+            "Rough parts in Rishi's and Anjan's colours ride a belt under a press, get measured and squeezed onto one grid, and come out as a rounded button. An easing curve plots itself beside it, and a cursor keeps playing with the finished button, toggle and slider.",
+        beats: [
+            {
+                readout: "raw · 4 parts, 0 aligned",
+            },
+            {
+                readout: "aligned · 4px grid",
+            },
+            {
+                readout: "ease 0.22, 1, 0.36, 1 · 700ms",
+            },
+        ],
+    },
+    {
+        key: "anjan",
+        xHandle: "anjanstwt",
+        about: "Anjan built the part of Darwin you never see. Every issue you file travels through his queues, waits for a free runner and gets fixed inside a sandbox he designed. He keeps every run isolated, observable and fast, so fixes keep landing while you sleep.",
+        hoverLines: [
+            "whoa, careful. that's production.",
+            "anjan here. i keep darwin awake.",
+            "if it breaks, it was dns. always dns.",
+            "now stop hovering, you're adding load.",
+        ],
+        name: "Anjan Suman",
+        title: "Co-founder",
+        role: "Co-founder · Backend & Infra",
+        tone: "var(--color-sky-500)",
+        portrait: anjanPortrait,
+        boxedPortrait: anjanBoxed,
+        figure: mountQueueRunners,
+        figureTitle: "The machine underneath",
+        figureLabel:
+            "Issues roll from a hopper into a queue and take turns inside three runners. Runs are written to a database, each runner sits in its own sandbox cage, a metrics tower tracks every run, and finished pull requests stack on a tray.",
+        beats: [
+            {
+                readout: "queue · 6 waiting",
+            },
+            {
+                readout: "runners · tests passing · stored",
+            },
+            {
+                readout: "sandboxed · logged · shipped",
+            },
+        ],
+    },
+];
+
+export const beatAt = (sceneProgress: number) =>
+    BEAT_STARTS.reduce((beat, start, index) => (sceneProgress >= start ? index : beat), 0);

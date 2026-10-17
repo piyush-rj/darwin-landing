@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 
 import { GithubLogoIcon, PullRequestOpenIcon } from "@/components/icons";
 import { DarwinBlockLogo } from "@/components/logo/DarwinBlockLogo";
@@ -98,7 +99,7 @@ export default function LiveBoardPanel() {
                     <div className="mt-6 h-[214px] overflow-hidden">
                         <AnimatePresence initial={false} mode="popLayout">
                             {rows.map((row) => (
-                                <motion.div
+                                <m.div
                                     key={row.issue}
                                     layout
                                     initial={{ opacity: 0, y: -12 }}
@@ -123,7 +124,7 @@ export default function LiveBoardPanel() {
                                         meta={ageLabel(row.slot)}
                                         index={row.slot}
                                     />
-                                </motion.div>
+                                </m.div>
                             ))}
                         </AnimatePresence>
                     </div>

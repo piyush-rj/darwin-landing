@@ -72,6 +72,15 @@
     }
 }
 
+@keyframes caret-blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
 @keyframes nav-enter {
     from {
         transform: translateY(-100%);
@@ -181,48 +190,6 @@
     .grain-strong {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.35 1.6' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 7 0 0 0 -3.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
         background-repeat: repeat;
-    }
-}
-
-.portrait-blurred {
-    filter: blur(4px) grayscale(1) contrast(0.75) brightness(1.15);
-}
-
-.portrait-sharp {
-    --portrait-ring: var(--color-primary);
-    filter: grayscale(1) contrast(1.05) drop-shadow(2px 0 0 var(--portrait-ring))
-        drop-shadow(-2px 0 0 var(--portrait-ring)) drop-shadow(0 2px 0 var(--portrait-ring))
-        drop-shadow(0 -2px 0 var(--portrait-ring))
-        drop-shadow(0 0 6px color-mix(in oklab, var(--portrait-ring) 45%, transparent));
-}
-
-.team-founder {
-    will-change: scale;
-    transition: scale 650ms
-        linear(
-            0,
-            0.141 4.4%,
-            0.5 9.6%,
-            0.86 15.4%,
-            1.044 21%,
-            1.11 25.6%,
-            1.118 28.8%,
-            1.096 33.6%,
-            1.012 44.6%,
-            0.985 52.4%,
-            0.987 61.8%,
-            1.002 79.6%,
-            1
-        );
-}
-
-.team-founder:hover {
-    scale: 1.05;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .team-founder {
-        transition: none;
     }
 }
 

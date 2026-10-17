@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, MotionConfig } from "motion/react";
+import { MotionConfig } from "motion/react";
+import * as m from "motion/react-m";
 import type { ReactNode } from "react";
 
 export default function FadeIn({
@@ -16,7 +17,7 @@ export default function FadeIn({
 }) {
     return (
         <MotionConfig reducedMotion="user">
-            <motion.div
+            <m.div
                 className={className}
                 initial={{ opacity: 0, y }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -24,7 +25,7 @@ export default function FadeIn({
                 transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
             >
                 {children}
-            </motion.div>
+            </m.div>
         </MotionConfig>
     );
 }

@@ -2,7 +2,6 @@
 
 import {
     easeInOut,
-    motion,
     type MotionValue,
     motionValue,
     useMotionValue,
@@ -10,6 +9,7 @@ import {
     useScroll,
     useTransform,
 } from "motion/react";
+import * as m from "motion/react-m";
 import Link from "next/link";
 import { type RefObject, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
@@ -148,17 +148,17 @@ export default function LandingHeroSection() {
                 ref={stageRef}
                 className="grid w-full border-b border-edge lg:sticky lg:top-11 lg:h-[calc(100dvh-2.75rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:grid-rows-[minmax(auto,1fr)_minmax(0,auto)]"
             >
-                <motion.div
+                <m.div
                     style={motionStyle(scroll.toLeft)}
                     className="flex min-h-[18rem] items-end px-6 pt-16 pb-10 md:px-9 lg:min-h-[auto] lg:pt-10"
                 >
                     <h1 className="text-[min(calc((100vw-3.25rem)/6.95),3.25rem)] leading-[0.95] font-normal tracking-[-0.035em] max-lg:leading-[1.08] max-sm:tracking-[-0.045em] text-foreground sm:text-[72px] lg:text-[88px]">
                         <RollingText text={"Issues in.\nPull requests out."} />
                     </h1>
-                </motion.div>
+                </m.div>
 
                 <div className="relative z-10 flex items-end px-6 pt-10 pb-10 max-lg:border-t max-lg:border-edge md:px-9">
-                    <motion.div
+                    <m.div
                         aria-hidden
                         style={motionStyle(scroll.panel)}
                         className="absolute inset-0 border-edge bg-mist lg:border-b lg:border-l"
@@ -171,15 +171,15 @@ export default function LandingHeroSection() {
                         className="z-20"
                     />
                     <div ref={anchorRef} className="relative">
-                        <motion.div style={motionStyle(scroll.statement)}>
+                        <m.div style={motionStyle(scroll.statement)}>
                             {animated && (
-                                <motion.div
+                                <m.div
                                     aria-hidden
                                     style={scroll.icons}
                                     className="absolute inset-x-0 bottom-full mb-3 flex justify-center"
                                 >
                                     <StatusStrip reveal={scroll.statusReveal} />
-                                </motion.div>
+                                </m.div>
                             )}
                             <p className="max-w-[22ch] text-[24px] leading-[1.15] tracking-[-0.02em] text-foreground lg:hidden">
                                 {STATEMENT_LINES.join(" ")}
@@ -189,24 +189,24 @@ export default function LandingHeroSection() {
                                 className="hidden w-fit flex-col text-[23px] leading-[1.2] tracking-[-0.02em] text-foreground lg:flex"
                             >
                                 {STATEMENT_LINES.map((line, index) => (
-                                    <motion.span
+                                    <m.span
                                         key={line}
                                         style={motionStyle({ x: scroll.lines[index] })}
                                         className="w-fit whitespace-nowrap"
                                     >
                                         {line}
-                                    </motion.span>
+                                    </m.span>
                                 ))}
                             </div>
-                        </motion.div>
+                        </m.div>
                     </div>
                 </div>
 
-                <motion.div style={motionStyle(scroll.toLeft)} className="overflow-hidden">
+                <m.div style={motionStyle(scroll.toLeft)} className="overflow-hidden">
                     <BlockMosaic />
-                </motion.div>
+                </m.div>
 
-                <motion.div
+                <m.div
                     style={motionStyle(scroll.toRight)}
                     className="relative flex flex-col justify-between gap-10 border-t border-edge px-6 py-6 max-lg:hidden md:px-9 lg:border-t-0"
                 >
@@ -273,7 +273,7 @@ export default function LandingHeroSection() {
                             </div>
                         </div>
                     </div>
-                </motion.div>
+                </m.div>
             </section>
         </div>
     );

@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion, usePresenceData, useReducedMotion } from "motion/react";
+import { AnimatePresence, usePresenceData, useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 
 import {
     EASE_IN_OUT,
@@ -9,8 +10,8 @@ import {
     parkedOffset,
     RESTING_Y,
     rollsTwice,
-    seededRandom,
-} from "@/components/utility/RollingText";
+} from "@/lib/rollingLetters";
+import { seededRandom } from "@/lib/seededRandom";
 
 const SWAP_SECONDS = 0.6;
 
@@ -21,7 +22,7 @@ function SwapWord({ text }: { text: string }) {
     const sign: 1 | -1 = direction === "up" ? 1 : -1;
 
     return (
-        <motion.span
+        <m.span
             aria-hidden
             initial="hidden"
             animate="shown"
@@ -37,7 +38,7 @@ function SwapWord({ text }: { text: string }) {
                 };
                 const doubled = rollsTwice(character, index);
                 return (
-                    <motion.span
+                    <m.span
                         key={index}
                         variants={{
                             hidden: { y: parkedOffset(doubled, sign), opacity: 0 },
@@ -79,10 +80,10 @@ function SwapWord({ text }: { text: string }) {
                             </span>
                         )}
                         {character}
-                    </motion.span>
+                    </m.span>
                 );
             })}
-        </motion.span>
+        </m.span>
     );
 }
 

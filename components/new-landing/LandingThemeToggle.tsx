@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { useLayoutEffect, useSyncExternalStore } from "react";
 
 import { LANDING_DARK_CLASS, type LandingTheme } from "@/lib/landingTheme";
@@ -126,7 +127,7 @@ export default function LandingThemeToggle({ className }: { className?: string }
                 >
                     {hydrated && (
                         <AnimatePresence initial={false}>
-                            <motion.span
+                            <m.span
                                 key={theme}
                                 initial={{ y: SKY_ROWS * PIXEL }}
                                 animate={{ y: 0 }}
@@ -135,7 +136,7 @@ export default function LandingThemeToggle({ className }: { className?: string }
                                 className="absolute inset-0"
                             >
                                 <PixelBody cells={BODIES[theme]} />
-                            </motion.span>
+                            </m.span>
                         </AnimatePresence>
                     )}
                 </span>

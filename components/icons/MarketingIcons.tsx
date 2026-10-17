@@ -6,6 +6,8 @@ import { createIcon } from "./createIcon";
 
 export const TelegramLogoIcon = createIcon(RiTelegram2Fill);
 
-export const FigmaLogoIcon: IconType = ({ className }) => (
+const FigmaLogoGlyph: IconType = ({ className }) => (
     <Image src="/images/figma-logo.webp" alt="" width={512} height={512} className={className} />
 );
+
+export const FigmaLogoIcon = createIcon(FigmaLogoGlyph);

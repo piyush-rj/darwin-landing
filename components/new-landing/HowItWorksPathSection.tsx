@@ -1,11 +1,13 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { useInView, useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 import { useRef } from "react";
 
 import RollingText from "@/components/utility/RollingText";
 
-import StatusBlock, { STATUS_BLOCK_ORDER } from "./StatusBlock";
+import StatusBlock from "./StatusBlock";
+import { STATUS_BLOCK_ORDER } from "./statusSprites";
 
 const PIXEL_SCALE = 3;
 const DROP_HEIGHT = PIXEL_SCALE * 8;
@@ -32,7 +34,7 @@ export default function HowItWorksPathSection() {
                 {STATUS_BLOCK_ORDER.map((status, index) => {
                     const isDone = index === lastIndex;
                     return (
-                        <motion.div
+                        <m.div
                             key={status}
                             initial={reduceMotion ? false : { y: 0, scale: 1 }}
                             animate={
@@ -49,7 +51,7 @@ export default function HowItWorksPathSection() {
                                 ease: inSteps(4),
                             }}
                         >
-                            <motion.div
+                            <m.div
                                 initial={reduceMotion ? false : { y: -DROP_HEIGHT, opacity: 0 }}
                                 animate={rowInView ? { y: 0, opacity: 1 } : undefined}
                                 transition={{
@@ -63,8 +65,8 @@ export default function HowItWorksPathSection() {
                                     scale={PIXEL_SCALE}
                                     className="block"
                                 />
-                            </motion.div>
-                        </motion.div>
+                            </m.div>
+                        </m.div>
                     );
                 })}
             </div>

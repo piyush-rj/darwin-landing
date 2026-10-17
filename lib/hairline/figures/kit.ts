@@ -1,4 +1,5 @@
 import {
+    circ,
     clamp,
     lerp,
     prism,
@@ -10,7 +11,17 @@ import {
     type Vec2,
     type Vec3,
 } from "../core/iso";
-import { type Disposer, type FigureEls, mk, put, type Solid, solid } from "../core/stage";
+import { reducedMotion, spring, stepS } from "../core/motion";
+import {
+    type Disposer,
+    type FigureEls,
+    type FigureHandle,
+    mk,
+    put,
+    register,
+    type Solid,
+    solid,
+} from "../core/stage";
 
 export const progress = (t: number, from: number, to: number) =>
     clamp((t - from) / (to - from), 0, 1);
@@ -136,3 +147,74 @@ export function moveTag(
 
 export const setOpacity = (element: Element, value: number) =>
     element.setAttribute("opacity", String(r2(clamp(value, 0, 1))));
+
+export function scrubbedFigure(
+    stage: HTMLElement,
+    bag: Disposer,
+    initial: number,
+    render: (progress: number, seconds: number) => void,
+): FigureHandle {
+    const shown = spring(clamp(initial, 0, 1), { k: 160, c: 26, eps: 0.0005 });
+    let seconds = 0;
+    const loop = register(stage, (dt) => {
+        const moving = stepS(shown, dt);
+        if (!reducedMotion()) seconds += dt;
+        render(shown.x, seconds);
+        return moving || !reducedMotion();
+    });
+    bag.add(loop.unregister);
+    return {
+        set(value: number) {
+            shown.t = clamp(value, 0, 1);
+            loop.wake();
+        },
+        destroy: bag.dispose,
+    };
+}
+
+export function pointAlong3(route: Vec3[], share: number): Vec3 {
+    const lengths = route
+        .slice(1)
+        .map((point, index) =>
+            Math.hypot(
+                point[0] - route[index][0],
+                point[1] - route[index][1],
+                point[2] - route[index][2],
+            ),
+        );
+    let remaining = clamp(share, 0, 1) * lengths.reduce((sum, length) => sum + length, 0);
+    for (let index = 0; index < lengths.length; index++) {
+        if (remaining <= lengths[index]) {
+            const part = lengths[index] === 0 ? 0 : remaining / lengths[index];
+            return [0, 1, 2].map((axis) =>
+                lerp(route[index][axis], route[index + 1][axis], part),
+            ) as Vec3;
+        }
+        remaining -= lengths[index];
+    }
+    return route[route.length - 1];
+}
+
+export function cylinder(
+    element: Solid,
+    { P, front }: Scene,
+    centre: Vec2,
+    radius: number,
+    z: number,
+    height: number,
+) {
+    const ring = circ(radius, 48).map((sample) => ({
+        ...sample,
+        u: sample.u + centre[0],
+        v: sample.v + centre[1],
+    }));
+    const inner = circ(Math.max(0.5, radius - 1.4), 48).map((sample) => ({
+        ...sample,
+        u: sample.u + centre[0],
+        v: sample.v + centre[1],
+    }));
+    put(element, prism(P, front, ring, inner, z, z + height));
+}
+
+export const loopShare = (seconds: number, period: number, offset = 0) =>
+    (((seconds / period + offset) % 1) + 1) % 1;

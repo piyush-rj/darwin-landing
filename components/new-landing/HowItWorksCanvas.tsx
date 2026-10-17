@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { useInView, useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 
 import { PointerCursorIcon } from "@/components/icons";
@@ -126,7 +127,7 @@ export default function HowItWorksCanvas({ className }: { className?: string }) 
             className={cn("relative overflow-hidden bg-[#E8F0FB] @container", className)}
             style={{ "--cell": `calc(100cqw / ${COLUMNS})` } as CSSProperties}
         >
-            <motion.div
+            <m.div
                 className="absolute inset-0 bg-[linear-gradient(to_right,rgb(30_58_138/0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgb(30_58_138/0.12)_1px,transparent_1px)] bg-size-[var(--cell)_var(--cell)]"
                 initial={reduceMotion ? false : { clipPath: "circle(0% at 0% 0%)" }}
                 animate={hasEntered ? { clipPath: "circle(150% at 0% 0%)" } : undefined}
@@ -141,7 +142,7 @@ export default function HowItWorksCanvas({ className }: { className?: string }) 
                     height: cells(6.4),
                 }}
             >
-                <motion.circle
+                <m.circle
                     cx="50%"
                     cy="50%"
                     r="50%"
@@ -159,7 +160,7 @@ export default function HowItWorksCanvas({ className }: { className?: string }) 
             </svg>
 
             {BLOCK_IDS.map((id) => (
-                <motion.div
+                <m.div
                     key={id}
                     className={cn("absolute", BLOCK_FILL[id])}
                     style={rectStyle(BLOCKS[id])}
@@ -175,7 +176,7 @@ export default function HowItWorksCanvas({ className }: { className?: string }) 
 
             {settled &&
                 cornersOf(selected).map((corner, index) => (
-                    <motion.span
+                    <m.span
                         key={`${selectedId}-${index}`}
                         className="absolute size-2 -translate-1/2 bg-[#1E3A8A]"
                         style={{ left: cells(corner.column), top: cells(corner.row) }}
@@ -185,7 +186,7 @@ export default function HowItWorksCanvas({ className }: { className?: string }) 
                     />
                 ))}
 
-            <motion.div
+            <m.div
                 className="absolute top-0 left-0"
                 initial={
                     reduceMotion
@@ -209,7 +210,7 @@ export default function HowItWorksCanvas({ className }: { className?: string }) 
                 onAnimationComplete={() => setEntryFinished(true)}
             >
                 <PointerCursorIcon className="size-8 text-white filter-[drop-shadow(0_0_1px_rgb(0_0_0))_drop-shadow(0_6px_8px_rgb(0_0_0/0.25))]" />
-            </motion.div>
+            </m.div>
             <div className="grain-strong pointer-events-none absolute inset-0 opacity-5 invert" />
         </div>
     );

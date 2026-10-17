@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import Link from "next/link";
 import type { MouseEvent } from "react";
 
@@ -19,7 +19,7 @@ export default function MobileNavMenu({
     onNavigate: (event: MouseEvent<HTMLAnchorElement>, href: string) => void;
 }) {
     return (
-        <motion.div
+        <m.div
             id="mobile-nav-menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -29,7 +29,7 @@ export default function MobileNavMenu({
         >
             <nav aria-label="Main">
                 {links.map((link, index) => (
-                    <motion.div
+                    <m.div
                         key={link.label}
                         initial={{ opacity: 0, x: 24 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -47,7 +47,7 @@ export default function MobileNavMenu({
                             {link.label}
                             <CtaArrowIcon className="size-5 text-neutral-500" />
                         </Link>
-                    </motion.div>
+                    </m.div>
                 ))}
             </nav>
 
@@ -57,6 +57,6 @@ export default function MobileNavMenu({
                 </span>
                 <LandingThemeToggle className="flex size-10 items-center justify-center border border-edge" />
             </div>
-        </motion.div>
+        </m.div>
     );
 }

@@ -1,4 +1,5 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 
 import {
     CheckIcon,
@@ -77,7 +78,7 @@ export default function RunnerStage({ frame }: { frame: number }) {
                         {LOG.slice(0, visible).map((line, index) => {
                             const current = !passed && index === visible - 1;
                             return (
-                                <motion.li
+                                <m.li
                                     key={line.text}
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -116,7 +117,7 @@ export default function RunnerStage({ frame }: { frame: number }) {
                                             {line.detail}
                                         </span>
                                     )}
-                                </motion.li>
+                                </m.li>
                             );
                         })}
                     </AnimatePresence>

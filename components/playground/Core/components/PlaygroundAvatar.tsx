@@ -27,7 +27,7 @@ const AVATAR_TONE = {
     },
 } as const;
 
-export const AVATAR_SIZE = {
+const AVATAR_SIZE = {
     sm: "size-4 text-[9px] rounded-[5px]",
     md: "size-5 text-[11px] rounded-[6px]",
     lg: "size-6 text-[12px] rounded-[7px]",
@@ -45,24 +45,6 @@ const LETTER_RING = "ring-overlay/15";
 // top sheen — bright highlight fading to nothing, like the logo's radial sheen
 const SHEEN =
     "before:pointer-events-none before:absolute before:inset-0 before:bg-linear-to-b before:from-white/35 before:to-transparent before:opacity-80";
-
-const TONES = Object.keys(AVATAR_TONE) as AvatarTone[];
-
-/** Deterministic tone so a person keeps the same color across renders. */
-export function toneFor(id: string): AvatarTone {
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-    return TONES[hash % TONES.length];
-}
-
-/** `User.name` is nullable, `User.email` is not — so this never returns "". */
-export function displayNameOf(name: string | null | undefined, email: string): string {
-    return name?.trim() || email.split("@")[0];
-}
-
-export function initialOf(name: string | null | undefined, email: string): string {
-    return displayNameOf(name, email)[0].toUpperCase();
-}
 
 type PlaygroundAvatarProps = {
     letter: string;

@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -59,7 +59,7 @@ function CheckRow({
     children: ReactNode;
 }) {
     return (
-        <div className="flex h-[32px] items-center gap-2.5 border-b border-dashed border-foreground/15 px-3 text-[11.5px]">
+        <div className="flex h-[30px] items-center gap-2.5 border-b border-dashed border-foreground/15 px-3 text-[11.5px]">
             {tile}
             <span className="text-foreground/80">{label}</span>
             <span
@@ -101,13 +101,13 @@ export default function PullRequestStage({ frame }: { frame: number }) {
 
     return (
         <MockWindow title={WINDOW_TITLE} status="#910">
-            <motion.div
+            <m.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={MOVE}
                 className="flex h-full flex-col"
             >
-                <div className="m-3 bg-foreground/[0.04] p-2.5 font-mono text-[9.5px]">
+                <div className="m-2.5 flex-1 bg-foreground/[0.04] p-2.5 font-mono text-[9.5px]">
                     <div className="tracking-[0.08em] text-neutral-400 uppercase">
                         Files changed · {CHANGED_FILES.length}
                     </div>
@@ -135,7 +135,7 @@ export default function PullRequestStage({ frame }: { frame: number }) {
                     </div>
                 </div>
 
-                <div className="border-y border-foreground/15 px-3 py-2.5">
+                <div className="border-y border-foreground/15 px-3 py-2">
                     <p className="flex items-center gap-2 text-[12.5px] text-foreground">
                         <span
                             className={cn(
@@ -222,8 +222,8 @@ export default function PullRequestStage({ frame }: { frame: number }) {
                     )}
                 </CheckRow>
 
-                <div className="p-3">
-                    <motion.div
+                <div className="px-3 pt-3 pb-[38px]">
+                    <m.div
                         animate={{ y: merged ? 3 : 0 }}
                         transition={MOVE}
                         className={cn(
@@ -249,9 +249,9 @@ export default function PullRequestStage({ frame }: { frame: number }) {
                             <MergeIcon className="size-3.5" aria-hidden />
                         )}
                         {merged ? "Merged" : "Merge pull request"}
-                    </motion.div>
+                    </m.div>
                 </div>
-            </motion.div>
+            </m.div>
         </MockWindow>
     );
 }

@@ -3,35 +3,20 @@
 import { useAnimate, useInView, useReducedMotion } from "motion/react";
 import { Fragment, useEffect } from "react";
 
+import {
+    EASE_IN_OUT,
+    PACE_STEP_SECONDS,
+    PARKED_GAP_EM,
+    parkedOffset,
+    RESTING_Y,
+    rollsTwice,
+} from "@/lib/rollingLetters";
+import { seededRandom } from "@/lib/seededRandom";
+
 const RISE_SECONDS = 1;
 const ROW_GAP_SECONDS = 0.8;
 const PUSH_SECONDS = 0.8;
-export const PACE_STEP_SECONDS = 0.005;
-export const EASE_IN_OUT = [0.76, 0, 0.24, 1] as const;
-const DESCENDER_LETTERS = new Set(["g", "j", "p", "q", "y"]);
 const FADE_SHARE = 0.55;
-export const PARKED_GAP_EM = 0.35;
-export const RESTING_Y = "calc(0% + 0em)";
-
-export function parkedOffset(doubled: boolean, sign: 1 | -1 = 1) {
-    const lines = doubled ? 200 : 100;
-    const gap = doubled ? PARKED_GAP_EM * 2 : PARKED_GAP_EM;
-    return `calc(${sign * lines}% + ${sign * gap}em)`;
-}
-
-export function seededRandom(seed: number) {
-    let state = seed >>> 0;
-    return () => {
-        state = (state + 0x6d2b79f5) >>> 0;
-        let mixed = Math.imul(state ^ (state >>> 15), state | 1);
-        mixed ^= mixed + Math.imul(mixed ^ (mixed >>> 7), mixed | 61);
-        return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296;
-    };
-}
-
-export function rollsTwice(character: string, indexInLine: number) {
-    return !DESCENDER_LETTERS.has(character) && (indexInLine % 5 === 0 || indexInLine % 8 === 0);
-}
 
 function groupWordsIntoRows(words: HTMLElement[]) {
     const rowsByTop = new Map<number, HTMLElement[]>();
