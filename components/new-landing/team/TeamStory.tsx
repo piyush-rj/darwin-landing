@@ -1,19 +1,35 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 
-import { CtaArrowIcon } from "@/components/icons";
 import { HARD_SHADOW } from "@/components/new-landing/boxStyles";
 import FadeIn from "@/components/new-landing/FadeIn";
-import StatusBlock from "@/components/new-landing/StatusBlock";
-import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
+import { seededRandom } from "@/lib/seededRandom";
 import { cn } from "@/lib/utils";
-import { KanbanStatus } from "@/types/kanban";
 
 import { TEAM_CHAPTERS, type TeamChapter } from "./teamChapters";
 
-const FOUNDER_STATUS = KanbanStatus.InProgress;
+const MOSAIC_COLUMNS = 8;
+const MOSAIC_ROWS = 5;
+const TILE_SHADES = [
+    [0.78, 0.17],
+    [0.86, 0.14],
+    [0.72, 0.19],
+    [0.75, 0.18],
+    [0.82, 0.16],
+].map(([lightness, chroma]) => `oklch(from var(--tone) ${lightness} ${chroma} h)`);
+const INSET_SHADOW = [
+    "0 -1px 0 oklch(from var(--tone) 0.34 0.13 h / 0.85)",
+    "-1px 0 0 oklch(from var(--tone) 0.34 0.13 h / 0.45)",
+    "0 1px 0 oklch(from var(--tone) 0.95 0.04 h / 0.7)",
+].join(", ");
 
-const issueId = (index: number) => `DRW-${String(index + 1).padStart(3, "0")}`;
+function mosaicShades(seed: number) {
+    const random = seededRandom(seed);
+    return Array.from(
+        { length: MOSAIC_COLUMNS * MOSAIC_ROWS },
+        () => TILE_SHADES[Math.floor(random() * TILE_SHADES.length)],
+    );
+}
 
 function FounderHead({ chapter }: { chapter: TeamChapter }) {
     return <Image src={chapter.head} alt="" sizes="112px" className="size-14 shrink-0" />;
@@ -23,39 +39,35 @@ function FounderCard({ chapter, index }: { chapter: TeamChapter; index: number }
     return (
         <div
             style={{ "--tone": chapter.tone } as CSSProperties}
-            className={cn("w-full border border-(--tone) bg-snow", HARD_SHADOW)}
+            className={cn("relative aspect-[8/5] w-full overflow-hidden", HARD_SHADOW)}
         >
-            <div className="flex items-center justify-between gap-3 border-b border-foreground/10 px-4 py-2.5 font-mono text-[11px] tracking-[0.08em] text-neutral-500">
-                {issueId(index)}
-                <span className="flex items-center gap-1.5 text-foreground/80">
-                    <StatusBlock status={FOUNDER_STATUS} />
-                    {KanbanBoard.columnFor(FOUNDER_STATUS)!.title}
-                </span>
-            </div>
-            <div className="px-4 pt-4 pb-5">
-                <p className="text-[19px] leading-[1.3] tracking-[-0.01em] text-foreground">
-                    {chapter.role}
-                </p>
-                <ul className="mt-4 flex flex-col gap-2 border-l border-(--tone) pl-3">
-                    {chapter.facts.map((fact) => (
-                        <li
-                            key={fact}
-                            className="text-[14px] leading-snug text-foreground/75 first-letter:uppercase"
-                        >
-                            {fact}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <a
-                href={`https://x.com/${chapter.xHandle}`}
-                target="_blank"
-                rel="noreferrer"
-                className="group/handle flex items-center justify-between border-t border-foreground/10 px-4 py-2.5 font-mono text-[11px] tracking-[0.08em] text-neutral-500 transition-colors hover:text-foreground"
+            <div
+                aria-hidden
+                className="absolute inset-0 grid"
+                style={{ gridTemplateColumns: `repeat(${MOSAIC_COLUMNS}, 1fr)` }}
             >
-                @{chapter.xHandle}
-                <CtaArrowIcon className="size-3.5 transition-transform group-hover/handle:translate-x-0.5" />
-            </a>
+                {mosaicShades(index + 1).map((shade, tile) => (
+                    <span key={tile} style={{ background: shade }} />
+                ))}
+            </div>
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-[4%] border border-snow/35"
+            />
+            <div
+                className="absolute top-[10%] left-[7%] font-pixel leading-none text-snow uppercase"
+                style={{ textShadow: INSET_SHADOW }}
+            >
+                <p className="text-[7px] tracking-[0.12em]">The founding team of</p>
+                <p className="mt-1 text-[22px] tracking-[0.06em]">Darwin</p>
+            </div>
+            <div
+                className="absolute right-[7%] bottom-[10%] text-right font-pixel leading-none text-snow uppercase"
+                style={{ textShadow: INSET_SHADOW }}
+            >
+                <p className="text-[8px] tracking-[0.1em]">{chapter.role}</p>
+                <p className="mt-1.5 text-[24px] tracking-[0.06em]">{chapter.name.split(" ")[0]}</p>
+            </div>
         </div>
     );
 }

@@ -24,7 +24,6 @@ export type TeamChapter = {
     head: StaticImageData;
     about: string;
     xHandle: string;
-    facts: string[];
     hoverLines: string[];
 };
 
@@ -47,11 +46,6 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
         boxedPortrait: rishiBoxed,
         head: rishiHead,
         rosterFraming: { zoom: 1.12, anchorY: 1 },
-        facts: [
-            "filed issue #1",
-            "web · server · database · runners",
-            "owns every call in between",
-        ],
     },
     {
         key: "piyush",
@@ -70,11 +64,6 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
         portrait: piyushPortrait,
         boxedPortrait: piyushBoxed,
         head: piyushHead,
-        facts: [
-            "board · review screens · this page",
-            "spacing · motion · state",
-            "signs off before it ships",
-        ],
     },
     {
         key: "anjan",
@@ -93,10 +82,5 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
         portrait: anjanPortrait,
         boxedPortrait: anjanBoxed,
         head: anjanHead,
-        facts: [
-            "queues · runners · sandboxes",
-            "isolated · observable · fast",
-            "fixes land while you sleep",
-        ],
     },
 ];
