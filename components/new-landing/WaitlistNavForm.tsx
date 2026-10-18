@@ -1,11 +1,19 @@
 "use client";
 
-import { type FocusEvent, type FormEvent, useRef, useState } from "react";
+import {
+    type FocusEvent,
+    type FormEvent,
+    useEffect,
+    useEffectEvent,
+    useRef,
+    useState,
+} from "react";
 import { flushSync } from "react-dom";
 
 import { CtaArrowIcon } from "@/components/icons";
 import RollingSwap from "@/components/utility/RollingSwap";
 import { cn } from "@/lib/utils";
+import { FOCUS_NAVBAR_WAITLIST_EVENT } from "@/lib/waitlist/focusNavbarWaitlist";
 
 type WaitlistStatus =
     | { state: "idle" }
@@ -36,9 +44,11 @@ const COMPACT_LABEL =
 export default function WaitlistNavForm({
     compact = false,
     menuOpen = false,
+    focusOnCtaClick = false,
 }: {
     compact?: boolean;
     menuOpen?: boolean;
+    focusOnCtaClick?: boolean;
 }) {
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<WaitlistStatus>({ state: "idle" });
@@ -55,6 +65,17 @@ export default function WaitlistNavForm({
     function collapse() {
         if (compact && !email) setExpanded(false);
     }
+
+    const focusFromCta = useEffectEvent(() => {
+        expand();
+        if (document.activeElement !== inputRef.current) collapse();
+    });
+
+    useEffect(() => {
+        if (!focusOnCtaClick) return;
+        window.addEventListener(FOCUS_NAVBAR_WAITLIST_EVENT, focusFromCta);
+        return () => window.removeEventListener(FOCUS_NAVBAR_WAITLIST_EVENT, focusFromCta);
+    }, [focusOnCtaClick]);
 
     function handleBlur(event: FocusEvent<HTMLFormElement>) {
         if (!event.currentTarget.contains(event.relatedTarget)) collapse();

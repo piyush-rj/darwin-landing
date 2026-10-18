@@ -1,5 +1,3 @@
-import type { CSSProperties } from "react";
-
 import { CtaArrowIcon } from "@/components/icons";
 import FadeIn from "@/components/new-landing/FadeIn";
 import { MONO_LABEL } from "@/components/new-landing/landingType";
@@ -7,98 +5,7 @@ import PixelReveal from "@/components/new-landing/PixelReveal";
 import { cn } from "@/lib/utils";
 
 import HoverRevealPortrait from "./HoverRevealPortrait";
-import { TEAM_CHAPTERS, type TeamChapter } from "./teamChapters";
-
-const CHAT_LEAD_MS = 350;
-const CHAR_MS = 26;
-const LINE_PAUSE_MS = 480;
-const PAUSE_AFTER: Record<string, number> = { ",": 260, ".": 420, "?": 460, "!": 420 };
-
-type ChatSegment = { text: string; startMs: number; typeMs: number };
-type ChatLine = { text: string; segments: ChatSegment[]; endMs: number };
-
-function splitAtPauses(line: string) {
-    const segments: string[] = [];
-    let depth = 0;
-    let current = "";
-    [...line].forEach((character, index) => {
-        current += character;
-        if (character === "(") depth++;
-        if (character === ")") depth--;
-        if (depth === 0 && PAUSE_AFTER[character] && line[index + 1] === " ") {
-            segments.push(current + " ");
-            current = "";
-        } else if (character === " " && segments.length && current === " ") {
-            current = "";
-        }
-    });
-    if (current) segments.push(current);
-    return segments;
-}
-
-function scheduleChat(lines: string[]): ChatLine[] {
-    let cursor = CHAT_LEAD_MS;
-    return lines.map((text) => {
-        const segments = splitAtPauses(text).map((segment) => {
-            const typed = { text: segment, startMs: cursor, typeMs: segment.length * CHAR_MS };
-            const mark = segment.trimEnd().slice(-1);
-            cursor += typed.typeMs + (segment.endsWith(" ") ? (PAUSE_AFTER[mark] ?? 0) : 0);
-            return typed;
-        });
-        const endMs = cursor;
-        cursor += LINE_PAUSE_MS;
-        return { text, segments, endMs };
-    });
-}
-
-function PortraitChat({ chapter }: { chapter: TeamChapter }) {
-    const speaker = `<${chapter.name.split(" ")[0]}>`;
-    const lines = scheduleChat([speaker, ...chapter.hoverLines]);
-    const last = lines[lines.length - 1];
-
-    return (
-        <div aria-hidden className="pointer-events-none absolute inset-0 flex flex-col justify-end">
-            <div className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-black/80 via-black/40 to-transparent opacity-0 backdrop-blur-[2px] transition-opacity duration-500 mask-t-from-45% mask-t-to-100% group-hover/portrait:opacity-100" />
-            <ol className="relative flex flex-col items-start gap-1 p-4 font-pixel text-[13px] leading-snug text-white">
-                {lines.map((line, index) => (
-                    <li
-                        key={line.text}
-                        style={
-                            {
-                                "--line-delay": `${line.segments[0].startMs}ms`,
-                                "--caret-delay": `${last.endMs}ms`,
-                                color:
-                                    index === 0
-                                        ? `color-mix(in oklab, ${chapter.tone} 70%, var(--color-white))`
-                                        : undefined,
-                            } as CSSProperties
-                        }
-                        className="flex items-center bg-black/55 px-2 py-1 opacity-0 transition-opacity duration-0 group-hover/portrait:opacity-100 group-hover/portrait:delay-(--line-delay)"
-                    >
-                        {line.segments.map((segment) => (
-                            <span
-                                key={segment.startMs}
-                                style={
-                                    {
-                                        "--type-chars": segment.text.length,
-                                        "--type-ms": `${segment.typeMs}ms`,
-                                        "--type-delay": `${segment.startMs}ms`,
-                                    } as CSSProperties
-                                }
-                                className="block max-w-0 overflow-hidden whitespace-pre group-hover/portrait:max-w-[calc(var(--type-chars)*1ch)] group-hover/portrait:[transition:max-width_var(--type-ms)_steps(var(--type-chars),end)_var(--type-delay)]"
-                            >
-                                {segment.text}
-                            </span>
-                        ))}
-                        {line === last && (
-                            <span className="ml-px inline-block h-[0.15em] w-[1ch] self-end bg-current opacity-0 group-hover/portrait:animate-[caret-blink_1s_steps(1)_infinite] group-hover/portrait:[animation-delay:var(--caret-delay)]" />
-                        )}
-                    </li>
-                ))}
-            </ol>
-        </div>
-    );
-}
+import { TEAM_CHAPTERS } from "./teamChapters";
 
 export default function TeamRoster() {
     return (
@@ -113,6 +20,9 @@ export default function TeamRoster() {
                         name={chapter.name}
                         image={chapter.boxedPortrait}
                         sizes="(min-width: 768px) 33vw, 100vw"
+                        framing={chapter.rosterFraming}
+                        captionLines={[`<${chapter.name.split(" ")[0]}>`, ...chapter.hoverLines]}
+                        captionTone={chapter.tone}
                         className="aspect-[4/5]"
                     >
                         <PixelReveal
@@ -122,7 +32,6 @@ export default function TeamRoster() {
                             spreadMs={300}
                             className="z-20"
                         />
-                        <PortraitChat chapter={chapter} />
                         <a
                             href={`https://x.com/${chapter.xHandle}`}
                             target="_blank"

@@ -1,181 +1,94 @@
-"use client";
+import Image from "next/image";
+import type { CSSProperties } from "react";
 
-import { useMotionValueEvent, useScroll, useTransform } from "motion/react";
-import { useRef, useState } from "react";
-
+import { CtaArrowIcon } from "@/components/icons";
+import { HARD_SHADOW } from "@/components/new-landing/boxStyles";
 import FadeIn from "@/components/new-landing/FadeIn";
-import { MONO_LABEL } from "@/components/new-landing/landingType";
-import PixelReveal from "@/components/new-landing/PixelReveal";
+import StatusBlock from "@/components/new-landing/StatusBlock";
+import { KanbanBoard } from "@/lib/kanban/KanbanBoard";
 import { cn } from "@/lib/utils";
+import { KanbanStatus } from "@/types/kanban";
 
-import ChapterFigure from "./ChapterFigure";
-import FounderPortrait from "./FounderPortrait";
-import { beatAt, TEAM_CHAPTERS, type TeamChapter } from "./teamChapters";
+import { TEAM_CHAPTERS, type TeamChapter } from "./teamChapters";
 
-const CHAPTER_SCROLL_SVH = 320;
-const STAGE_TOP_PX = 44;
-const STAGE_TOP = `${STAGE_TOP_PX}px`;
-const LAST_CHAPTER = TEAM_CHAPTERS.length - 1;
-const SCENE_SHARE = 0.92;
+const FOUNDER_STATUS = KanbanStatus.InProgress;
 
-const chapterNumber = (index: number) => String(index + 1).padStart(2, "0");
+const issueId = (index: number) => `DRW-${String(index + 1).padStart(3, "0")}`;
 
-function PinnedChapter({ chapter, index }: { chapter: TeamChapter; index: number }) {
-    const sectionRef = useRef<HTMLElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: sectionRef,
-        offset: [`start ${STAGE_TOP_PX}px`, "end end"],
-    });
-    const sceneProgress = useTransform(scrollYProgress, (share) =>
-        Math.min(1, share / SCENE_SHARE),
-    );
-    const [beat, setBeat] = useState(0);
-    const portraitOnRight = index % 2 === 1;
+function FounderHead({ chapter }: { chapter: TeamChapter }) {
+    return <Image src={chapter.head} alt="" sizes="112px" className="size-14 shrink-0" />;
+}
 
-    useMotionValueEvent(sceneProgress, "change", (progress) => setBeat(beatAt(progress)));
-
+function FounderCard({ chapter, index }: { chapter: TeamChapter; index: number }) {
     return (
-        <section
-            ref={sectionRef}
-            aria-label={`${chapter.name}, ${chapter.role}`}
-            className="relative border-b border-edge"
-            style={{ height: `${CHAPTER_SCROLL_SVH}svh` }}
+        <div
+            style={{ "--tone": chapter.tone } as CSSProperties}
+            className={cn("w-full border border-(--tone) bg-snow", HARD_SHADOW)}
         >
-            <div
-                className={cn(
-                    "sticky grid",
-                    portraitOnRight
-                        ? "grid-cols-[minmax(0,8fr)_minmax(0,4fr)]"
-                        : "grid-cols-[minmax(0,4fr)_minmax(0,8fr)]",
-                )}
-                style={{ top: STAGE_TOP, height: `calc(100svh - ${STAGE_TOP})` }}
-            >
-                <div
-                    className={cn(
-                        "flex min-h-0 flex-col border-edge",
-                        portraitOnRight ? "order-last border-l" : "border-r",
-                    )}
-                >
-                    <FounderPortrait
-                        name={chapter.name}
-                        image={chapter.portrait}
-                        sizes="(min-width: 1024px) 34vw, 100vw"
-                        className="min-h-0 flex-1"
-                    >
-                        {" "}
-                        <PixelReveal
-                            cover="var(--color-ink)"
-                            tileSize={64}
-                            startMs={0}
-                            spreadMs={300}
-                            className="z-20"
-                        />{" "}
-                    </FounderPortrait>
-                    <div className="border-t border-edge px-9 pt-7 pb-9">
-                        <FadeIn className="flex items-center justify-between gap-4">
-                            <h2 className="text-[30px] leading-none font-medium tracking-[-0.03em] text-foreground">
-                                {chapter.name}
-                            </h2>
-                        </FadeIn>
-                        <FadeIn delay={0.1} className="mt-4">
-                            <p className="max-w-[46ch] text-[16px] leading-[1.6] tracking-[-0.005em] text-neutral-500">
-                                {chapter.about}
-                            </p>
-                        </FadeIn>
-                    </div>
-                </div>
-
-                <FadeIn delay={0.15} className="grid min-h-0">
-                    <ChapterFigure
-                        chapter={chapter}
-                        index={index}
-                        beat={beat}
-                        sceneProgress={sceneProgress}
-                        className="min-h-0"
-                    />
-                </FadeIn>
+            <div className="flex items-center justify-between gap-3 border-b border-foreground/10 px-4 py-2.5 font-mono text-[11px] tracking-[0.08em] text-neutral-500">
+                {issueId(index)}
+                <span className="flex items-center gap-1.5 text-foreground/80">
+                    <StatusBlock status={FOUNDER_STATUS} />
+                    {KanbanBoard.columnFor(FOUNDER_STATUS)!.title}
+                </span>
             </div>
-        </section>
-    );
-}
-
-function PinnedStory() {
-    return (
-        <div className="hidden bg-ink lg:block">
-            {TEAM_CHAPTERS.map((chapter, index) => (
-                <PinnedChapter key={chapter.key} chapter={chapter} index={index} />
-            ))}
-        </div>
-    );
-}
-
-function StackedChapter({ chapter, index }: { chapter: TeamChapter; index: number }) {
-    const figureRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: figureRef,
-        offset: ["start 0.9", "end 0.45"],
-    });
-    const [beat, setBeat] = useState(0);
-
-    useMotionValueEvent(scrollYProgress, "change", (progress) => setBeat(beatAt(progress)));
-
-    return (
-        <article className="border-b border-edge">
-            <div className="flex items-center justify-between border-b border-edge px-6 py-5">
-                <p className={MONO_LABEL}>
-                    {chapterNumber(index)} / {chapterNumber(LAST_CHAPTER)}
+            <div className="px-4 pt-4 pb-5">
+                <p className="text-[19px] leading-[1.3] tracking-[-0.01em] text-foreground">
+                    {chapter.role}
                 </p>
-                <p className={MONO_LABEL}>{chapter.role}</p>
+                <ul className="mt-4 flex flex-col gap-2 border-l border-(--tone) pl-3">
+                    {chapter.facts.map((fact) => (
+                        <li
+                            key={fact}
+                            className="text-[14px] leading-snug text-foreground/75 first-letter:uppercase"
+                        >
+                            {fact}
+                        </li>
+                    ))}
+                </ul>
             </div>
-            <FounderPortrait
-                name={chapter.name}
-                image={chapter.portrait}
-                sizes="100vw"
-                className="aspect-[4/5]"
+            <a
+                href={`https://x.com/${chapter.xHandle}`}
+                target="_blank"
+                rel="noreferrer"
+                className="group/handle flex items-center justify-between border-t border-foreground/10 px-4 py-2.5 font-mono text-[11px] tracking-[0.08em] text-neutral-500 transition-colors hover:text-foreground"
             >
-                {" "}
-                <PixelReveal
-                    cover="var(--color-ink)"
-                    tileSize={64}
-                    startMs={0}
-                    spreadMs={300}
-                    className="z-20"
-                />{" "}
-            </FounderPortrait>
-            <div className="border-t border-edge px-6 pt-7 pb-10">
-                <FadeIn className="flex items-center justify-between gap-4">
-                    <h2 className="text-[28px] leading-none font-medium tracking-[-0.03em] text-foreground">
-                        {chapter.name}
-                    </h2>
-                </FadeIn>
-                <FadeIn delay={0.1} className="mt-4">
-                    <p className="max-w-[46ch] text-[16px] leading-[1.6] tracking-[-0.005em] text-neutral-500">
-                        {chapter.about}
-                    </p>
-                </FadeIn>
-            </div>
-            <div ref={figureRef} className="border-t border-edge">
-                <ChapterFigure
-                    chapter={chapter}
-                    index={index}
-                    beat={beat}
-                    sceneProgress={scrollYProgress}
-                    className="aspect-square"
-                />
-            </div>
-        </article>
+                @{chapter.xHandle}
+                <CtaArrowIcon className="size-3.5 transition-transform group-hover/handle:translate-x-0.5" />
+            </a>
+        </div>
     );
 }
 
 export default function TeamStory() {
     return (
-        <>
-            <PinnedStory />
-            <div className="bg-ink lg:hidden">
-                {TEAM_CHAPTERS.map((chapter, index) => (
-                    <StackedChapter key={chapter.key} chapter={chapter} index={index} />
-                ))}
-            </div>
-        </>
+        <div className="bg-ink">
+            {TEAM_CHAPTERS.map((chapter, index) => (
+                <section
+                    key={chapter.key}
+                    aria-label={`${chapter.name}, ${chapter.role}`}
+                    className="grid grid-cols-1 border-b border-edge lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]"
+                >
+                    <div className="px-6 py-14 md:px-9 lg:py-20">
+                        <FadeIn y={8} className="flex items-center gap-4">
+                            <FounderHead chapter={chapter} />
+                            <h2 className="text-[30px] leading-none font-medium tracking-[-0.03em] text-foreground">
+                                {chapter.name}
+                            </h2>
+                        </FadeIn>
+                        <FadeIn delay={0.1} y={8} className="mt-6">
+                            <p className="max-w-[44ch] text-[22px] leading-[1.4] tracking-[-0.015em] text-foreground lg:text-[26px]">
+                                {chapter.about}
+                            </p>
+                        </FadeIn>
+                    </div>
+                    <div className="flex items-center border-edge bg-mist px-6 py-10 max-lg:border-t md:px-9 lg:border-l lg:py-20">
+                        <FadeIn delay={0.15} y={12} className="w-full">
+                            <FounderCard chapter={chapter} index={index} />
+                        </FadeIn>
+                    </div>
+                </section>
+            ))}
+        </div>
     );
 }

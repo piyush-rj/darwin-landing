@@ -90,11 +90,11 @@ export default function NewLandingNavbar() {
                 <LandingThemeToggle className="hidden h-full items-center border-r border-edge px-4 lg:flex" />
 
                 <div className="ml-auto hidden w-[28rem] items-stretch justify-end border-l border-edge lg:flex">
-                    <WaitlistNavForm />
+                    <WaitlistNavForm focusOnCtaClick />
                 </div>
 
                 <div className="flex flex-1 items-stretch overflow-hidden lg:hidden">
-                    <WaitlistNavForm compact menuOpen={menu.open} />
+                    <WaitlistNavForm compact menuOpen={menu.open} focusOnCtaClick />
                 </div>
 
                 <button

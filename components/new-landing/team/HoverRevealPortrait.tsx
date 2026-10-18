@@ -7,11 +7,13 @@ import { type PointerEvent, type ReactNode, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 import FounderPortrait from "./FounderPortrait";
+import { type CaptionColors, captionFont, paintCaption } from "./paintCaption";
+import type { PortraitFraming } from "./teamChapters";
 
 const BLOCK_PX = 18;
-const SPREAD_MS = 520;
-const JITTER_MS = 110;
-const POP_MS = 280;
+const SPREAD_MS = 260;
+const JITTER_MS = 60;
+const POP_MS = 160;
 const START_SCALE = 0.35;
 
 const easeOutBack = (share: number) => {
@@ -35,7 +37,32 @@ type Tiles = {
     picture: HTMLCanvasElement;
 };
 
-function coverInto(source: HTMLImageElement, width: number, height: number) {
+function resolveColor(element: HTMLElement, color: string) {
+    element.style.color = color;
+    const resolved = getComputedStyle(element).color;
+    element.style.color = "";
+    return resolved;
+}
+
+function resolveCaptionColors(element: HTMLElement, tone: string): CaptionColors {
+    const black = (share: number) =>
+        resolveColor(element, `color-mix(in srgb, var(--color-black) ${share}%, transparent)`);
+    return {
+        shadeBottom: black(80),
+        shadeMiddle: black(40),
+        shadeTop: black(0),
+        box: black(55),
+        text: resolveColor(element, "var(--color-white)"),
+        accent: resolveColor(element, `color-mix(in oklab, ${tone} 70%, var(--color-white))`),
+    };
+}
+
+function coverInto(
+    source: HTMLImageElement,
+    width: number,
+    height: number,
+    framing: PortraitFraming = { zoom: 1, anchorY: 0.5 },
+) {
     const picture = document.createElement("canvas");
     picture.width = Math.round(width);
     picture.height = Math.round(height);
@@ -44,6 +71,10 @@ function coverInto(source: HTMLImageElement, width: number, height: number) {
     const sourceHeight = height / scale;
     const context = picture.getContext("2d")!;
     context.imageSmoothingQuality = "high";
+    const anchorY = picture.height * framing.anchorY;
+    context.translate(picture.width / 2, anchorY);
+    context.scale(framing.zoom, framing.zoom);
+    context.translate(-picture.width / 2, -anchorY);
     context.drawImage(
         source,
         (source.naturalWidth - sourceWidth) / 2,
@@ -55,6 +86,7 @@ function coverInto(source: HTMLImageElement, width: number, height: number) {
         picture.width,
         picture.height,
     );
+    context.resetTransform();
     return picture;
 }
 
@@ -63,6 +95,9 @@ export default function HoverRevealPortrait({
     image,
     reveal,
     sizes,
+    framing,
+    captionLines,
+    captionTone,
     className,
     children,
 }: {
@@ -70,6 +105,9 @@ export default function HoverRevealPortrait({
     image: StaticImageData;
     reveal: StaticImageData;
     sizes: string;
+    framing?: PortraitFraming;
+    captionLines?: string[];
+    captionTone?: string;
     className?: string;
     children?: ReactNode;
 }) {
@@ -176,12 +214,22 @@ export default function HoverRevealPortrait({
             canvas.height = Math.round(height);
             const columns = Math.max(1, Math.round(width / (BLOCK_PX * ratio)));
             const rows = Math.max(1, Math.round(height / (BLOCK_PX * ratio)));
+            const picture = coverInto(source, width, height, framing);
+            if (captionLines?.length) {
+                paintCaption(
+                    picture,
+                    captionLines,
+                    captionFont(getComputedStyle(canvas).fontFamily, ratio),
+                    resolveCaptionColors(canvas, captionTone ?? "var(--color-white)"),
+                    ratio,
+                );
+            }
             tiles = {
                 columns,
                 rows,
                 tileWidth: width / columns,
                 tileHeight: height / rows,
-                picture: coverInto(source, width, height),
+                picture,
             };
             shown = new Float32Array(columns * rows).fill(waveRef.current.target);
             starts = new Float32Array(columns * rows);
@@ -189,7 +237,10 @@ export default function HoverRevealPortrait({
             wake();
         };
 
-        source.decode().then(build, build);
+        const captionFontReady = captionLines?.length
+            ? document.fonts.load(captionFont(getComputedStyle(canvas).fontFamily, 1))
+            : Promise.resolve();
+        Promise.all([source.decode(), captionFontReady]).then(build, build);
         const observer = new ResizeObserver(build);
         observer.observe(host);
         return () => {
@@ -197,7 +248,7 @@ export default function HoverRevealPortrait({
             observer.disconnect();
             cancelAnimationFrame(frame);
         };
-    }, [reveal.src, reduceMotion]);
+    }, [reveal.src, reduceMotion, captionLines, captionTone, framing]);
 
     const startWave = (event: PointerEvent<HTMLDivElement>, target: 0 | 1) => {
         const bounds = event.currentTarget.getBoundingClientRect();
@@ -219,11 +270,17 @@ export default function HoverRevealPortrait({
             onPointerLeave={(event) => startWave(event, 0)}
             className={cn("group/portrait relative overflow-hidden", className)}
         >
-            <FounderPortrait name={name} image={image} sizes={sizes} className="absolute inset-0" />
+            <FounderPortrait
+                name={name}
+                image={image}
+                sizes={sizes}
+                framing={framing}
+                className="absolute inset-0"
+            />
             <canvas
                 ref={canvasRef}
                 aria-hidden
-                className="pointer-events-none absolute inset-0 size-full"
+                className="pointer-events-none absolute inset-0 size-full font-pixel"
             />
             {children}
         </div>

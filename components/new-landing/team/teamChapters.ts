@@ -1,17 +1,16 @@
 import type { StaticImageData } from "next/image";
 
-import type { FigureMount } from "@/lib/hairline/core/stage";
-import { mountFoundingStack } from "@/lib/hairline/figures/foundingStack";
-import { mountQueueRunners } from "@/lib/hairline/figures/queueRunners";
-import { mountShapingPress } from "@/lib/hairline/figures/shapingPress";
 import anjanPortrait from "@/public/images/team/founders/anjan.webp";
 import anjanBoxed from "@/public/images/team/founders/anjan-boxed.webp";
+import anjanHead from "@/public/images/team/founders/anjan-head.webp";
 import piyushPortrait from "@/public/images/team/founders/piyush.webp";
 import piyushBoxed from "@/public/images/team/founders/piyush-boxed.webp";
+import piyushHead from "@/public/images/team/founders/piyush-head.webp";
 import rishiPortrait from "@/public/images/team/founders/rishi.webp";
 import rishiBoxed from "@/public/images/team/founders/rishi-boxed.webp";
+import rishiHead from "@/public/images/team/founders/rishi-head.webp";
 
-export type ChapterBeat = { readout: string };
+export type PortraitFraming = { zoom: number; anchorY: number };
 
 export type TeamChapter = {
     key: string;
@@ -21,16 +20,13 @@ export type TeamChapter = {
     tone: string;
     portrait: StaticImageData;
     boxedPortrait: StaticImageData;
-    figure: FigureMount;
-    figureTitle: string;
-    figureLabel: string;
+    rosterFraming?: PortraitFraming;
+    head: StaticImageData;
     about: string;
     xHandle: string;
-    beats: ChapterBeat[];
+    facts: string[];
     hoverLines: string[];
 };
-
-export const BEAT_STARTS = [0, 0.34, 0.67];
 
 export const TEAM_CHAPTERS: TeamChapter[] = [
     {
@@ -49,20 +45,12 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
         tone: "var(--color-primary)",
         portrait: rishiPortrait,
         boxedPortrait: rishiBoxed,
-        figure: mountFoundingStack,
-        figureTitle: "Issue #1",
-        figureLabel:
-            "Issue #1 drops onto a board and moves into progress. Wires carry it into a four-layer stack built one layer at a time, a carriage keeps climbing a rail touching every layer, and pull requests land on a tray while new issues queue up.",
-        beats: [
-            {
-                readout: "#1 · filed by Rishi",
-            },
-            {
-                readout: "web · server · database · runners",
-            },
-            {
-                readout: "owner · every layer",
-            },
+        head: rishiHead,
+        rosterFraming: { zoom: 1.12, anchorY: 1 },
+        facts: [
+            "filed issue #1",
+            "web · server · database · runners",
+            "owns every call in between",
         ],
     },
     {
@@ -81,20 +69,11 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
         tone: "var(--color-orange-500)",
         portrait: piyushPortrait,
         boxedPortrait: piyushBoxed,
-        figure: mountShapingPress,
-        figureTitle: "The shaping press",
-        figureLabel:
-            "Rough parts in Rishi's and Anjan's colours ride a belt under a press, get measured and squeezed onto one grid, and come out as a rounded button. An easing curve plots itself beside it, and a cursor keeps playing with the finished button, toggle and slider.",
-        beats: [
-            {
-                readout: "raw · 4 parts, 0 aligned",
-            },
-            {
-                readout: "aligned · 4px grid",
-            },
-            {
-                readout: "ease 0.22, 1, 0.36, 1 · 700ms",
-            },
+        head: piyushHead,
+        facts: [
+            "board · review screens · this page",
+            "spacing · motion · state",
+            "signs off before it ships",
         ],
     },
     {
@@ -113,23 +92,11 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
         tone: "var(--color-sky-500)",
         portrait: anjanPortrait,
         boxedPortrait: anjanBoxed,
-        figure: mountQueueRunners,
-        figureTitle: "The machine underneath",
-        figureLabel:
-            "Issues roll from a hopper into a queue and take turns inside three runners. Runs are written to a database, each runner sits in its own sandbox cage, a metrics tower tracks every run, and finished pull requests stack on a tray.",
-        beats: [
-            {
-                readout: "queue · 6 waiting",
-            },
-            {
-                readout: "runners · tests passing · stored",
-            },
-            {
-                readout: "sandboxed · logged · shipped",
-            },
+        head: anjanHead,
+        facts: [
+            "queues · runners · sandboxes",
+            "isolated · observable · fast",
+            "fixes land while you sleep",
         ],
     },
 ];
-
-export const beatAt = (sceneProgress: number) =>
-    BEAT_STARTS.reduce((beat, start, index) => (sceneProgress >= start ? index : beat), 0);
