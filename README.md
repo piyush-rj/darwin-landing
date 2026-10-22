@@ -11,7 +11,7 @@ bun install
 bun run dev
 ```
 
-Open http://localhost:4400.
+Open http://localhost:4420.
 
 ## Waitlist
 

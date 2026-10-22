@@ -43,7 +43,7 @@ export default function VideoBackdrop({ className }: { className?: string }) {
                             }}
                         >
                             <span
-                                className="absolute inset-0 opacity-[0.05] [.landing-dark_&]:invert"
+                                className="absolute inset-0 opacity-[0.05]"
                                 style={{ backgroundImage: GRAIN }}
                             />
                         </span>

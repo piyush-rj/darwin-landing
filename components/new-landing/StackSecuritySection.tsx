@@ -29,7 +29,7 @@ function LogoImage({ name, className }: { name: string; className?: string }) {
 }
 
 const LOGOS: Record<string, ReactNode> = {
-    GitHub: <LogoImage name="github" className="[.landing-dark_&]:invert" />,
+    GitHub: <LogoImage name="github" />,
     Telegram: <TelegramLogoIcon className="size-8 text-sky-500 sm:size-11" />,
     Slack: <LogoImage name="slack" className="scale-[2.4]" />,
     Figma: <LogoImage name="figma" />,

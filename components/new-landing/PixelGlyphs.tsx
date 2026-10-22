@@ -43,3 +43,7 @@ export const PullRequestGlyph = glyph("M5 8V16 M19 16V7H12 M14 5L12 7L14 9", [
     [2, 16, 6, 6],
     [16, 16, 6, 6],
 ]);
+
+export const EyeGlyph = glyph("M2 12L6 7H18L22 12L18 17H6Z", [[10, 10, 4, 4]]);
+
+export const ProofGlyph = glyph("M3 3H21V21H3Z M7 12L10 15L17 8");

@@ -8,7 +8,6 @@ import { type MouseEvent, useEffect, useState } from "react";
 
 import { MobileNavCloseIcon, MobileNavIcon } from "@/components/icons";
 import { DarwinBlockLogo } from "@/components/logo/DarwinBlockLogo";
-import LandingThemeToggle from "@/components/new-landing/LandingThemeToggle";
 import MobileNavMenu, { type NavLink } from "@/components/new-landing/MobileNavMenu";
 import WaitlistNavForm from "@/components/new-landing/WaitlistNavForm";
 import { cn } from "@/lib/utils";
@@ -86,8 +85,6 @@ export default function NewLandingNavbar() {
                         </Link>
                     ))}
                 </nav>
-
-                <LandingThemeToggle className="hidden h-full items-center border-r border-edge px-4 lg:flex" />
 
                 <div className="ml-auto hidden w-[28rem] items-stretch justify-end border-l border-edge lg:flex">
                     <WaitlistNavForm focusOnCtaClick />

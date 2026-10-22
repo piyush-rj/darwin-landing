@@ -27,7 +27,7 @@ Waitlist variables are listed in `.env.example`: `DATABASE_URL` (required), `RES
 
 ```bash
 bun install
-bun run dev                  # next dev on :4400
+bun run dev                  # next dev on :4420
 bun run build
 bun run lint
 bun run typecheck

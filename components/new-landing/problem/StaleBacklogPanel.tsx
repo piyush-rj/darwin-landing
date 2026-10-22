@@ -19,7 +19,7 @@ export default function StaleBacklogPanel() {
 
     return (
         <div className="relative isolate flex h-full flex-col overflow-hidden bg-[color-mix(in_oklab,var(--color-foreground)_8%,var(--color-snow))] px-6 pt-8 pb-10 md:px-9">
-            <div className="grain-strong pointer-events-none absolute inset-0 -z-10 opacity-20 [.landing-dark_&]:opacity-5" />
+            <div className="grain-strong pointer-events-none absolute inset-0 -z-10 opacity-20" />
             <FadeIn>
                 <div className="flex items-center gap-2">
                     <PanelTag>Backlog</PanelTag>

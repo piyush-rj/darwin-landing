@@ -5,7 +5,7 @@
             "name": "web",
             "runtimeExecutable": "bun",
             "runtimeArgs": ["run", "dev"],
-            "port": 4400
+            "port": 4420
         }
     ]
 }

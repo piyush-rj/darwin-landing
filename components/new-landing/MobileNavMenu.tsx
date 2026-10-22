@@ -5,7 +5,6 @@ import Link from "next/link";
 import type { MouseEvent } from "react";
 
 import { CtaArrowIcon } from "@/components/icons";
-import LandingThemeToggle from "@/components/new-landing/LandingThemeToggle";
 
 export type NavLink = { label: string; href: string };
 
@@ -55,7 +54,6 @@ export default function MobileNavMenu({
                 <span className="font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase">
                     Appearance
                 </span>
-                <LandingThemeToggle className="flex size-10 items-center justify-center border border-edge" />
             </div>
         </m.div>
     );

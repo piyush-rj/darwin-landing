@@ -4,7 +4,7 @@
     "private": true,
     "packageManager": "bun@1.3.2",
     "scripts": {
-        "dev": "next dev --port 4400",
+        "dev": "next dev --port 4420",
         "build": "next build",
         "start": "next start",
         "lint": "eslint . --max-warnings 0",
