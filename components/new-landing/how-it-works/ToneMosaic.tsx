@@ -74,19 +74,18 @@ export function ToneTiles({
         let finishedAt = Math.max(...delays) + TILE_MS;
         let width = 0;
         let height = 0;
-        let offsetX = 0;
         let frame = 0;
         let startedAt = 0;
 
         const draw = (elapsed: number) => {
             context.clearRect(0, 0, width, height);
-            const tileWidth = tileSize ?? width / columns;
-            const tileHeight = tileSize ?? height / rows;
+            const tileWidth = width / columns;
+            const tileHeight = height / rows;
             delays.forEach((delay, cell) => {
                 const reveal = easeOutCubic(Math.min(1, Math.max(0, (elapsed - delay) / TILE_MS)));
                 if (reveal <= 0) return;
                 const scale = 0.8 + 0.2 * reveal;
-                const x = offsetX + (cell % columns) * tileWidth + (tileWidth * (1 - scale)) / 2;
+                const x = (cell % columns) * tileWidth + (tileWidth * (1 - scale)) / 2;
                 const y = Math.floor(cell / columns) * tileHeight + (tileHeight * (1 - scale)) / 2;
                 context.globalAlpha = reveal;
                 context.fillStyle = snow;
@@ -98,7 +97,7 @@ export function ToneTiles({
             context.globalAlpha = 0.25;
             context.fillStyle = snow;
             for (let column = 1; column <= columns; column++) {
-                context.fillRect(Math.round(offsetX + column * tileWidth) - 1, 0, 1, height);
+                context.fillRect(Math.round(column * tileWidth) - 1, 0, 1, height);
             }
             for (let row = 1; row <= rows; row++) {
                 context.fillRect(0, Math.round(row * tileHeight) - 1, width, 1);
@@ -124,9 +123,8 @@ export function ToneTiles({
             canvas.height = Math.round(height * ratio);
             context.setTransform(ratio, 0, 0, ratio, 0, 0);
             if (tileSize) {
-                offsetX = ((width / 2) % tileSize) - tileSize;
-                columns = Math.ceil((width - offsetX) / tileSize);
-                rows = Math.ceil(height / tileSize);
+                columns = Math.max(1, Math.round(width / tileSize));
+                rows = Math.max(1, Math.round(height / tileSize));
                 delays = planTileFlood(columns, rows, seedFrom(tone), {
                     stepMs: STEP_MS,
                     jitterMs: JITTER_MS,

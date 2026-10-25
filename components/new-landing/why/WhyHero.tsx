@@ -11,7 +11,7 @@ import RollingText from "@/components/utility/RollingText";
 import { cn } from "@/lib/utils";
 import { focusNavbarWaitlist } from "@/lib/waitlist/focusNavbarWaitlist";
 
-import PixelPickaxe from "./PixelPickaxe";
+import PixelClaw from "./PixelClaw";
 
 const WHY_TONE = "#F59E0B";
 const TILE_PX = 96;
@@ -55,7 +55,7 @@ export default function WhyHero() {
 
             <div
                 ref={stageRef}
-                className="theme-light relative flex h-[30rem] justify-center overflow-hidden border-edge max-lg:border-t sm:h-[36rem] lg:h-auto lg:border-l"
+                className="theme-light relative flex h-[30rem] items-center justify-center overflow-hidden border-edge max-lg:border-t sm:h-[36rem] lg:h-auto lg:border-l"
                 style={{ "--tone": WHY_TONE } as CSSProperties}
             >
                 <ToneTiles
@@ -65,9 +65,7 @@ export default function WhyHero() {
                     tileSize={TILE_PX}
                     strengths={TILE_STRENGTHS}
                 />
-                <div className="relative pt-16 [--head:min(60vw,240px)] lg:pt-[12svh] lg:[--head:clamp(240px,22vw,336px)]">
-                    <PixelPickaxe />
-                </div>
+                <PixelClaw className="max-lg:[zoom:0.78] max-sm:[zoom:0.62]" />
             </div>
         </section>
     );

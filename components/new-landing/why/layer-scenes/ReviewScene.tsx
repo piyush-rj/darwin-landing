@@ -27,8 +27,8 @@ const DIFF_BLOCKS = ["bg-green-500", "bg-green-500", "bg-green-500", "bg-red-500
 
 const CURSOR_PATH = [
     { at: 5300, x: 430, y: 168 },
-    { at: AT.merge, x: 284, y: 252, click: true },
-    { at: 7300, x: 284, y: 252 },
+    { at: AT.merge, x: 284, y: 266, click: true },
+    { at: 7300, x: 284, y: 266 },
 ];
 
 function Avatar({ className }: { className?: string }) {
@@ -74,7 +74,7 @@ export default function ReviewScene() {
                     }
                     status={<span>#910</span>}
                 >
-                    <div className="relative h-[332px]">
+                    <div className="relative flex h-[332px] flex-col">
                         <div className="border-b border-edge px-4 pt-3.5 pb-3">
                             <div className="flex items-center gap-2">
                                 <m.span
@@ -118,7 +118,7 @@ export default function ReviewScene() {
                             </div>
                         </div>
 
-                        <div className="flex h-10 items-center gap-2.5 border-b border-dashed border-edge px-4">
+                        <div className="flex h-11 items-center gap-2.5 border-b border-dashed border-edge px-4">
                             <m.span
                                 initial={false}
                                 animate={{
@@ -141,23 +141,23 @@ export default function ReviewScene() {
                             </m.span>
                         </div>
 
-                        <div className="flex h-10 items-center gap-2.5 px-4">
+                        <div className="flex h-11 items-center gap-2.5 border-b border-dashed border-edge px-4">
                             <Avatar className="size-5" />
                             <span className="text-[13px] text-foreground/85">
                                 Review from Piyush
                             </span>
                             <span
                                 className={cn(
-                                    "ml-auto flex items-center gap-1 font-mono text-[10.5px] tracking-[0.06em] uppercase transition-colors duration-300",
+                                    "ml-auto flex items-center gap-1 font-mono text-[10.5px] transition-colors duration-300",
                                     approved ? "text-green-600" : "text-amber-600",
                                 )}
                             >
                                 {approved && <CheckIcon className="size-3" aria-hidden />}
-                                {approved ? "approved" : "requested"}
+                                {approved ? "approved" : "review requested"}
                             </span>
                         </div>
 
-                        <div className="flex h-[44px] items-center px-4">
+                        <div className="flex h-11 items-center gap-2.5 border-b border-dashed border-edge px-4">
                             <m.div
                                 initial={false}
                                 animate={{
@@ -165,7 +165,7 @@ export default function ReviewScene() {
                                     y: commented ? 0 : 8,
                                 }}
                                 transition={{ duration: 0.3, ease: EASE }}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2.5"
                             >
                                 <Avatar className="size-5" />
                                 <span className="rounded-md border border-edge bg-mist/60 px-2.5 py-1 text-[12px] text-foreground/85">
@@ -174,7 +174,7 @@ export default function ReviewScene() {
                             </m.div>
                         </div>
 
-                        <div className="px-4 pt-1.5">
+                        <div className="flex flex-1 flex-col justify-center gap-3 px-4">
                             <m.div
                                 initial={false}
                                 animate={{ scale: merged ? [1, 0.97, 1] : 1 }}
@@ -195,7 +195,7 @@ export default function ReviewScene() {
                                 initial={false}
                                 animate={{ opacity: footed ? 1 : 0 }}
                                 transition={{ duration: 0.35 }}
-                                className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-neutral-500"
+                                className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-500"
                             >
                                 <DarwinBlockLogo
                                     className={cn("size-3.5", DARWIN_LOGO_BRAND_COLOR)}
@@ -204,6 +204,8 @@ export default function ReviewScene() {
                                 <span className="text-neutral-300">·</span>
                                 <Avatar className="size-3.5" />
                                 merged by Piyush
+                                <span className="text-neutral-300">·</span>
+                                branch deleted
                             </m.p>
                         </div>
 

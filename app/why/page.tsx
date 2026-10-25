@@ -14,7 +14,10 @@ export const metadata: Metadata = {
 
 export default function WhyPage() {
     return (
-        <LandingPageShell ctaTone="#F59E0B">
+        <LandingPageShell
+            ctaTone="#F59E0B"
+            ctaText={"The backlog won't clear itself.\nDarwin clears it."}
+        >
             <WhyHero />
             <StoryScroll />
             <LayersSection />

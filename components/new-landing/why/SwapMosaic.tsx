@@ -117,6 +117,8 @@ export default function SwapMosaic({
         const paper = hexToRgb(String(context.fillStyle));
         let width = 0;
         let height = 0;
+        let tileWidth = tileSize;
+        let tileHeight = tileSize;
         let board = buildBoard(1, 1, levels);
         let fromColor = latestTone.current;
         let toColor = fromColor;
@@ -132,8 +134,8 @@ export default function SwapMosaic({
                 `rgb(${tone.map((channel, index) => Math.round(paper[index] + (channel - paper[index]) * level)).join(",")})`;
             const cellBox = (cell: number) =>
                 [
-                    (cell % board.columns) * tileSize,
-                    Math.floor(cell / board.columns) * tileSize,
+                    (cell % board.columns) * tileWidth,
+                    Math.floor(cell / board.columns) * tileHeight,
                 ] as const;
             const moving = board.levels
                 .map((_, tile) => tile)
@@ -142,7 +144,7 @@ export default function SwapMosaic({
                 if (board.fromCell[tile] !== board.toCell[tile]) return;
                 const [x, y] = cellBox(board.toCell[tile]);
                 context.fillStyle = fill(level);
-                context.fillRect(x, y, tileSize, tileSize);
+                context.fillRect(x, y, tileWidth, tileHeight);
             });
             moving.forEach((tile) => {
                 const partner = moving.find(
@@ -152,7 +154,7 @@ export default function SwapMosaic({
                 context.fillStyle = fill(
                     Math.min(board.levels[tile], partner === undefined ? 1 : board.levels[partner]),
                 );
-                context.fillRect(x, y, tileSize, tileSize);
+                context.fillRect(x, y, tileWidth, tileHeight);
             });
             moving.forEach((tile) => {
                 const [fromX, fromY] = cellBox(board.fromCell[tile]);
@@ -161,17 +163,17 @@ export default function SwapMosaic({
                 context.fillRect(
                     fromX + (toX - fromX) * eased,
                     fromY + (toY - fromY) * eased,
-                    tileSize,
-                    tileSize,
+                    tileWidth,
+                    tileHeight,
                 );
             });
             context.fillStyle = snow;
             context.globalAlpha = 0.4;
             for (let column = 1; column < board.columns; column++) {
-                context.fillRect(column * tileSize - 1, 0, 1, height);
+                context.fillRect(column * tileWidth - 1, 0, 1, height);
             }
             for (let row = 1; row < board.rows; row++) {
-                context.fillRect(0, row * tileSize - 1, width, 1);
+                context.fillRect(0, row * tileHeight - 1, width, 1);
             }
             context.globalAlpha = 1;
         };
@@ -208,7 +210,11 @@ export default function SwapMosaic({
             canvas.width = Math.round(width * ratio);
             canvas.height = Math.round(height * ratio);
             context.setTransform(ratio, 0, 0, ratio, 0, 0);
-            board = buildBoard(Math.ceil(width / tileSize), Math.ceil(height / tileSize), levels);
+            const columns = Math.max(1, Math.round(width / tileSize));
+            const rows = Math.max(1, Math.round(height / tileSize));
+            tileWidth = width / columns;
+            tileHeight = height / rows;
+            board = buildBoard(columns, rows, levels);
             fromColor = toColor;
             draw(1);
         };

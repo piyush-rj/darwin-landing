@@ -135,31 +135,6 @@
     }
 }
 
-@keyframes pickaxe-glint {
-    0%,
-    55% {
-        mask-position: 100% 0;
-    }
-    100% {
-        mask-position: 0% 0;
-    }
-}
-
-.pickaxe-glint {
-    opacity: 0.75;
-    mask-image: linear-gradient(110deg, transparent 40%, #000 50%, transparent 60%);
-    mask-size: 250% 100%;
-    mask-repeat: no-repeat;
-    animation: pickaxe-glint 3.6s steps(18) infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .pickaxe-glint {
-        animation: none;
-        opacity: 0;
-    }
-}
-
 @layer components {
     .surface-card {
         background: var(--surface-card);
