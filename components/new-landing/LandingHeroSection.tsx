@@ -13,18 +13,49 @@ import * as m from "motion/react-m";
 import Link from "next/link";
 import { type RefObject, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
-import { BackChevronIcon, CtaArrowIcon, FooterLinkHoverArrowIcon } from "@/components/icons";
+import { FooterLinkHoverArrowIcon } from "@/components/icons";
 import RollingText from "@/components/utility/RollingText";
 
 import BlockMosaic from "./BlockMosaic";
 import PixelReveal from "./PixelReveal";
+import PixelSprite, { type PixelSpriteArt } from "./PixelSprite";
 import StatusStrip from "./StatusStrip";
 
-const FEATURED = [
+const FEATURED: {
+    title: string;
+    description?: string;
+    href: string;
+    badge?: string;
+    tone?: string;
+}[] = [
+    {
+        title: "TypeScript projects only, for now.",
+        description: "Darwin runs TypeScript codebases today. More languages are on the way.",
+        href: "/blog?tab=changelog",
+        badge: "TS",
+        tone: "#3178C6",
+    },
     { title: "Bug-proof fixes are live.", href: "/blog?tab=changelog" },
     { title: "Why we ship pull requests, not prompts.", href: "/why" },
     { title: "Every repo gets its own sandboxed runner.", href: "/blog?tab=changelog" },
 ];
+
+const TS_BADGE: PixelSpriteArt = {
+    rows: ["www.www", ".w..w..", ".w..www", ".w....w", ".w..www"],
+    colors: { w: "#ffffff" },
+};
+
+const TS_TILE_SHADES = [
+    "#3178C6",
+    "color-mix(in oklab, #3178C6 76%, #ffffff)",
+    "color-mix(in oklab, #3178C6 84%, #000000)",
+    "color-mix(in oklab, #3178C6 52%, #ffffff)",
+];
+
+const TS_TILE_CELLS = Array.from({ length: 49 }, (_, cell) => {
+    const hash = (cell * 37 + 11) % 97;
+    return hash < 55 ? 0 : hash < 73 ? 1 : hash < 87 ? 2 : 3;
+});
 
 const DESKTOP_QUERY = "(min-width: 1024px)";
 const STATEMENT_SCALE = 1.4;
@@ -125,10 +156,7 @@ function useHeroScroll(
 }
 
 export default function LandingHeroSection() {
-    const [featured, setFeatured] = useState(0);
-    const story = FEATURED[featured];
-    const step = (by: number) =>
-        setFeatured((current) => (current + by + FEATURED.length) % FEATURED.length);
+    const story = FEATURED[0];
     const trackRef = useRef<HTMLDivElement>(null);
     const stageRef = useRef<HTMLElement>(null);
     const anchorRef = useRef<HTMLDivElement>(null);
@@ -234,43 +262,51 @@ export default function LandingHeroSection() {
                             >
                                 <span
                                     aria-hidden
-                                    className="grid size-14 shrink-0 grid-cols-3 grid-rows-3"
-                                    style={{ background: "var(--color-primary)" }}
+                                    className="relative grid size-14 shrink-0 place-items-center overflow-hidden"
+                                    style={{ background: story.tone ?? "var(--color-primary)" }}
                                 >
-                                    {[1, 3, 5, 7].map((cell) => (
-                                        <span
-                                            key={cell}
-                                            style={{
-                                                gridColumn: (cell % 3) + 1,
-                                                gridRow: Math.floor(cell / 3) + 1,
-                                                background:
-                                                    "color-mix(in oklab, var(--color-primary) 60%, var(--color-black))",
-                                            }}
+                                    {story.badge ? (
+                                        <span className="absolute inset-0 grid grid-cols-7 grid-rows-7">
+                                            {TS_TILE_CELLS.map((shade, cell) => (
+                                                <span
+                                                    key={cell}
+                                                    style={{ background: TS_TILE_SHADES[shade] }}
+                                                />
+                                            ))}
+                                        </span>
+                                    ) : (
+                                        <span className="absolute inset-0 grid grid-cols-3 grid-rows-3">
+                                            {[1, 3, 5, 7].map((cell) => (
+                                                <span
+                                                    key={cell}
+                                                    style={{
+                                                        gridColumn: (cell % 3) + 1,
+                                                        gridRow: Math.floor(cell / 3) + 1,
+                                                        background: `color-mix(in oklab, ${story.tone ?? "var(--color-primary)"} 72%, var(--color-black))`,
+                                                    }}
+                                                />
+                                            ))}
+                                        </span>
+                                    )}
+                                    {story.badge && (
+                                        <PixelSprite
+                                            art={TS_BADGE}
+                                            scale={5}
+                                            className="relative [filter:drop-shadow(3px_3px_0_rgba(13,37,71,0.55))]"
                                         />
-                                    ))}
+                                    )}
                                 </span>
-                                <span className="text-[15px] leading-snug text-foreground">
-                                    {story.title}
+                                <span className="flex min-w-0 flex-col gap-1">
+                                    <span className="text-[15px] leading-snug text-foreground">
+                                        {story.title}
+                                    </span>
+                                    {story.description && (
+                                        <span className="text-[12.5px] leading-snug text-neutral-500">
+                                            {story.description}
+                                        </span>
+                                    )}
                                 </span>
                             </Link>
-                            <div className="flex flex-col border-l border-edge">
-                                <button
-                                    type="button"
-                                    aria-label="Next story"
-                                    onClick={() => step(1)}
-                                    className="flex flex-1 cursor-pointer items-center justify-center px-2.5 text-foreground transition-colors hover:bg-mist"
-                                >
-                                    <CtaArrowIcon className="size-4" />
-                                </button>
-                                <button
-                                    type="button"
-                                    aria-label="Previous story"
-                                    onClick={() => step(-1)}
-                                    className="flex flex-1 cursor-pointer items-center justify-center border-t border-edge px-2.5 text-foreground transition-colors hover:bg-mist"
-                                >
-                                    <BackChevronIcon className="size-4" />
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </m.div>
