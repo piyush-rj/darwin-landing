@@ -12,7 +12,6 @@ import {
     rollsTwice,
 } from "@/lib/rollingLetters";
 import { seededRandom } from "@/lib/seededRandom";
-import { cn } from "@/lib/utils";
 
 const RISE_SECONDS = 1;
 const ROW_GAP_SECONDS = 0.8;
@@ -65,19 +64,11 @@ function RisingCharacter({
     );
 }
 
-export default function RollingText({
-    text,
-    accent,
-}: {
-    text: string;
-    accent?: { words: string[]; className: string };
-}) {
+export default function RollingText({ text }: { text: string }) {
     const [scope, animate] = useAnimate<HTMLSpanElement>();
     const isInView = useInView(scope, { once: true, amount: 0.5 });
     const reduceMotion = useReducedMotion();
     const lines = text.split("\n");
-    const accentClassName = (word: string) =>
-        accent?.words.includes(word) ? accent.className : undefined;
 
     useEffect(() => {
         if (!isInView || !scope.current) return;
@@ -146,12 +137,7 @@ export default function RollingText({
     if (reduceMotion) {
         return lines.map((line, lineIndex) => (
             <span key={lineIndex} className="block">
-                {line.split(" ").map((word, wordIndex) => (
-                    <Fragment key={wordIndex}>
-                        {wordIndex > 0 && " "}
-                        <span className={accentClassName(word)}>{word}</span>
-                    </Fragment>
-                ))}
+                {line}
             </span>
         ));
     }
@@ -169,10 +155,7 @@ export default function RollingText({
                                     {wordIndex > 0 && " "}
                                     <span
                                         data-rolling-word
-                                        className={cn(
-                                            "my-[-0.12em] inline-block overflow-y-clip py-[0.12em] align-top whitespace-nowrap",
-                                            accentClassName(word),
-                                        )}
+                                        className="my-[-0.12em] inline-block overflow-y-clip py-[0.12em] align-top whitespace-nowrap"
                                     >
                                         {[...word].map((character) => {
                                             const index = indexInLine++;
