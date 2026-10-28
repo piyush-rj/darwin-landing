@@ -13,11 +13,9 @@ import WaitlistNavForm from "@/components/new-landing/WaitlistNavForm";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS: NavLink[] = [
-    { label: "Security", href: "/#security" },
     { label: "How it works", href: "/how-it-works" },
     { label: "Why Darwin", href: "/why" },
-    { label: "Blog", href: "/blog?tab=blogs" },
-    { label: "Changelog", href: "/changelog" },
+    { label: "Team", href: "/team" },
 ];
 
 const CELL = "flex h-full items-center border-r border-edge px-4 text-[14px] text-foreground";
