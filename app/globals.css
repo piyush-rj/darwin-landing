@@ -195,7 +195,7 @@
 }
 
 [data-hairline] .accent {
-    stroke: var(--color-primary);
+    stroke: var(--layer, var(--color-primary));
 }
 
 [data-hairline] .filled {

@@ -7,6 +7,7 @@ export * from "./MediaIcons";
 export * from "./MiscIcons";
 export * from "./NavigationIcons";
 export * from "./PeopleIcons";
+export * from "./PlaygroundIcons";
 export * from "./StatusIcons";
 export * from "./TemplateIcons";
 export type { IconType } from "react-icons";

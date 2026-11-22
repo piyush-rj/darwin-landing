@@ -14,27 +14,13 @@ import { CtaArrowIcon } from "@/components/icons";
 import RollingSwap from "@/components/utility/RollingSwap";
 import { cn } from "@/lib/utils";
 import { FOCUS_NAVBAR_WAITLIST_EVENT } from "@/lib/waitlist/focusNavbarWaitlist";
+import { joinWaitlist } from "@/lib/waitlist/joinWaitlist";
 
 type WaitlistStatus =
     | { state: "idle" }
     | { state: "submitting" }
     | { state: "joined"; message: string }
     | { state: "failed"; message: string };
-
-type WaitlistResponse = { success: boolean; message: string };
-
-async function joinWaitlist(email: string): Promise<WaitlistResponse> {
-    try {
-        const response = await fetch("/api/waitlist", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-        });
-        return (await response.json()) as WaitlistResponse;
-    } catch {
-        return { success: false, message: "Could not join the waitlist. Try again." };
-    }
-}
 
 const INVERTED = "bg-foreground text-[14px] font-medium whitespace-nowrap text-snow";
 const PLAIN = "text-[14px] font-medium whitespace-nowrap text-foreground";

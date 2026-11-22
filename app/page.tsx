@@ -1,23 +1,24 @@
-import HowItWorksSection from "@/components/new-landing/HowItWorksSection";
-import LandingHeroSection from "@/components/new-landing/LandingHeroSection";
-import LandingPageShell from "@/components/new-landing/LandingPageShell";
-import ProblemSection from "@/components/new-landing/ProblemSection";
-import ProductVideoSection from "@/components/new-landing/ProductVideoSection";
-import SectionDivider from "@/components/new-landing/SectionDivider";
-import StackSecuritySection from "@/components/new-landing/StackSecuritySection";
+import ControlSection from "@/components/redesign/ControlSection";
+import FloatingNavbar from "@/components/redesign/FloatingNavbar";
+import HeroSection from "@/components/redesign/hero/HeroSection";
+import HowItWorksSection from "@/components/redesign/HowItWorksSection";
+import InsideDarwinSection from "@/components/redesign/InsideDarwinSection";
+import ProblemGlobeSection from "@/components/redesign/problem-globe/ProblemGlobeSection";
+import LenisProvider from "@/providers/LenisProvider";
 
 export default function Home() {
     return (
-        <LandingPageShell>
-            <LandingHeroSection />
-            <SectionDivider />
-            <ProductVideoSection />
-            <SectionDivider />
-            <ProblemSection />
-            <SectionDivider />
-            <HowItWorksSection />
-            <SectionDivider />
-            <StackSecuritySection />
-        </LandingPageShell>
+        <LenisProvider>
+            <div className="min-h-screen w-full bg-paper font-body text-stone-950">
+                <FloatingNavbar />
+                <main className="overflow-x-clip">
+                    <HeroSection />
+                    <ProblemGlobeSection />
+                    <HowItWorksSection />
+                    <InsideDarwinSection />
+                    <ControlSection />
+                </main>
+            </div>
+        </LenisProvider>
     );
 }
