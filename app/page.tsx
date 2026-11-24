@@ -1,23 +1,30 @@
-import ControlSection from "@/components/redesign/ControlSection";
 import FloatingNavbar from "@/components/redesign/FloatingNavbar";
+import Footer from "@/components/redesign/Footer";
 import HeroSection from "@/components/redesign/hero/HeroSection";
 import HowItWorksSection from "@/components/redesign/HowItWorksSection";
 import InsideDarwinSection from "@/components/redesign/InsideDarwinSection";
-import ProblemGlobeSection from "@/components/redesign/problem-globe/ProblemGlobeSection";
+import StickyNotesSection from "@/components/redesign/notes/StickyNotesSection";
+import StackSecuritySection from "@/components/redesign/stack/StackSecuritySection";
 import LenisProvider from "@/providers/LenisProvider";
 
 export default function Home() {
     return (
         <LenisProvider>
-            <div className="min-h-screen w-full bg-paper font-body text-stone-950">
+            <div className="w-full font-body text-stone-950">
                 <FloatingNavbar />
-                <main className="overflow-x-clip">
+                <main className="relative z-10 min-h-screen overflow-x-clip bg-paper">
                     <HeroSection />
-                    <ProblemGlobeSection />
+                    <StickyNotesSection />
                     <HowItWorksSection />
                     <InsideDarwinSection />
-                    <ControlSection />
+                    <StackSecuritySection />
+                    <div
+                        id="footer-reveal"
+                        aria-hidden
+                        className="pointer-events-none absolute bottom-0 h-px w-px"
+                    />
                 </main>
+                <Footer />
             </div>
         </LenisProvider>
     );

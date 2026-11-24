@@ -12,7 +12,7 @@ import {
 import * as m from "motion/react-m";
 import { type RefObject, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { MOCK_HEIGHT, MOCK_SCENES, MOCK_WIDTH } from "./inside-darwin/playgroundBoard";
+import { beatDelays, MOCK_HEIGHT, MOCK_SCENES, MOCK_WIDTH } from "./inside-darwin/playgroundBoard";
 import PlaygroundMock from "./inside-darwin/PlaygroundMock";
 import StatusRelayGlyph, { type RelayStatus } from "./inside-darwin/StatusRelayGlyph";
 import SectionHeader from "./SectionHeader";
@@ -22,7 +22,7 @@ const FEATURES = [
         title: "A board your team already knows",
         status: "queued" as RelayStatus,
         tone: "text-sky-500",
-        body: "Issues move through To Do, Queued, In Progress, In Review and Done. The agent works the same board you do.",
+        body: "Issues move through To Do, In Progress, In Review and Done. The agent works the same board you do.",
     },
     {
         title: "The agent picks up the work",
@@ -200,13 +200,18 @@ export default function InsideDarwinSection() {
     const trackRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
     const titleRefs = useRef<(HTMLSpanElement | null)[]>([]);
-    const [active, setActive] = useState(0);
+    const [step, setStep] = useState({ active: 0, previous: 0 });
+    const { active, previous } = step;
+    const delays = beatDelays(MOCK_SCENES[previous], MOCK_SCENES[active], active >= previous);
     const scale = useStageScale();
     const lenis = useLenis();
     const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
 
     useMotionValueEvent(scrollYProgress, "change", (progress) => {
-        setActive(Math.min(FEATURES.length - 1, Math.floor(progress * FEATURES.length)));
+        const next = Math.min(FEATURES.length - 1, Math.floor(progress * FEATURES.length));
+        setStep((current) =>
+            current.active === next ? current : { active: next, previous: current.active },
+        );
     });
 
     const glyphOffset = useGlyphOffset(listRef, titleRefs, active);
@@ -248,10 +253,10 @@ export default function InsideDarwinSection() {
                         <div className="md:col-start-2 md:row-start-1">
                             <div style={{ height: MOCK_HEIGHT * scale }}>
                                 <div
-                                    className="origin-top-left"
+                                    className="origin-top-left will-change-transform"
                                     style={{ width: MOCK_WIDTH, transform: `scale(${scale})` }}
                                 >
-                                    <PlaygroundMock scene={MOCK_SCENES[active]} />
+                                    <PlaygroundMock scene={MOCK_SCENES[active]} delays={delays} />
                                 </div>
                             </div>
                         </div>

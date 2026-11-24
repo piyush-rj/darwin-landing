@@ -1,4 +1,4 @@
-import { BsArrowDownShort } from "react-icons/bs";
+import { BsArrowDownShort, BsArrowUpShort } from "react-icons/bs";
 import { MdChevronRight, MdOutlineKeyboardArrowRight, MdSearch } from "react-icons/md";
 import { Add, Menu4 } from "reicon-react";
 
@@ -8,6 +8,7 @@ import { createReiconIcon } from "./createReiconIcon";
 export const CtaArrowIcon = createIcon(MdChevronRight);
 
 export const FooterLinkHoverArrowIcon = createIcon(BsArrowDownShort);
+export const SendArrowIcon = createIcon(BsArrowUpShort);
 
 export const SearchIcon = createIcon(MdSearch);
 

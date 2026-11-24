@@ -17,6 +17,11 @@
     --color-paper: #fbfaf7;
     --color-plate: #f2f1eb;
     --color-plate-edge: #e7e3d9;
+    --color-parchment: #f3efe6;
+
+    /* Warm dark band, after v7labs. */
+    --color-cocoa: #1c1a17;
+    --color-cocoa-card: #262320;
 
     /* Accents. */
     --color-primary: #ab9ff2; /* brand purple */
@@ -129,14 +134,6 @@
 
     --animate-letter-drop: letter-drop 720ms cubic-bezier(0.4, 0, 0.2, 1) both;
     --animate-letter-drop-magic: letter-drop-magic 1100ms cubic-bezier(0.4, 0, 0.2, 1) both;
-    --animate-pager-fill: pager-fill 1s linear both;
-
-    @keyframes pager-fill {
-        from {
-            transform: scaleX(0);
-        }
-    }
-
     @keyframes letter-drop {
         0% {
             opacity: 0;

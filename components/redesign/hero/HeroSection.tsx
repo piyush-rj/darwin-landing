@@ -3,7 +3,7 @@
 import { stagger, useAnimate, useReducedMotion } from "motion/react";
 import { useLayoutEffect } from "react";
 
-import { WAITLIST_EMAIL_INPUT_ID } from "../FloatingNavbar";
+import { WAITLIST_EMAIL_INPUT_ID } from "../WaitlistPill";
 import BlockTrail from "./BlockTrail";
 import MosaicPainting from "./MosaicPainting";
 import { PlainTicketLink, SolidTicketButton, TicketBridge } from "./TicketButtons";
@@ -101,10 +101,7 @@ export default function HeroSection() {
                         </p>
                         <div className="flex items-center opacity-0">
                             <SolidTicketButton label="Join waitlist" onClick={focusWaitlist} />
-                            <TicketBridge
-                                fill="bg-linear-to-r from-stone-900 to-stone-200"
-                                width={12}
-                            />
+                            <TicketBridge fill="bg-linear-to-r from-stone-900 to-stone-200" />
                             <PlainTicketLink href="#inside-darwin" label="Watch it work" />
                         </div>
                     </div>

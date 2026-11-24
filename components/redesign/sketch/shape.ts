@@ -18,6 +18,7 @@ export type HatchLayer = {
     spacing: number;
     gap?: number;
     bend?: number;
+    trim?: number;
     region?: Point[];
 };
 
@@ -51,6 +52,7 @@ export function shape(points: Point[], random: Random, options: ShapeOptions = {
             spacing: layer.spacing,
             gap: layer.gap ?? 0.08,
             bend: layer.bend ?? 0.8,
+            trim: layer.trim ?? 2,
         }),
     }));
     if (grainTone) {

@@ -4,11 +4,10 @@ import {
     DoneStatusIcon,
     InProgressStatusIcon,
     InReviewStatusIcon,
-    QueuedStatusIcon,
     TodoStatusIcon,
 } from "@/components/icons";
 
-export type LaneKey = "todo" | "queued" | "progress" | "review" | "done";
+export type LaneKey = "todo" | "progress" | "review" | "done";
 
 export type Lane = {
     key: LaneKey;
@@ -19,7 +18,6 @@ export type Lane = {
 
 export const LANES: Lane[] = [
     { key: "todo", title: "To Do", Icon: TodoStatusIcon, tone: "text-neutral-400" },
-    { key: "queued", title: "Queued", Icon: QueuedStatusIcon, tone: "text-neutral-500" },
     { key: "progress", title: "In Progress", Icon: InProgressStatusIcon, tone: "text-yellow-400" },
     { key: "review", title: "In Review", Icon: InReviewStatusIcon, tone: "text-indigo-400" },
     { key: "done", title: "Done", Icon: DoneStatusIcon, tone: "text-green-500" },
@@ -64,22 +62,12 @@ export const BACKGROUND_CARDS: BoardCard[] = [
     {
         id: "NOC-39",
         title: "OTP lockout counter never resets after a successful sign-in",
-        lane: "queued",
+        lane: "todo",
         priority: "Urgent",
         labels: [BUG],
         assignee: "darwin",
         activity: { kind: "queued" },
         created: "Created Nov 12",
-    },
-    {
-        id: "NOC-37",
-        title: "Runner leaks containers when an attempt is aborted mid-clone",
-        lane: "progress",
-        priority: "High",
-        labels: [INFRA],
-        assignee: "darwin",
-        activity: { kind: "working", step: "Running tests", runner: "runner-03" },
-        created: "Created Nov 10",
     },
     {
         id: "NOC-33",
@@ -112,14 +100,14 @@ export const FOCUS_CARD: Omit<BoardCard, "lane" | "activity"> = {
     created: "Created Nov 16",
 };
 
-export type SceneKey = "board" | "work" | "question" | "pullRequest";
+export type PanelKind = "logs" | "question" | "pullRequest";
 
 export type MockScene = {
-    key: SceneKey;
     focusLane: LaneKey;
-    focusActivity: CardActivity;
-    boardShift: number;
-    callout: { label: string; x: number; y: number; drop?: number };
+    focusAssignee: BoardCard["assignee"];
+    focusActivity?: CardActivity;
+    panel: PanelKind | null;
+    inboxCount: number;
     band: string;
 };
 
@@ -132,41 +120,104 @@ export const LANE_WIDTH = 336;
 export const LANE_GAP = 8;
 export const LANE_STEP = LANE_WIDTH + LANE_GAP;
 export const BOARD_INSET = 12;
-export const PANEL = { left: SIDEBAR_WIDTH + BOARD_INSET + 12, top: 300, width: 380 };
+export const LANE_PAD = 8;
+export const LANE_HEADER_HEIGHT = 28;
+export const CARD_WIDTH = LANE_WIDTH - 2 * LANE_PAD;
+export const FOCUS_CARD_Y = BOARD_INSET + LANE_PAD + LANE_HEADER_HEIGHT + LANE_GAP;
+export function laneIndex(lane: LaneKey) {
+    return LANES.findIndex((candidate) => candidate.key === lane);
+}
 
-const PANEL_EDGE = PANEL.left + PANEL.width + 4;
+export function laneShift(lane: LaneKey) {
+    return -laneIndex(lane) * LANE_STEP;
+}
+
+export function cardX(lane: LaneKey) {
+    return BOARD_INSET + laneIndex(lane) * LANE_STEP + LANE_PAD;
+}
+
+const PRIYA: BoardCard["assignee"] = { initials: "PN", tone: "bg-indigo-950 text-indigo-300" };
 
 export const MOCK_SCENES: MockScene[] = [
     {
-        key: "board",
+        focusLane: "todo",
+        focusAssignee: PRIYA,
+        panel: null,
+        inboxCount: 3,
         band: "bg-sky-300",
-        focusLane: "queued",
-        focusActivity: { kind: "queued" },
-        boardShift: 0,
-        callout: { label: "Kanban board", x: SIDEBAR_WIDTH - 8, y: 263, drop: 50 },
     },
     {
-        key: "work",
-        band: "bg-amber-300",
         focusLane: "progress",
+        focusAssignee: "darwin",
         focusActivity: { kind: "working", step: "Reproducing the bug", runner: "runner-07" },
-        boardShift: -2 * LANE_STEP,
-        callout: { label: "Agent logs", x: PANEL_EDGE, y: PANEL.top + 22 },
+        panel: "logs",
+        inboxCount: 3,
+        band: "bg-amber-300",
     },
     {
-        key: "question",
-        band: "bg-rose-300",
-        focusLane: "progress",
-        focusActivity: { kind: "waiting" },
-        boardShift: -2 * LANE_STEP,
-        callout: { label: "Questions", x: PANEL_EDGE, y: PANEL.top + 22 },
-    },
-    {
-        key: "pullRequest",
-        band: "bg-violet-300",
         focusLane: "review",
-        focusActivity: { kind: "review", pullRequest: 482, additions: 18, deletions: 6 },
-        boardShift: -3 * LANE_STEP,
-        callout: { label: "Pull request", x: PANEL_EDGE, y: PANEL.top + 250 },
+        focusAssignee: "darwin",
+        focusActivity: { kind: "waiting" },
+        panel: "question",
+        inboxCount: 4,
+        band: "bg-rose-300",
+    },
+    {
+        focusLane: "done",
+        focusAssignee: "darwin",
+        focusActivity: { kind: "merged", duration: "3m 12s" },
+        panel: "pullRequest",
+        inboxCount: 3,
+        band: "bg-violet-300",
     },
 ];
+
+export type Beat = "avatar" | "hop" | "pan" | "activity" | "panel" | "morph";
+
+export type BeatDelays = Record<Beat, number>;
+
+const FORWARD_BEATS: Beat[] = ["morph", "avatar", "hop", "pan", "activity", "panel"];
+const REVERSE_BEATS: Beat[] = ["panel", "activity", "pan", "hop", "avatar", "morph"];
+
+export const HOP_SPAN = 0.3;
+
+const BEAT_SPAN: BeatDelays = {
+    avatar: 0.1,
+    hop: HOP_SPAN,
+    pan: 0.25,
+    activity: 0.1,
+    panel: 0.45,
+    morph: 0.3,
+};
+
+export function hopPath(from: LaneKey, to: LaneKey): LaneKey[] {
+    const start = laneIndex(from);
+    const end = laneIndex(to);
+    const direction = end > start ? 1 : -1;
+    return Array.from(
+        { length: Math.abs(end - start) },
+        (_, step) => LANES[start + direction * (step + 1)].key,
+    );
+}
+
+function changedBeats(from: MockScene, to: MockScene): Set<Beat> {
+    const changed = new Set<Beat>();
+    if (from.focusAssignee !== to.focusAssignee) changed.add("avatar");
+    if (from.focusLane !== to.focusLane) changed.add("hop").add("pan");
+    if (from.focusActivity?.kind !== to.focusActivity?.kind) changed.add("activity");
+    if (from.panel !== to.panel) changed.add(from.panel && to.panel ? "morph" : "panel");
+    return changed;
+}
+
+export function beatDelays(from: MockScene, to: MockScene, forward: boolean): BeatDelays {
+    const changed = changedBeats(from, to);
+    const order = forward ? FORWARD_BEATS : REVERSE_BEATS;
+    const delays: BeatDelays = { avatar: 0, hop: 0, pan: 0, activity: 0, panel: 0, morph: 0 };
+    const hops = hopPath(from.focusLane, to.focusLane).length;
+    let clock = 0;
+    for (const beat of order) {
+        delays[beat] = clock;
+        if (changed.has(beat)) clock += beat === "hop" ? HOP_SPAN * hops : BEAT_SPAN[beat];
+    }
+    return delays;
+}

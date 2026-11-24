@@ -5,7 +5,7 @@ export type Tone = "ink" | "line" | "soft" | "hatch" | "shade" | "dark" | "grain
 
 export type Stroke = { tone: Tone; d: string };
 
-export type Drawing = { fill?: string; texture?: string; strokes: Stroke[] };
+export type Drawing = { fill?: string; strokes: Stroke[] };
 
 const round = (value: number) => Math.round(value * 10) / 10;
 

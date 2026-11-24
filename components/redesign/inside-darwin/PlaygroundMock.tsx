@@ -1,8 +1,8 @@
 "use client";
 
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence, type Transition, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
-import type { ComponentType, ReactNode } from "react";
+import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 
 import {
     AgentNavIcon,
@@ -34,23 +34,70 @@ import { DarwinBlockLogo } from "@/components/logo/DarwinBlockLogo";
 import { usePerforatedEdge } from "../usePerforatedEdge";
 import {
     BACKGROUND_CARDS,
+    type Beat,
+    type BeatDelays,
     BOARD_INSET,
     type BoardCard,
+    CARD_WIDTH,
     type CardActivity,
+    cardX,
     FOCUS_CARD,
+    FOCUS_CARD_Y,
+    HOP_SPAN,
+    hopPath,
     LANE_WIDTH,
+    type LaneKey,
     LANES,
+    laneShift,
     MOCK_HEIGHT,
     MOCK_WIDTH,
     type MockScene,
     PANE_BAR_HEIGHT,
+    type PanelKind,
     type Priority,
     SIDEBAR_WIDTH,
     TITLE_BAR_HEIGHT,
 } from "./playgroundBoard";
-import { LogsPanel, PullRequestPanel, QuestionCard } from "./PlaygroundPanels";
+import { PanelContent } from "./PlaygroundPanels";
 
 const SPRING = { type: "spring", stiffness: 240, damping: 34 } as const;
+const INSTANT = { duration: 0 } as const;
+const EASE_OUT = [0.22, 1, 0.36, 1] as const;
+const SLOT = { duration: 0.25, ease: EASE_OUT } as const;
+
+type Beats = Record<Beat, Transition>;
+
+function useBeats(delays: BeatDelays): Beats {
+    const reduceMotion = useReducedMotion();
+    const beat = (name: Beat): Transition =>
+        reduceMotion ? INSTANT : { ...SPRING, delay: delays[name] };
+    return {
+        avatar: beat("avatar"),
+        hop: reduceMotion ? INSTANT : SPRING,
+        pan: beat("pan"),
+        activity: beat("activity"),
+        panel: reduceMotion
+            ? INSTANT
+            : { duration: BEAT_SPAN_PANEL, ease: EASE_OUT, delay: delays.panel },
+        morph: beat("morph"),
+    };
+}
+
+const BEAT_SPAN_PANEL = 0.45;
+
+function useHopLane(target: LaneKey, delay: number, reduceMotion: boolean) {
+    const [lane, setLane] = useState(target);
+
+    useEffect(() => {
+        if (lane === target) return;
+        const timers = hopPath(lane, target).map((next, hop) =>
+            setTimeout(() => setLane(next), reduceMotion ? 0 : (delay + hop * HOP_SPAN) * 1000),
+        );
+        return () => timers.forEach(clearTimeout);
+    }, [lane, target, delay, reduceMotion]);
+
+    return lane;
+}
 
 function NavRow({
     Icon,
@@ -70,8 +117,19 @@ function NavRow({
             <Icon className={`size-4 ${active ? "text-overlay/80" : "text-overlay/45"}`} />
             <span className="flex-1">{label}</span>
             {badge && (
-                <span className="rounded-full bg-overlay/10 px-1.5 text-[10.5px] leading-4.5 text-overlay/80 tabular-nums">
-                    {badge}
+                <span className="overflow-hidden rounded-full bg-overlay/10 px-1.5 text-[10.5px] leading-4.5 text-overlay/80 tabular-nums">
+                    <AnimatePresence mode="wait" initial={false}>
+                        <m.span
+                            key={badge}
+                            className="block"
+                            initial={{ y: 8, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -8, opacity: 0 }}
+                            transition={{ duration: 0.18 }}
+                        >
+                            {badge}
+                        </m.span>
+                    </AnimatePresence>
                 </span>
             )}
         </div>
@@ -86,7 +144,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
     );
 }
 
-function Sidebar() {
+function Sidebar({ inboxCount }: { inboxCount: number }) {
     return (
         <aside
             className="flex shrink-0 flex-col border-r border-edge bg-charcoal text-[12.5px] font-medium"
@@ -102,7 +160,7 @@ function Sidebar() {
             </div>
             <nav className="flex flex-col px-2 pt-2">
                 <NavRow Icon={AgentNavIcon} label="Agent" />
-                <NavRow Icon={InboxNavIcon} label="Inbox" badge={3} />
+                <NavRow Icon={InboxNavIcon} label="Inbox" badge={inboxCount} />
                 <NavRow Icon={MyIssuesNavIcon} label="My issues" />
                 <NavRow Icon={ChatsNavIcon} label="Chats" />
                 <SectionLabel>Board</SectionLabel>
@@ -160,7 +218,7 @@ function Activity({ activity }: { activity: CardActivity }) {
         case "waiting":
             return (
                 <span className="flex items-center gap-1.5 text-yellow-400">
-                    <span className="size-1.5 rounded-full bg-yellow-400" />
+                    <span className="size-1.5 animate-pulse rounded-full bg-yellow-400" />
                     Waiting for your answer
                 </span>
             );
@@ -186,27 +244,115 @@ function Activity({ activity }: { activity: CardActivity }) {
     }
 }
 
-function IssueCard({ card, focused }: { card: BoardCard; focused?: boolean }) {
+function Avatar({ assignee }: { assignee: BoardCard["assignee"] }) {
+    if (assignee === "darwin") {
+        return (
+            <span className="flex size-5 -rotate-7 items-center justify-center rounded-[5px] bg-graphite">
+                <DarwinBlockLogo className="size-4" />
+            </span>
+        );
+    }
+    return (
+        <span
+            className={`flex size-5 -rotate-7 items-center justify-center rounded-[5px] text-[9px] font-semibold ${assignee.tone}`}
+        >
+            {assignee.initials}
+        </span>
+    );
+}
+
+function Swap({
+    id,
+    transition,
+    children,
+}: {
+    id: string;
+    transition: Transition;
+    children: ReactNode;
+}) {
+    return (
+        <AnimatePresence mode="wait" initial={false}>
+            <m.span
+                key={id}
+                className="block"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6, transition: { duration: 0.14 } }}
+                transition={transition}
+            >
+                {children}
+            </m.span>
+        </AnimatePresence>
+    );
+}
+
+function Grow({
+    show,
+    gap,
+    transition,
+    children,
+}: {
+    show: boolean;
+    gap: string;
+    transition: Transition;
+    children: ReactNode;
+}) {
+    return (
+        <AnimatePresence initial={false}>
+            {show && (
+                <m.div
+                    key="grow"
+                    className={`shrink-0 overflow-hidden ${gap}`}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={transition}
+                >
+                    {children}
+                </m.div>
+            )}
+        </AnimatePresence>
+    );
+}
+
+function CardExpansion({ panel, beats }: { panel: PanelKind | null; beats?: Beats }) {
+    return (
+        <Grow show={panel !== null} gap="-mt-2.5" transition={beats?.panel ?? INSTANT}>
+            <div className="pt-2.5">
+                <div className="rounded-md border border-overlay/8 bg-ink/30 px-3 py-2.5">
+                    {panel && <PanelContent kind={panel} morph={beats?.morph ?? INSTANT} />}
+                </div>
+            </div>
+        </Grow>
+    );
+}
+
+function IssueCard({
+    card,
+    panel = null,
+    beats,
+}: {
+    card: BoardCard;
+    panel?: PanelKind | null;
+    beats?: Beats;
+}) {
     const PriorityIcon = PRIORITY_ICONS[card.priority];
     const lane = LANES.find((candidate) => candidate.key === card.lane);
     const StatusIcon = lane?.Icon;
+    const assigneeId = card.assignee === "darwin" ? "darwin" : card.assignee.initials;
 
     return (
         <div
-            className={`surface-card flex flex-col gap-2.5 rounded-md p-[9px] ${focused ? "ring-1 ring-overlay/15" : ""} ${card.activity?.kind === "merged" ? "opacity-80" : ""}`}
+            className={`surface-card flex flex-col gap-2.5 rounded-md p-[9px] ${beats ? "ring-1 ring-overlay/15" : ""} ${card.activity?.kind === "merged" ? "opacity-80" : ""}`}
         >
-            <div className="flex items-center justify-between text-[11px] text-neutral-500 tabular-nums">
+            <div className="flex h-5 items-center justify-between text-[11px] text-neutral-500 tabular-nums">
                 {card.id}
-                {card.assignee === "darwin" ? (
-                    <span className="flex size-5 -rotate-7 items-center justify-center rounded-[5px] bg-graphite">
-                        <DarwinBlockLogo className="size-4" />
-                    </span>
+                {beats ? (
+                    <Swap id={assigneeId} transition={beats.avatar}>
+                        <Avatar assignee={card.assignee} />
+                    </Swap>
                 ) : (
-                    <span
-                        className={`flex size-5 -rotate-7 items-center justify-center rounded-[5px] text-[9px] font-semibold ${card.assignee.tone}`}
-                    >
-                        {card.assignee.initials}
-                    </span>
+                    <Avatar assignee={card.assignee} />
                 )}
             </div>
             <div className="flex gap-2">
@@ -230,59 +376,85 @@ function IssueCard({ card, focused }: { card: BoardCard; focused?: boolean }) {
                     </span>
                 ))}
             </div>
-            {card.activity && (
-                <div className="flex text-[11.5px]">
-                    <Activity activity={card.activity} />
-                </div>
+            <CardExpansion panel={panel} beats={beats} />
+            {beats ? (
+                <Grow show={card.activity !== undefined} gap="-mt-2.5" transition={beats.activity}>
+                    <div className="flex h-8 items-center pt-2.5 text-[11.5px]">
+                        {card.activity && (
+                            <Swap id={card.activity.kind} transition={beats.activity}>
+                                <Activity activity={card.activity} />
+                            </Swap>
+                        )}
+                    </div>
+                </Grow>
+            ) : (
+                card.activity && (
+                    <div className="flex text-[11.5px]">
+                        <Activity activity={card.activity} />
+                    </div>
+                )
             )}
             <p className="text-[11px] text-neutral-600">{card.created}</p>
         </div>
     );
 }
 
-function Board({ scene }: { scene: MockScene }) {
+function Board({ scene, beats, delays }: { scene: MockScene; beats: Beats; delays: BeatDelays }) {
+    const reduceMotion = useReducedMotion() ?? false;
+    const lane = useHopLane(scene.focusLane, delays.hop, reduceMotion);
     const focus: BoardCard = {
         ...FOCUS_CARD,
-        lane: scene.focusLane,
+        lane,
+        assignee: scene.focusAssignee,
         activity: scene.focusActivity,
     };
 
     return (
         <div className="relative flex-1 overflow-hidden">
             <m.div
-                className="flex h-full gap-x-2"
+                className="relative flex h-full gap-x-2"
                 style={{ paddingInline: BOARD_INSET, paddingTop: BOARD_INSET }}
-                animate={{ x: scene.boardShift }}
-                transition={SPRING}
+                animate={{ x: laneShift(scene.focusLane) }}
+                transition={beats.pan}
             >
-                {LANES.map((lane) => {
-                    const cards = BACKGROUND_CARDS.filter((card) => card.lane === lane.key);
-                    const count = cards.length + (lane.key === scene.focusLane ? 1 : 0);
+                <m.div
+                    className="absolute left-0 z-10"
+                    style={{ top: FOCUS_CARD_Y, width: CARD_WIDTH }}
+                    animate={{ x: cardX(lane) }}
+                    transition={beats.hop}
+                >
+                    <IssueCard card={focus} panel={scene.panel} beats={beats} />
+                </m.div>
+                {LANES.map((column) => {
+                    const cards = BACKGROUND_CARDS.filter((card) => card.lane === column.key);
+                    const count = cards.length + (column.key === lane ? 1 : 0);
                     return (
                         <div
-                            key={lane.key}
+                            key={column.key}
                             className="flex shrink-0 flex-col gap-2 rounded-t-lg bg-ink/20 p-2 ring-[0.5px] ring-snow/3"
                             style={{ width: LANE_WIDTH }}
                         >
-                            <div className="flex h-7 items-center gap-2 px-1">
-                                <lane.Icon className={`size-3.5 ${lane.tone}`} />
+                            <div className="flex h-7 shrink-0 items-center gap-2 px-1">
+                                <column.Icon className={`size-3.5 ${column.tone}`} />
                                 <span className="text-[13px] font-semibold text-neutral-200">
-                                    {lane.title}
+                                    {column.title}
                                 </span>
                                 <span className="text-[11px] text-neutral-500 tabular-nums">
                                     {count}
                                 </span>
                                 <PlusIcon className="ml-auto size-3.5 text-neutral-600" />
                             </div>
-                            {lane.key === scene.focusLane && (
-                                <m.div layoutId="focus-card" transition={SPRING}>
-                                    <IssueCard card={focus} focused />
-                                </m.div>
-                            )}
+                            <Grow
+                                show={column.key === lane}
+                                gap="-mt-2"
+                                transition={reduceMotion ? INSTANT : SLOT}
+                            >
+                                <div aria-hidden className="invisible pt-2">
+                                    <IssueCard card={focus} panel={scene.panel} beats={beats} />
+                                </div>
+                            </Grow>
                             {cards.map((card) => (
-                                <m.div key={card.id} layout="position" transition={SPRING}>
-                                    <IssueCard card={card} />
-                                </m.div>
+                                <IssueCard key={card.id} card={card} />
                             ))}
                         </div>
                     );
@@ -292,57 +464,14 @@ function Board({ scene }: { scene: MockScene }) {
     );
 }
 
-const CALLOUT_LEAD = 22;
-
-function Callout({ scene }: { scene: MockScene }) {
-    const { label, x, y, drop = 0 } = scene.callout;
-    return (
-        <m.div
-            className="pointer-events-none absolute z-30"
-            initial={false}
-            animate={{ left: x, top: y }}
-            transition={SPRING}
-        >
-            <span className="absolute -top-1 -left-1 size-2 rounded-full bg-snow ring-4 ring-snow/15" />
-            <span
-                className="absolute top-0 left-0 h-px bg-snow/80"
-                style={{ width: CALLOUT_LEAD }}
-            />
-            <m.span
-                className="absolute top-0 w-px bg-snow/80"
-                style={{ left: CALLOUT_LEAD }}
-                initial={false}
-                animate={{ height: drop }}
-                transition={SPRING}
-            />
-            <m.div
-                className="absolute flex items-center"
-                style={{ left: CALLOUT_LEAD, translateY: "-50%" }}
-                initial={false}
-                animate={{ top: drop }}
-                transition={SPRING}
-            >
-                <span className="h-px w-[18px] bg-snow/80" />
-                <span className="relative overflow-hidden rounded-full bg-snow px-3.5 py-1.5 text-[14px] font-medium whitespace-nowrap text-ink shadow-lg shadow-black/40">
-                    <AnimatePresence mode="popLayout" initial={false}>
-                        <m.span
-                            key={label}
-                            className="block"
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -8 }}
-                            transition={{ duration: 0.24 }}
-                        >
-                            {label}
-                        </m.span>
-                    </AnimatePresence>
-                </span>
-            </m.div>
-        </m.div>
-    );
-}
-
-export default function PlaygroundMock({ scene }: { scene: MockScene }) {
+export default function PlaygroundMock({
+    scene,
+    delays,
+}: {
+    scene: MockScene;
+    delays: BeatDelays;
+}) {
+    const beats = useBeats(delays);
     const [bandEdgeRef, bandEdgeStyle] = usePerforatedEdge<HTMLDivElement>();
     const [frameEdgeRef, frameEdgeStyle] = usePerforatedEdge<HTMLDivElement>();
     return (
@@ -375,7 +504,7 @@ export default function PlaygroundMock({ scene }: { scene: MockScene }) {
                         <span className="ml-4 text-[12px] text-neutral-500">appx / nocturn</span>
                     </div>
                     <div className="relative flex min-h-0 flex-1">
-                        <Sidebar />
+                        <Sidebar inboxCount={scene.inboxCount} />
                         <main className="surface-chrome flex min-w-0 flex-1 flex-col">
                             <div
                                 className="flex shrink-0 items-center gap-2 border-b border-edge px-4 text-[13px]"
@@ -395,18 +524,10 @@ export default function PlaygroundMock({ scene }: { scene: MockScene }) {
                                     New issue
                                 </span>
                             </div>
-                            <Board scene={scene} />
+                            <Board scene={scene} beats={beats} delays={delays} />
                         </main>
                     </div>
                 </div>
-
-                <AnimatePresence initial={false}>
-                    {scene.key === "work" && <LogsPanel key="logs" />}
-                    {scene.key === "question" && <QuestionCard key="question" />}
-                    {scene.key === "pullRequest" && <PullRequestPanel key="pull-request" />}
-                </AnimatePresence>
-
-                <Callout scene={scene} />
             </div>
         </div>
     );

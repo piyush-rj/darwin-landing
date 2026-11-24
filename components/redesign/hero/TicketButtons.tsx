@@ -63,7 +63,7 @@ export function RollingLabel({ text, delayOffset = 0 }: { text: string; delayOff
 
 export function TicketBridge({
     fill = "bg-current",
-    width = 6,
+    width = 12,
 }: {
     fill?: string;
     width?: number;
