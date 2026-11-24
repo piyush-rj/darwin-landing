@@ -69,7 +69,7 @@ const NOTES: Note[] = [
 ];
 
 const SCROLL_PER_NOTE_VH = 42;
-const HEADLINE_SHARE = 0.12;
+const HEADLINE_SHARE = 0.08;
 const EASE_OUT_BACK = (t: number) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
 
 function useNoteProgress(progress: MotionValue<number>, index: number, frozen: boolean) {
@@ -134,9 +134,6 @@ export default function StickyNotesSection() {
     const trackRef = useRef<HTMLDivElement>(null);
     const frozen = useReducedMotion() ?? false;
     const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
-    const headline = useTransform(scrollYProgress, [0, HEADLINE_SHARE], [0, 1]);
-    const headlineOpacity = useTransform(headline, (t) => (frozen ? 1 : t));
-    const headlineY = useTransform(headline, (t) => (frozen ? 0 : 16 * (1 - t)));
 
     return (
         <section
@@ -147,10 +144,7 @@ export default function StickyNotesSection() {
         >
             <div className="sticky top-0 flex h-screen items-center overflow-hidden px-4 md:px-8">
                 <div className="relative mx-auto aspect-[3/4] w-full max-w-[1180px] md:aspect-[16/9]">
-                    <m.div
-                        className="relative flex h-full flex-col items-center justify-center text-center"
-                        style={{ opacity: headlineOpacity, y: headlineY }}
-                    >
+                    <div className="relative flex h-full flex-col items-center justify-center text-center">
                         <p className="text-[13px] text-stone-500">The backlog, after hours</p>
                         <h2
                             id="notes-title"
@@ -158,7 +152,7 @@ export default function StickyNotesSection() {
                         >
                             <span className="block">
                                 the issues{" "}
-                                <DarwinBlockLogo className="inline-block size-[0.78em] -translate-y-[0.06em] align-baseline" />{" "}
+                                <DarwinBlockLogo className="inline-block size-[0.72em] -translate-y-[0.04em] align-middle" />{" "}
                                 nobody
                             </span>
                             <span className="block">picks up</span>
@@ -167,7 +161,7 @@ export default function StickyNotesSection() {
                             Filed at night, stale by Friday. These are the ones that happen when no
                             one is watching.
                         </p>
-                    </m.div>
+                    </div>
 
                     {NOTES.map((note, index) => (
                         <StickyNote
