@@ -241,3 +241,25 @@
     stroke-width: 0.8px;
     stroke-dasharray: 2 2;
 }
+
+.landing-redesign {
+    --color-primary: #3e63dd;
+    --color-ring: #3e63dd;
+    --color-paper: #f8fafd;
+    --color-parchment: #f1f4fa;
+    --color-plate: #eef2f8;
+    --color-plate-edge: #dfe5ef;
+    --color-cocoa: #111111;
+    --color-cocoa-card: #1a1a1a;
+    --color-stone-50: #f8fafc;
+    --color-stone-100: #f1f4f8;
+    --color-stone-200: #e2e7ef;
+    --color-stone-300: #cbd3df;
+    --color-stone-400: #949fb1;
+    --color-stone-500: #646f84;
+    --color-stone-600: #4a5468;
+    --color-stone-700: #353d4d;
+    --color-stone-800: #222834;
+    --color-stone-900: #151922;
+    --color-stone-950: #0b0e14;
+}

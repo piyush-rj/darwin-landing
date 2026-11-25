@@ -61,7 +61,7 @@ const ring = (outline: Point[]) => `M${outline.map(([x, y]) => `${x} ${y}`).join
 const LETTER_PATH = ring(LETTER) + ring(COUNTER);
 const toPoints = (points: Point[]) => points.map(([x, y]) => `${x},${y}`).join(" ");
 
-export const DARWIN_LOGO_BRAND_COLOR = "[--color-primary:#7c5ce6]";
+export const DARWIN_LOGO_BRAND_COLOR = "[--color-primary:#3e63dd]";
 
 const TOP = "fill-[color-mix(in_oklab,var(--color-primary)_88%,var(--color-white))]";
 const DIRT = "fill-[color-mix(in_oklab,var(--color-primary)_68%,var(--color-black))]";
