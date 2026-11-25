@@ -47,7 +47,12 @@ function StageCard({ stage, index }: { stage: Stage; index: number }) {
         <FadeIn delay={index * 0.1}>
             <figure className="flex h-full flex-col bg-cocoa-card p-3 ring-1 ring-parchment/8">
                 <div className="flex h-72 items-center justify-center bg-parchment px-4 [--figure-ground:var(--color-parchment)] [--figure-ink:var(--color-stone-900)] md:h-80">
-                    <HairlineFigure figure={stage.figure} value={0} label={stage.figureLabel} />
+                    <HairlineFigure
+                        figure={stage.figure}
+                        value={0}
+                        label={stage.figureLabel}
+                        className="w-full"
+                    />
                 </div>
                 <figcaption className="flex flex-1 flex-col px-2 pt-6 pb-3">
                     <p className="text-[21px] leading-[1.2] font-medium tracking-[-0.025em] text-parchment">

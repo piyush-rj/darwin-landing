@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, type Transition, useReducedMotion } from "motion/react";
+import { AnimatePresence, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 
@@ -27,30 +27,24 @@ const PANEL_CONTENT: Record<PanelKind, ComponentType> = {
 
 const CONTENT_VARIANTS = {
     enter: { opacity: 1, y: 0 },
-    exit: (delay: number) => ({
-        opacity: 0,
-        y: -8,
-        transition: { delay, duration: 0.1, delayChildren: delay, when: "afterChildren" },
-    }),
+    exit: { opacity: 0, y: -6, transition: { duration: 0.12, when: "afterChildren" } },
 };
 
 const PRESS_VARIANTS = {
     exit: { scale: [1, 0.94, 1], transition: { duration: 0.12 } },
 };
 
-export function PanelContent({ kind, morph }: { kind: PanelKind; morph: Transition }) {
+export function PanelContent({ kind }: { kind: PanelKind }) {
     const Content = PANEL_CONTENT[kind];
-    const delay = morph.delay ?? 0;
     return (
-        <AnimatePresence mode="wait" initial={false} custom={delay}>
+        <AnimatePresence mode="wait" initial={false}>
             <m.div
                 key={kind}
-                custom={delay}
                 variants={CONTENT_VARIANTS}
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate="enter"
                 exit="exit"
-                transition={{ ...morph, delay: 0 }}
+                transition={{ duration: 0.3, ease: EASE_OUT }}
                 className="text-[12.5px] text-neutral-200"
             >
                 <Content />

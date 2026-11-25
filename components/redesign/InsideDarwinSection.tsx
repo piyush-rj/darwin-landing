@@ -12,7 +12,7 @@ import {
 import * as m from "motion/react-m";
 import { type RefObject, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { beatDelays, MOCK_HEIGHT, MOCK_SCENES, MOCK_WIDTH } from "./inside-darwin/playgroundBoard";
+import { MOCK_HEIGHT, MOCK_SCENES, MOCK_WIDTH } from "./inside-darwin/playgroundBoard";
 import PlaygroundMock from "./inside-darwin/PlaygroundMock";
 import StatusRelayGlyph, { type RelayStatus } from "./inside-darwin/StatusRelayGlyph";
 import SectionHeader from "./SectionHeader";
@@ -200,18 +200,13 @@ export default function InsideDarwinSection() {
     const trackRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
     const titleRefs = useRef<(HTMLSpanElement | null)[]>([]);
-    const [step, setStep] = useState({ active: 0, previous: 0 });
-    const { active, previous } = step;
-    const delays = beatDelays(MOCK_SCENES[previous], MOCK_SCENES[active], active >= previous);
+    const [active, setActive] = useState(0);
     const scale = useStageScale();
     const lenis = useLenis();
     const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
 
     useMotionValueEvent(scrollYProgress, "change", (progress) => {
-        const next = Math.min(FEATURES.length - 1, Math.floor(progress * FEATURES.length));
-        setStep((current) =>
-            current.active === next ? current : { active: next, previous: current.active },
-        );
+        setActive(Math.min(FEATURES.length - 1, Math.floor(progress * FEATURES.length)));
     });
 
     const glyphOffset = useGlyphOffset(listRef, titleRefs, active);
@@ -256,7 +251,7 @@ export default function InsideDarwinSection() {
                                     className="origin-top-left will-change-transform"
                                     style={{ width: MOCK_WIDTH, transform: `scale(${scale})` }}
                                 >
-                                    <PlaygroundMock scene={MOCK_SCENES[active]} delays={delays} />
+                                    <PlaygroundMock scene={MOCK_SCENES[active]} />
                                 </div>
                             </div>
                         </div>

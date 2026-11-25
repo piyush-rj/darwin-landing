@@ -1,8 +1,25 @@
 "use client";
 
-import { AnimatePresence, type Transition, useReducedMotion } from "motion/react";
+import {
+    animate,
+    AnimatePresence,
+    type MotionValue,
+    useMotionValue,
+    useMotionValueEvent,
+    useReducedMotion,
+    useSpring,
+    useTransform,
+    useVelocity,
+} from "motion/react";
 import * as m from "motion/react-m";
-import { type ComponentType, type ReactNode, useEffect, useState } from "react";
+import {
+    type ComponentType,
+    type ReactNode,
+    type RefObject,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 
 import {
     AgentNavIcon,
@@ -34,21 +51,18 @@ import { DarwinBlockLogo } from "@/components/logo/DarwinBlockLogo";
 import { usePerforatedEdge } from "../usePerforatedEdge";
 import {
     BACKGROUND_CARDS,
-    type Beat,
-    type BeatDelays,
     BOARD_INSET,
     type BoardCard,
+    boardPan,
     CARD_WIDTH,
     type CardActivity,
     cardX,
     FOCUS_CARD,
     FOCUS_CARD_Y,
-    HOP_SPAN,
-    hopPath,
+    LANE_GAP,
     LANE_WIDTH,
-    type LaneKey,
+    laneIndex,
     LANES,
-    laneShift,
     MOCK_HEIGHT,
     MOCK_WIDTH,
     type MockScene,
@@ -57,47 +71,18 @@ import {
     type Priority,
     SIDEBAR_WIDTH,
     TITLE_BAR_HEIGHT,
+    VISIBLE_BOARD_WIDTH,
 } from "./playgroundBoard";
 import { PanelContent } from "./PlaygroundPanels";
 
-const SPRING = { type: "spring", stiffness: 240, damping: 34 } as const;
-const INSTANT = { duration: 0 } as const;
+const CARD_SPRING = { stiffness: 170, damping: 26, mass: 1 } as const;
+const CAMERA_SPRING = { stiffness: 80, damping: 22, mass: 1 } as const;
+const HEIGHT_SPRING = { type: "spring", stiffness: 260, damping: 32 } as const;
 const EASE_OUT = [0.22, 1, 0.36, 1] as const;
-const SLOT = { duration: 0.25, ease: EASE_OUT } as const;
-
-type Beats = Record<Beat, Transition>;
-
-function useBeats(delays: BeatDelays): Beats {
-    const reduceMotion = useReducedMotion();
-    const beat = (name: Beat): Transition =>
-        reduceMotion ? INSTANT : { ...SPRING, delay: delays[name] };
-    return {
-        avatar: beat("avatar"),
-        hop: reduceMotion ? INSTANT : SPRING,
-        pan: beat("pan"),
-        activity: beat("activity"),
-        panel: reduceMotion
-            ? INSTANT
-            : { duration: BEAT_SPAN_PANEL, ease: EASE_OUT, delay: delays.panel },
-        morph: beat("morph"),
-    };
-}
-
-const BEAT_SPAN_PANEL = 0.45;
-
-function useHopLane(target: LaneKey, delay: number, reduceMotion: boolean) {
-    const [lane, setLane] = useState(target);
-
-    useEffect(() => {
-        if (lane === target) return;
-        const timers = hopPath(lane, target).map((next, hop) =>
-            setTimeout(() => setLane(next), reduceMotion ? 0 : (delay + hop * HOP_SPAN) * 1000),
-        );
-        return () => timers.forEach(clearTimeout);
-    }, [lane, target, delay, reduceMotion]);
-
-    return lane;
-}
+const SWAP = { duration: 0.28, ease: EASE_OUT } as const;
+const ARRIVAL_TOLERANCE = 0.12;
+const ACTIVITY_DELAY = 0.08;
+const PANEL_DELAY = 0.16;
 
 function NavRow({
     Icon,
@@ -261,15 +246,7 @@ function Avatar({ assignee }: { assignee: BoardCard["assignee"] }) {
     );
 }
 
-function Swap({
-    id,
-    transition,
-    children,
-}: {
-    id: string;
-    transition: Transition;
-    children: ReactNode;
-}) {
+function Swap({ id, delay = 0, children }: { id: string; delay?: number; children: ReactNode }) {
     return (
         <AnimatePresence mode="wait" initial={false}>
             <m.span
@@ -278,7 +255,7 @@ function Swap({
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6, transition: { duration: 0.14 } }}
-                transition={transition}
+                transition={{ ...SWAP, delay }}
             >
                 {children}
             </m.span>
@@ -286,77 +263,92 @@ function Swap({
     );
 }
 
-function Grow({
-    show,
-    gap,
-    transition,
+function useMeasuredHeight(ref: RefObject<HTMLElement | null>, height: MotionValue<number>) {
+    useEffect(() => {
+        const element = ref.current;
+        if (!element) return;
+        const observer = new ResizeObserver(() => height.set(element.offsetHeight));
+        observer.observe(element);
+        height.set(element.offsetHeight);
+        return () => observer.disconnect();
+    }, [ref, height]);
+}
+
+function AutoHeight({
+    delay = 0,
+    className,
     children,
 }: {
-    show: boolean;
-    gap: string;
-    transition: Transition;
+    delay?: number;
+    className?: string;
+    children: ReactNode;
+}) {
+    const reduceMotion = useReducedMotion();
+    const innerRef = useRef<HTMLDivElement>(null);
+    const measured = useMotionValue(0);
+    const height = useMotionValue(0);
+    useMeasuredHeight(innerRef, measured);
+
+    useMotionValueEvent(measured, "change", (target) => {
+        if (reduceMotion) height.set(target);
+        else animate(height, target, { ...HEIGHT_SPRING, delay });
+    });
+
+    return (
+        <m.div className={`overflow-hidden ${className ?? ""}`} style={{ height }}>
+            <div ref={innerRef}>{children}</div>
+        </m.div>
+    );
+}
+
+function FocusCardBody({
+    card,
+    panel,
+    children,
+}: {
+    card: BoardCard;
+    panel: PanelKind | null;
     children: ReactNode;
 }) {
     return (
-        <AnimatePresence initial={false}>
-            {show && (
-                <m.div
-                    key="grow"
-                    className={`shrink-0 overflow-hidden ${gap}`}
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={transition}
-                >
-                    {children}
-                </m.div>
-            )}
-        </AnimatePresence>
-    );
-}
-
-function CardExpansion({ panel, beats }: { panel: PanelKind | null; beats?: Beats }) {
-    return (
-        <Grow show={panel !== null} gap="-mt-2.5" transition={beats?.panel ?? INSTANT}>
-            <div className="pt-2.5">
-                <div className="rounded-md border border-overlay/8 bg-ink/30 px-3 py-2.5">
-                    {panel && <PanelContent kind={panel} morph={beats?.morph ?? INSTANT} />}
-                </div>
-            </div>
-        </Grow>
-    );
-}
-
-function IssueCard({
-    card,
-    panel = null,
-    beats,
-}: {
-    card: BoardCard;
-    panel?: PanelKind | null;
-    beats?: Beats;
-}) {
-    const PriorityIcon = PRIORITY_ICONS[card.priority];
-    const lane = LANES.find((candidate) => candidate.key === card.lane);
-    const StatusIcon = lane?.Icon;
-    const assigneeId = card.assignee === "darwin" ? "darwin" : card.assignee.initials;
-
-    return (
-        <div
-            className={`surface-card flex flex-col gap-2.5 rounded-md p-[9px] ${beats ? "ring-1 ring-overlay/15" : ""} ${card.activity?.kind === "merged" ? "opacity-80" : ""}`}
-        >
+        <div className="surface-card flex flex-col gap-2.5 rounded-md p-[9px] ring-1 ring-overlay/15">
             <div className="flex h-5 items-center justify-between text-[11px] text-neutral-500 tabular-nums">
                 {card.id}
-                {beats ? (
-                    <Swap id={assigneeId} transition={beats.avatar}>
-                        <Avatar assignee={card.assignee} />
-                    </Swap>
-                ) : (
+                <Swap id={card.assignee === "darwin" ? "darwin" : card.assignee.initials}>
                     <Avatar assignee={card.assignee} />
-                )}
+                </Swap>
             </div>
+            {children}
+            <AutoHeight delay={PANEL_DELAY} className="-mt-2.5">
+                {panel && (
+                    <div className="pt-2.5">
+                        <div className="rounded-md border border-overlay/8 bg-ink/30 px-3 py-2.5">
+                            <PanelContent kind={panel} />
+                        </div>
+                    </div>
+                )}
+            </AutoHeight>
+            <AutoHeight delay={ACTIVITY_DELAY} className="-mt-2.5">
+                {card.activity && (
+                    <div className="flex h-8 items-center pt-2.5 text-[11.5px]">
+                        <Swap id={card.activity.kind} delay={ACTIVITY_DELAY}>
+                            <Activity activity={card.activity} />
+                        </Swap>
+                    </div>
+                )}
+            </AutoHeight>
+            <p className="text-[11px] text-neutral-600">{card.created}</p>
+        </div>
+    );
+}
+
+function CardMeta({ card }: { card: BoardCard }) {
+    const PriorityIcon = PRIORITY_ICONS[card.priority];
+    const lane = LANES[laneIndex(card.lane)];
+    return (
+        <>
             <div className="flex gap-2">
-                {StatusIcon && <StatusIcon className={`mt-0.5 size-3.5 shrink-0 ${lane.tone}`} />}
+                <lane.Icon className={`mt-0.5 size-3.5 shrink-0 ${lane.tone}`} />
                 <p className="line-clamp-2 text-[14px] leading-snug font-medium text-neutral-100">
                     {card.title}
                 </p>
@@ -376,58 +368,142 @@ function IssueCard({
                     </span>
                 ))}
             </div>
-            <CardExpansion panel={panel} beats={beats} />
-            {beats ? (
-                <Grow show={card.activity !== undefined} gap="-mt-2.5" transition={beats.activity}>
-                    <div className="flex h-8 items-center pt-2.5 text-[11.5px]">
-                        {card.activity && (
-                            <Swap id={card.activity.kind} transition={beats.activity}>
-                                <Activity activity={card.activity} />
-                            </Swap>
-                        )}
-                    </div>
-                </Grow>
-            ) : (
-                card.activity && (
-                    <div className="flex text-[11.5px]">
-                        <Activity activity={card.activity} />
-                    </div>
-                )
+        </>
+    );
+}
+
+function IssueCard({ card }: { card: BoardCard }) {
+    return (
+        <div
+            className={`surface-card flex flex-col gap-2.5 rounded-md p-[9px] ${card.activity?.kind === "merged" ? "opacity-80" : ""}`}
+        >
+            <div className="flex h-5 items-center justify-between text-[11px] text-neutral-500 tabular-nums">
+                {card.id}
+                <Avatar assignee={card.assignee} />
+            </div>
+            <CardMeta card={card} />
+            {card.activity && (
+                <div className="flex text-[11.5px]">
+                    <Activity activity={card.activity} />
+                </div>
             )}
             <p className="text-[11px] text-neutral-600">{card.created}</p>
         </div>
     );
 }
 
-function Board({ scene, beats, delays }: { scene: MockScene; beats: Beats; delays: BeatDelays }) {
+function visibleBoardWidth(board: HTMLDivElement | null) {
+    if (!board) return VISIBLE_BOARD_WIDTH;
+    const rect = board.getBoundingClientRect();
+    const scale = rect.width / board.clientWidth;
+    return Math.min(board.clientWidth, (window.innerWidth - rect.left) / scale);
+}
+
+function useLaneTravel(
+    targetLane: number,
+    boardRef: RefObject<HTMLDivElement | null>,
+    reduceMotion: boolean,
+) {
+    const lane = useSpring(targetLane, CARD_SPRING);
+    const camera = useSpring(boardPan(targetLane, VISIBLE_BOARD_WIDTH), CAMERA_SPRING);
+
+    useEffect(() => {
+        const pan = boardPan(targetLane, visibleBoardWidth(boardRef.current));
+        if (reduceMotion) {
+            lane.jump(targetLane);
+            camera.jump(pan);
+            return;
+        }
+        lane.set(targetLane);
+        camera.set(pan);
+    }, [targetLane, boardRef, reduceMotion, lane, camera]);
+
+    return { lane, camera };
+}
+
+function useArrivedScene(lane: MotionValue<number>, scene: MockScene) {
+    const [arrived, setArrived] = useState(scene);
+    useMotionValueEvent(lane, "change", (position) => {
+        if (Math.abs(position - laneIndex(scene.focusLane)) < ARRIVAL_TOLERANCE) {
+            setArrived(scene);
+        }
+    });
+    return arrived;
+}
+
+function useNearestLane(lane: MotionValue<number>) {
+    const [nearest, setNearest] = useState(() => Math.round(lane.get()));
+    useMotionValueEvent(lane, "change", (position) => setNearest(Math.round(position)));
+    return nearest;
+}
+
+function LaneSlot({
+    lane,
+    cardHeight,
+    index,
+}: {
+    lane: MotionValue<number>;
+    cardHeight: MotionValue<number>;
+    index: number;
+}) {
+    const height = useTransform(
+        [lane, cardHeight],
+        ([position, size]: number[]) =>
+            Math.max(0, 1 - Math.abs(position - index)) * (size + LANE_GAP),
+    );
+    return <m.div aria-hidden className="shrink-0" style={{ height, marginTop: -LANE_GAP }} />;
+}
+
+function Board({ scene }: { scene: MockScene }) {
     const reduceMotion = useReducedMotion() ?? false;
-    const lane = useHopLane(scene.focusLane, delays.hop, reduceMotion);
+    const boardRef = useRef<HTMLDivElement>(null);
+    const targetLane = laneIndex(scene.focusLane);
+    const { lane, camera } = useLaneTravel(targetLane, boardRef, reduceMotion);
+    const arrived = useArrivedScene(lane, scene);
+    const nearestLane = useNearestLane(lane);
+    const velocity = useVelocity(lane);
+
+    const focusRef = useRef<HTMLDivElement>(null);
+    const cardHeight = useMotionValue(0);
+    useMeasuredHeight(focusRef, cardHeight);
+
+    const boardX = useTransform(camera, (pan) => -pan);
+    const focusX = useTransform(lane, cardX);
+    const lift = useTransform(velocity, (speed) => Math.min(1, Math.abs(speed) / 3));
+    const scale = useTransform(lift, (amount) => 1 + amount * 0.03);
+    const rotate = useTransform(velocity, (speed) => Math.max(-2.2, Math.min(2.2, speed * 0.7)));
+
     const focus: BoardCard = {
         ...FOCUS_CARD,
-        lane,
-        assignee: scene.focusAssignee,
-        activity: scene.focusActivity,
+        lane: LANES[nearestLane].key,
+        assignee: arrived.focusAssignee,
+        activity: arrived.focusActivity,
     };
 
     return (
-        <div className="relative flex-1 overflow-hidden">
+        <div ref={boardRef} className="relative flex-1 overflow-hidden">
             <m.div
                 className="relative flex h-full gap-x-2"
-                style={{ paddingInline: BOARD_INSET, paddingTop: BOARD_INSET }}
-                animate={{ x: laneShift(scene.focusLane) }}
-                transition={beats.pan}
+                style={{ x: boardX, paddingInline: BOARD_INSET, paddingTop: BOARD_INSET }}
             >
                 <m.div
                     className="absolute left-0 z-10"
-                    style={{ top: FOCUS_CARD_Y, width: CARD_WIDTH }}
-                    animate={{ x: cardX(lane) }}
-                    transition={beats.hop}
+                    style={{ top: FOCUS_CARD_Y, width: CARD_WIDTH, x: focusX, scale, rotate }}
                 >
-                    <IssueCard card={focus} panel={scene.panel} beats={beats} />
+                    <m.div
+                        aria-hidden
+                        className="absolute inset-0 rounded-md shadow-[0_24px_48px_-12px] shadow-black/70"
+                        style={{ opacity: lift }}
+                    />
+                    <div ref={focusRef} className="relative">
+                        <FocusCardBody card={focus} panel={arrived.panel}>
+                            <CardMeta card={focus} />
+                        </FocusCardBody>
+                    </div>
                 </m.div>
-                {LANES.map((column) => {
+                {LANES.map((column, index) => {
                     const cards = BACKGROUND_CARDS.filter((card) => card.lane === column.key);
-                    const count = cards.length + (column.key === lane ? 1 : 0);
+                    const count = cards.length + (index === nearestLane ? 1 : 0);
                     return (
                         <div
                             key={column.key}
@@ -444,15 +520,7 @@ function Board({ scene, beats, delays }: { scene: MockScene; beats: Beats; delay
                                 </span>
                                 <PlusIcon className="ml-auto size-3.5 text-neutral-600" />
                             </div>
-                            <Grow
-                                show={column.key === lane}
-                                gap="-mt-2"
-                                transition={reduceMotion ? INSTANT : SLOT}
-                            >
-                                <div aria-hidden className="invisible pt-2">
-                                    <IssueCard card={focus} panel={scene.panel} beats={beats} />
-                                </div>
-                            </Grow>
+                            <LaneSlot lane={lane} cardHeight={cardHeight} index={index} />
                             {cards.map((card) => (
                                 <IssueCard key={card.id} card={card} />
                             ))}
@@ -464,14 +532,7 @@ function Board({ scene, beats, delays }: { scene: MockScene; beats: Beats; delay
     );
 }
 
-export default function PlaygroundMock({
-    scene,
-    delays,
-}: {
-    scene: MockScene;
-    delays: BeatDelays;
-}) {
-    const beats = useBeats(delays);
+export default function PlaygroundMock({ scene }: { scene: MockScene }) {
     const [bandEdgeRef, bandEdgeStyle] = usePerforatedEdge<HTMLDivElement>();
     const [frameEdgeRef, frameEdgeStyle] = usePerforatedEdge<HTMLDivElement>();
     return (
@@ -524,7 +585,7 @@ export default function PlaygroundMock({
                                     New issue
                                 </span>
                             </div>
-                            <Board scene={scene} beats={beats} delays={delays} />
+                            <Board scene={scene} />
                         </main>
                     </div>
                 </div>

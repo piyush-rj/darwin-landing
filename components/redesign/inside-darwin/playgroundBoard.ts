@@ -128,12 +128,17 @@ export function laneIndex(lane: LaneKey) {
     return LANES.findIndex((candidate) => candidate.key === lane);
 }
 
-export function laneShift(lane: LaneKey) {
-    return -laneIndex(lane) * LANE_STEP;
+export const BOARD_WIDTH =
+    2 * BOARD_INSET + LANES.length * LANE_WIDTH + (LANES.length - 1) * LANE_GAP;
+export const VISIBLE_BOARD_WIDTH = MOCK_WIDTH - SIDEBAR_WIDTH;
+
+export function cardX(lanePosition: number) {
+    return BOARD_INSET + lanePosition * LANE_STEP + LANE_PAD;
 }
 
-export function cardX(lane: LaneKey) {
-    return BOARD_INSET + laneIndex(lane) * LANE_STEP + LANE_PAD;
+export function boardPan(lanePosition: number, visibleWidth: number) {
+    const centered = lanePosition * LANE_STEP - (visibleWidth - LANE_WIDTH) / 2;
+    return Math.min(Math.max(0, centered), BOARD_WIDTH - visibleWidth);
 }
 
 const PRIYA: BoardCard["assignee"] = { initials: "PN", tone: "bg-indigo-950 text-indigo-300" };
@@ -171,53 +176,3 @@ export const MOCK_SCENES: MockScene[] = [
         band: "bg-violet-300",
     },
 ];
-
-export type Beat = "avatar" | "hop" | "pan" | "activity" | "panel" | "morph";
-
-export type BeatDelays = Record<Beat, number>;
-
-const FORWARD_BEATS: Beat[] = ["morph", "avatar", "hop", "pan", "activity", "panel"];
-const REVERSE_BEATS: Beat[] = ["panel", "activity", "pan", "hop", "avatar", "morph"];
-
-export const HOP_SPAN = 0.3;
-
-const BEAT_SPAN: BeatDelays = {
-    avatar: 0.1,
-    hop: HOP_SPAN,
-    pan: 0.25,
-    activity: 0.1,
-    panel: 0.45,
-    morph: 0.3,
-};
-
-export function hopPath(from: LaneKey, to: LaneKey): LaneKey[] {
-    const start = laneIndex(from);
-    const end = laneIndex(to);
-    const direction = end > start ? 1 : -1;
-    return Array.from(
-        { length: Math.abs(end - start) },
-        (_, step) => LANES[start + direction * (step + 1)].key,
-    );
-}
-
-function changedBeats(from: MockScene, to: MockScene): Set<Beat> {
-    const changed = new Set<Beat>();
-    if (from.focusAssignee !== to.focusAssignee) changed.add("avatar");
-    if (from.focusLane !== to.focusLane) changed.add("hop").add("pan");
-    if (from.focusActivity?.kind !== to.focusActivity?.kind) changed.add("activity");
-    if (from.panel !== to.panel) changed.add(from.panel && to.panel ? "morph" : "panel");
-    return changed;
-}
-
-export function beatDelays(from: MockScene, to: MockScene, forward: boolean): BeatDelays {
-    const changed = changedBeats(from, to);
-    const order = forward ? FORWARD_BEATS : REVERSE_BEATS;
-    const delays: BeatDelays = { avatar: 0, hop: 0, pan: 0, activity: 0, panel: 0, morph: 0 };
-    const hops = hopPath(from.focusLane, to.focusLane).length;
-    let clock = 0;
-    for (const beat of order) {
-        delays[beat] = clock;
-        if (changed.has(beat)) clock += beat === "hop" ? HOP_SPAN * hops : BEAT_SPAN[beat];
-    }
-    return delays;
-}
