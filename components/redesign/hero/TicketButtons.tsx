@@ -4,7 +4,7 @@ const LETTER_DELAY_MS = 28;
 
 export const ROLL_TRIGGER =
     "group relative inline-flex cursor-pointer items-center text-[13px] font-medium tracking-[0.06em] whitespace-nowrap uppercase outline-none [--roll:0] focus-visible:[--roll:1] motion-safe:hover:[--roll:1]";
-const PILL =
+export const PILL =
     "inline-flex h-12 items-center rounded-[8px] px-5 transition-colors group-focus-visible:ring-2 group-focus-visible:ring-sky-400";
 
 const BRIDGE_HEIGHT = 26;

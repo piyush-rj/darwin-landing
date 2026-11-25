@@ -6,7 +6,8 @@ import { useLayoutEffect } from "react";
 import { WAITLIST_EMAIL_INPUT_ID } from "../WaitlistPill";
 import BlockTrail from "./BlockTrail";
 import MosaicPainting from "./MosaicPainting";
-import { PlainTicketLink, SolidTicketButton, TicketBridge } from "./TicketButtons";
+import { SolidTicketButton, TicketBridge } from "./TicketButtons";
+import WatchItWorkButton from "./WatchItWorkButton";
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as const;
 const UNROLL = [0.65, 0, 0.25, 1] as const;
@@ -76,7 +77,7 @@ export default function HeroSection() {
                 <div className="mx-auto grid max-w-page gap-7 py-9 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:py-12">
                     <h1
                         id="hero-title"
-                        className="text-[44px] leading-none font-medium tracking-[-0.05em] text-stone-950 sm:text-[56px] md:text-[64px] lg:text-[80px]"
+                        className="text-[44px] leading-none font-normal tracking-[-0.05em] text-stone-950 sm:text-[56px] md:text-[64px] lg:text-[80px]"
                     >
                         {HEADLINE_LINES.map((line) => (
                             <span
@@ -100,9 +101,9 @@ export default function HeroSection() {
                             runner and opens a tested pull request.
                         </p>
                         <div className="flex items-center opacity-0">
+                            <WatchItWorkButton />
+                            <TicketBridge fill="bg-linear-to-r from-stone-200 to-stone-900" />
                             <SolidTicketButton label="Join waitlist" onClick={focusWaitlist} />
-                            <TicketBridge fill="bg-linear-to-r from-stone-900 to-stone-200" />
-                            <PlainTicketLink href="#inside-darwin" label="Watch it work" />
                         </div>
                     </div>
                 </div>
